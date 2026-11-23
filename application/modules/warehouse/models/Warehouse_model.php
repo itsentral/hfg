@@ -241,7 +241,7 @@ class Warehouse_model extends BF_Model
     // Bangun klausa WHERE untuk stock value (raw, aman dari collation issue)
     private function _where_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
     {
-        $where = " WHERE ws.qty_stock > 0 ";
+        $where = " WHERE 1 = 1 ";
 
         if (!empty($kd_gudang)) {
             $kd    = $this->db->escape($kd_gudang);
@@ -274,13 +274,15 @@ class Warehouse_model extends BF_Model
         LEFT JOIN warehouse_stock_coil wsc
             ON wsc.id_material = ws.code_lv4
             AND wsc.id_gudang = ws.id_gudang
+            AND wsc.kd_gudang = ws.kd_gudang
+            AND wsc.status = 1
         {$where}
         ";
     }
 
     public function get_grand_total_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
     {
-        $where = " WHERE ws.qty_stock > 0 ";
+        $where = " WHERE 1 = 1 ";
 
         if (!empty($kd_gudang)) {
             $kd    = $this->db->escape($kd_gudang);
@@ -424,6 +426,7 @@ class Warehouse_model extends BF_Model
             FROM warehouse_stock_coil
             WHERE id_material = ?
             AND id_gudang     = ?
+            AND status = 1
             ORDER BY no_coil ASC
         ", [$id_material, $id_gudang])->result_array();
     }
@@ -695,11 +698,11 @@ class Warehouse_model extends BF_Model
             return;
         }
 
-        $snap_datetime = $date_snap . ' 23:59:59';
+        $snap_datetime = $this->db->escape($date_snap . ' 23:59:59');
 
         // ── Subquery: ambil row TERBARU per material per gudang s.d. tanggal ──
         // Menggunakan subquery untuk dapat row terakhir (bukan GROUP BY yang ambil sembarang)
-        $where_sub = " WHERE spd.hist_date <= '{$snap_datetime}' ";
+        $where_sub = " WHERE spd.hist_date <= {$snap_datetime} ";
 
         if (!empty($kd_gudang)) {
             $kd         = $this->db->escape($kd_gudang);
@@ -767,23 +770,17 @@ class Warehouse_model extends BF_Model
             latest.hist_date,
             w.nm_gudang,
             ws.trade_name,
-            -- Jumlah coil netto sampai tanggal ini:
-            -- IN yang masuk s.d. tanggal dikurangi OUT s.d. tanggal
+            -- Hitung posisi TERAKHIR per coil, bukan menjumlahkan snapshot IN/OUT lintas hari.
             (
-                SELECT COUNT(*)
-                FROM warehouse_coil_per_day cpd
-                WHERE cpd.id_material  = latest.id_material
-                  AND cpd.id_gudang    = latest.id_gudang
-                  AND cpd.hist_date   <= '{$snap_datetime}'
-                  AND cpd.status       = 'IN'
-            ) -
-            (
-                SELECT COUNT(*)
-                FROM warehouse_coil_per_day cpd
-                WHERE cpd.id_material  = latest.id_material
-                  AND cpd.id_gudang    = latest.id_gudang
-                  AND cpd.hist_date   <= '{$snap_datetime}'
-                  AND cpd.status       = 'OUT'
+                SELECT COUNT(*) FROM warehouse_coil_per_day cpd
+                WHERE cpd.id_material = latest.id_material AND cpd.id_gudang = latest.id_gudang
+                  AND cpd.hist_date <= {$snap_datetime} AND cpd.status = 'IN'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM warehouse_coil_per_day newer
+                      WHERE newer.id_material = cpd.id_material AND newer.id_gudang = cpd.id_gudang
+                        AND newer.no_coil = cpd.no_coil AND newer.hist_date <= {$snap_datetime}
+                        AND (newer.hist_date > cpd.hist_date OR (newer.hist_date = cpd.hist_date AND newer.id > cpd.id))
+                  )
             ) AS jumlah_coil
         FROM (
             SELECT spd.*
@@ -791,11 +788,14 @@ class Warehouse_model extends BF_Model
             INNER JOIN (
                 SELECT id_material, id_gudang, MAX(hist_date) AS max_date
                 FROM warehouse_stock_per_day
-                WHERE hist_date <= '{$snap_datetime}'
+                WHERE hist_date <= {$snap_datetime}
                 GROUP BY id_material, id_gudang
             ) mx ON mx.id_material = spd.id_material
                 AND mx.id_gudang   = spd.id_gudang
                 AND mx.max_date    = spd.hist_date
+                AND spd.id = (SELECT MAX(tie.id) FROM warehouse_stock_per_day tie
+                    WHERE tie.id_material = spd.id_material AND tie.id_gudang = spd.id_gudang
+                      AND tie.hist_date = spd.hist_date)
             {$where_sub}
         ) latest
         LEFT JOIN warehouse w  ON w.id        = latest.id_gudang
@@ -854,9 +854,9 @@ class Warehouse_model extends BF_Model
     ) {
         if (empty($date_snap)) return 0;
 
-        $snap_datetime = $date_snap . ' 23:59:59';
+        $snap_datetime = $this->db->escape($date_snap . ' 23:59:59');
 
-        $where_sub = " WHERE spd.hist_date <= '{$snap_datetime}' ";
+        $where_sub = " WHERE spd.hist_date <= {$snap_datetime} ";
         if (!empty($kd_gudang)) {
             $kd         = $this->db->escape($kd_gudang);
             $where_sub .= " AND spd.kd_gudang = {$kd} ";
@@ -877,11 +877,14 @@ class Warehouse_model extends BF_Model
             INNER JOIN (
                 SELECT id_material, id_gudang, MAX(hist_date) AS max_date
                 FROM warehouse_stock_per_day
-                WHERE hist_date <= '{$snap_datetime}'
+                WHERE hist_date <= {$snap_datetime}
                 GROUP BY id_material, id_gudang
             ) mx ON mx.id_material = spd.id_material
                 AND mx.id_gudang   = spd.id_gudang
                 AND mx.max_date    = spd.hist_date
+                AND spd.id = (SELECT MAX(tie.id) FROM warehouse_stock_per_day tie
+                    WHERE tie.id_material = spd.id_material AND tie.id_gudang = spd.id_gudang
+                      AND tie.hist_date = spd.hist_date)
             {$where_sub}
         ) latest
         ")->row();
@@ -892,7 +895,7 @@ class Warehouse_model extends BF_Model
     public function export_excel_coil_perday($kd_gudang = '', $date_snap = '')
     {
         if (empty($date_snap)) {
-            echo 'Tanggal tidak boleh kosong.';
+            echo 'Date cannot be empty.';
             return;
         }
 
@@ -942,9 +945,9 @@ class Warehouse_model extends BF_Model
         ")->result_array();
 
         // ── Label ──────────────────────────────────────────────────────────
-        $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
-        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
+        $label_gudang = 'All Warehouses';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Production Warehouse';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Slitting Warehouse';
 
         $label_date   = ' | Per Tanggal: ' . date('d/m/Y', strtotime((string) $date_snap));
 
@@ -976,7 +979,7 @@ class Warehouse_model extends BF_Model
             'C' => 'Trade Name',
             'D' => 'Gudang',
             'E' => 'No. Coil',
-            'F' => 'Kode Internal',
+            'F' => 'Internal Code',
             'G' => 'Status',
             'H' => 'Nett Weight (Kg)',
             'I' => 'Gross Weight (Kg)',
@@ -1107,7 +1110,7 @@ class Warehouse_model extends BF_Model
 
         // ── Output ─────────────────────────────────────────────────────────
         $filename  = 'Stock_Coil_PerDay_'
-            . str_replace(' ', '_', $label_gudang)
+            . str_replace(' ', '_', $label_gudang ?? '')
             . '_' . date('Ymd', strtotime((string) $date_snap)) . '.xls';
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');

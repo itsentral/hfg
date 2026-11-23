@@ -114,13 +114,13 @@ $budgets = 0;
 		<div class="box box-primary">
 			<div class="box-body">
 				<div class="form-group ">
-					<label class="col-sm-2 col-md-2 control-label">No Dokumen</label>
+					<label class="col-sm-2 col-md-2 control-label">Document No.</label>
 					<div class="col-sm-4 col-md-4">
 						<input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 col-md-2 control-label">Tanggal <b class="text-red">*</b></label>
+					<label class="col-sm-2 col-md-2 control-label">Date <b class="text-red">*</b></label>
 					<div class="col-sm-4 col-md-4">
-						<input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" required>
+						<input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Document Date" required>
 					</div>
 				</div>
 				<div class="form-group ">
@@ -145,9 +145,9 @@ $budgets = 0;
 							</select>
 						</div>
 					</div>
-					<label class="col-sm-2 col-md-2 control-label">Keterangan <b class="text-red">*</b></label>
+					<label class="col-sm-2 col-md-2 control-label">Description <b class="text-red">*</b></label>
 					<div class="col-sm-4 col-md-4">
-						<input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Keterangan" required>
+						<input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Description" required>
 						<?php
 						if (isset($data->st_reject)) {
 							if ($data->st_reject != '') {
@@ -168,14 +168,14 @@ $budgets = 0;
 						if (!isset($stsview) || (isset($stsview) && $stsview == '')) {
 						?>
 
-					<h4>List Penggantian/Pengembalian Kasbon</h4>
+					<h4>Cash Advance Reimbursement/Return List</h4>
 					<table class="table table-bordered">
 						<thead>
 							<tr>
 								<th class="text-center">No</th>
 								<th class="text-center">No. Expense</th>
-								<th class="text-center">Keterangan</th>
-								<th class="text-center">Jumlah</th>
+								<th class="text-center">Description</th>
+								<th class="text-center">Amount</th>
 								<th class="text-center">Action</th>
 							</tr>
 						</thead>
@@ -189,7 +189,7 @@ $budgets = 0;
 								echo '<td class="text-left">' . $item->informasi . '</td>';
 								echo '<td class="text-center">' . number_format((float) $item->jumlah) . '</td>';
 								echo '<td class="text-center">
-									<button type="button" class="btn btn-sm btn-success	add_ganti_expense" data-no_doc="' . $item->no_doc . '">Bayar</button>
+									<button type="button" class="btn btn-sm btn-success	add_ganti_expense" data-no_doc="' . $item->no_doc . '">Pay</button>
 								</td>';
 								echo '</tr>';
 
@@ -204,9 +204,9 @@ $budgets = 0;
 						<thead>
 							<tr>
 								<th class="text-center">PIC</th>
-								<th class="text-center">No. Dokumen</th>
-								<th class="text-center">Keterangan</th>
-								<th class="text-center">Jumlah</th>
+								<th class="text-center">Document No.</th>
+								<th class="text-center">Description</th>
+								<th class="text-center">Amount</th>
 								<th class="text-center">Action</th>
 							</tr>
 						</thead>
@@ -219,7 +219,7 @@ $budgets = 0;
 								echo '<td class="text-left">' . $item->keperluan . '</td>';
 								echo '<td class="text-center">' . number_format((float) $item->jumlah_kasbon) . '</td>';
 								echo '<td class="text-center">
-									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Bayar</button>
+									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Pay</button>
 								</td>';
 								echo '</tr>';
 							}
@@ -232,19 +232,19 @@ $budgets = 0;
 				?> -->
 
 				<div>
-					<h4>Transfer ke</h4>
+					<h4>Transfer to</h4>
 					<div class="form-group ">
 						<label class="col-md-1 control-label">Bank</label>
 						<div class="col-md-2">
 							<input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank">
 						</div>
-						<label class="col-md-2 control-label">Nomor Rekening</label>
+						<label class="col-md-2 control-label">Account Number</label>
 						<div class="col-md-2">
-							<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening">
+							<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Account Number">
 						</div>
-						<label class="col-md-2 control-label">Nama Rekening</label>
+						<label class="col-md-2 control-label">Account Name</label>
 						<div class="col-md-3">
-							<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening">
+							<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Account Holder Name">
 						</div>
 					</div>
 				</div>
@@ -253,19 +253,19 @@ $budgets = 0;
 						<thead>
 							<tr>
 								<th width="30" scope="col" class="column-primary">#</th>
-								<th scope="col" width="220">Jenis</th>
-								<th scope="col" width="110">Tanggal</th>
-								<th scope="col" width="200">Barang/Jasa</th>
+								<th scope="col" width="220">Type</th>
+								<th scope="col" width="110">Date</th>
+								<th scope="col" width="200">Goods/Services</th>
 								<th scope="col" width="200">Spesifikasi</th>
-								<th scope="col" width="70">Jumlah</th>
-								<th scope="col" width="120">Harga Satuan</th>
+								<th scope="col" width="70">Amount</th>
+								<th scope="col" width="120">Unit Price</th>
 								<th scope="col" width="120">Expense</th>
-								<th scope="col" width="100">Kasbon</th>
+								<th scope="col" width="100">Cash Advance</th>
 								<th scope="col" width="120">Bon Bukti</th>
 								<th scope="col" width="80" class="column-primary">
 									<div class="pull-right">
-										<a class="btn btn-info btn-xs stsview" href="javascript:void(0)" title="Kasbon" onclick="add_kasbon()" id="add-kasbon"><i class="fa fa-user"></i> Kasbon</a><br />
-										<a class="btn btn-success btn-xs stsview" href="javascript:void(0)" title="Tambah" onclick="add_detail()" id="add-material"><i class="fa fa-plus"></i> Tambah</a>
+										<a class="btn btn-info btn-xs stsview" href="javascript:void(0)" title="Cash Advance" onclick="add_kasbon()" id="add-kasbon"><i class="fa fa-user"></i> Cash Advance</a><br />
+										<a class="btn btn-success btn-xs stsview" href="javascript:void(0)" title="Add" onclick="add_detail()" id="add-material"><i class="fa fa-plus"></i> Add</a>
 									</div>
 								</th>
 							</tr>
@@ -295,7 +295,7 @@ $budgets = 0;
 											}
 											?>
 										</td>
-										<td data-header="Jenis">
+										<td data-header="Type">
 											<?php
 											if ($tekskasbon == '') {
 												echo form_dropdown('coa[]', $data_budget, (isset($record->coa) ? $record->coa : ''), array('id' => 'coa' . $idd, 'required' => 'required', 'class' => 'form-control select2', 'style' => 'width:100%'));
@@ -304,17 +304,17 @@ $budgets = 0;
 											}
 											?>
 										</td>
-										<td data-header="Tanggal">
+										<td data-header="Date">
 											<input type="text" class="form-control tanggal input-sm" name="tanggal[]" id="tanggal<?= $idd; ?>" value="<?= $record->tanggal; ?>" <?= $tekskasbon ?>>
 										</td>
-										<td data-header="Barang / Jasa">
+										<td data-header="Goods / Services">
 											<textarea class="form-control input-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" style="min-height:80px;min-width:200px;font-size:14px;" <?= $tekskasbon ?>><?= $record->deskripsi ?></textarea>
 										</td>
 										<td data-header="Spesifikasi">
 											<textarea class="form-control input-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" style="min-height:80px;min-width:200px;font-size:14px;" <?= $tekskasbon ?>><?= $record->keterangan ?></textarea>
 										</td>
 										<td data-header="Qty"><input type="text" class="form-control divide input-sm" name="qty[]" id="qty_<?= $idd; ?>" value="<?= $record->qty; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> size="15"></td>
-										<td data-header="Harga Satuan"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?>></td>
+										<td data-header="Unit Price"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?>></td>
 										<td data-header="Expense"><input type="text" class="form-control divide subtotal input-sm" name="expense[]" id="expense_<?= $idd; ?>" value="<?= ($record->expense); ?>" tabindex="-1" readonly></td>
 										<td data-header="Kasbon"><input type="text" class="form-control divide subkasbon input-sm" name="kasbon[]" id="kasbon_<?= $idd; ?>" value="<?= ($record->kasbon); ?>" tabindex="-1" readonly></td>
 										<td data-header="Bon Bukti" width="50">
@@ -327,15 +327,15 @@ $budgets = 0;
 										<?php
 										if ($record->kasbon_pr_non_po_pett !== null) {
 										?>
-											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetailPRPett(<?= $idd ?>, "<?= $record->kasbon_pr_non_po_pett ?>")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button></th>
+											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetailPRPett(<?= $idd ?>, "<?= $record->kasbon_pr_non_po_pett ?>")' title='Delete data'><i class='fa fa-close'></i> Delete</button></th>
 										<?php
 										} else if ($record->id_expense_bayar_sisa !== null) {
 										?>
-											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetailKembalian(<?= $idd ?>, "<?= $record->id_expense_bayar_sisa ?>")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button></th>
+											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetailKembalian(<?= $idd ?>, "<?= $record->id_expense_bayar_sisa ?>")' title='Delete data'><i class='fa fa-close'></i> Delete</button></th>
 										<?php
 										} else {
 										?>
-											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetail(<?= $idd ?>)' title='Hapus data'><i class='fa fa-close'></i> Hapus</button></th>
+											<th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetail(<?= $idd ?>)' title='Delete data'><i class='fa fa-close'></i> Delete</button></th>
 										<?php
 										}
 										?>
@@ -363,10 +363,10 @@ $budgets = 0;
 							<tr>
 								<td colspan="7" align=right>TOTAL</td>
 								<td><input type="text" class="form-control divide input-sm" id="total_expense" name="total_expense" value="<?= $total_expense ?>" placeholder="Total Expense" tabindex="-1" readonly style='width:90px'></td>
-								<td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Kasbon" tabindex="-1" readonly style='width:90px'></td>
+								<td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Cash Advance" tabindex="-1" readonly style='width:90px'></td>
 								<td align=right colspan=2>
 									<div class="row">
-										<div class="col-md-2">Saldo</div>
+										<div class="col-md-2">Balance</div>
 										<div class="col-md-10"><input type="text" class="form-control divide input-sm" id="grand_total" name="grand_total" value="<?= $grand_total ?>" placeholder="Grand Total" tabindex="-1" readonly style='width:90px'></div>
 									</div>
 									<div class="row">
@@ -387,14 +387,14 @@ $budgets = 0;
 								if ($data->status == 0) {
 									if ($stsview == 'approval') {
 										$urlback = 'list_expense_approval';
-										echo '<a class="btn btn-success btn-sm" onclick="data_approve()"><i class="fa fa-check me-1">&nbsp;</i>Setujui (Approve)</a>';
-										echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban me-1">&nbsp;</i>Tolak (Reject)</a>';
+										echo '<a class="btn btn-success btn-sm" onclick="data_approve()"><i class="fa fa-check me-1">&nbsp;</i>Approve</a>';
+										echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban me-1">&nbsp;</i>Reject</a>';
 									}
 								}
 							}
 							?>
-							<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-							<a class="btn btn-default btn-sm" onclick="if (typeof list_view === 'function') { list_view(); } else { $('#form-data').hide().empty(); $('#card-list, .box').show(); } return false;"><i class="fa fa-reply">&nbsp;</i>Kembali / Batal</a>
+							<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>
+							<a class="btn btn-default btn-sm" onclick="if (typeof list_view === 'function') { list_view(); } else { $('#form-data').hide().empty(); $('#card-list, .box').show(); } return false;"><i class="fa fa-reply">&nbsp;</i>Back / Cancel</a>
 						</div>
 					</div>
 					<div class="row">
@@ -467,24 +467,24 @@ foreach($data_budget as $keys=>$val){
 				var iddtl = $(this).val();
 				// if($("#filename_"+iddtl).val()=="") {
 				// 	if ($('#doc_file_'+iddtl).get(0).files.length === 0) {
-				// 		errors="Bon Bukti harus diupload";
+				// 		errors="The receipt must be uploaded";
 				// 	}
 				// }
 			});
-			if (lops == 0) errors = "Detail harus diisi";
+			if (lops == 0) errors = "Detail is required";
 			if ($("#informasi").val() == "") errors = "Keterangan tidak boleh kosong";
 			if ($("#coa").val() == "0") errors = "Jenis Expense tidak boleh kosong";
 			if ($("#tgl_doc").val() == "") errors = "Tanggal Transaksi tidak boleh kosong";
-			if (parseFloat($("#grand_total").val()) > parseFloat($("#budgets").val())) errors = "Saldo lebih dari budget";
+			if (parseFloat($("#grand_total").val()) > parseFloat($("#budgets").val())) errors = "Balance exceeds the budget";
 			if (errors == "") {
 
 				Swal.fire({
-					title: "Anda Yakin?",
-					text: "Data Akan Disimpan!",
+					title: "Are you sure?",
+					text: "The Data Will Be Saved!",
 					icon: "info",
 					showCancelButton: true,
-					confirmButtonText: "Ya, simpan!",
-					cancelButtonText: "Tidak!",
+					confirmButtonText: "Yes, save!",
+					cancelButtonText: "No!",
 					closeOnConfirm: false,
 					closeOnCancel: true
 				}).then((next) => {
@@ -500,8 +500,8 @@ foreach($data_budget as $keys=>$val){
 							success: function(msg) {
 								if (msg['save'] == '1') {
 									Swal.fire({
-										title: "Sukses!",
-										text: "Data Berhasil Di Simpan",
+										title: "Success!",
+										text: "Data saved successfully",
 										icon: "success",
 										timer: 1500,
 										showConfirmButton: false
@@ -509,8 +509,8 @@ foreach($data_budget as $keys=>$val){
 									location.reload();
 								} else {
 									Swal.fire({
-										title: "Gagal!",
-										text: "Data Gagal Di Simpan",
+										title: "Failed!",
+										text: "Failed to save data",
 										icon: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -520,8 +520,8 @@ foreach($data_budget as $keys=>$val){
 							},
 							error: function(msg) {
 								Swal.fire({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Di Proses",
+									title: "Failed!",
+									text: "Ajax request failed to process.",
 									icon: "error",
 									timer: 1500,
 									showConfirmButton: false
@@ -596,18 +596,18 @@ foreach($data_budget as $keys=>$val){
 						Rows += "<input type='hidden' name='detail_id[]' id='raw_id_" + nomor + "' value='" + nomor + "'>";
 						Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='" + data[i].id + "'>";
 						Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value='" + data[i].doc_file + "'></td>";
-						Rows += "<td data-header='Tanggal'>";
+						Rows += "<td data-header='Date'>";
 						Rows += "<input type='text' class='form-control tanggal input-sm' name='tanggal[]' id='tanggal_" + nomor + "' tabindex='-1' readonly value='" + data[i].tgl_doc + "' />";
 						Rows += "<input type='hidden' name='coa[]' id='coa_" + nomor + "' value='" + data[i].coa + "' />";
 						Rows += "</td>";
-						Rows += "<td data-header='Barang / Jasa & Keteranga'>";
+						Rows += "<td data-header='Goods / Services & Keteranga'>";
 						Rows += "<input type='text' class='form-control input-sm' name='deskripsi[]' id='deskripsi_" + nomor + "' value='" + data[i].keperluan + "' tabindex='-1' readonly />";
 						Rows += "<input type='text' class='form-control input-sm' name='keterangan[]' id='keterangan_" + nomor + "' />";
 						Rows += "</td>";
 						Rows += "<td data-header='Qty'>";
 						Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='1' id='qty_" + nomor + "' tabindex='-1' readonly />";
 						Rows += "</td>";
-						Rows += "<td data-header='Harga Satuan'>";
+						Rows += "<td data-header='Unit Price'>";
 						Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='0' id='harga_" + nomor + "' tabindex='-1' readonly />";
 						Rows += "</td>";
 						Rows += "<td data-header='Expense'>";
@@ -624,7 +624,7 @@ foreach($data_budget as $keys=>$val){
 						}
 						Rows += "</td>";
 						Rows += "< th scope='row' align='center'>";
-						Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+						Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
 						Rows += "</th>";
 						Rows += "</tr>";
 						nomor++;
@@ -653,22 +653,22 @@ foreach($data_budget as $keys=>$val){
 			Rows += "<input type='hidden' name='detail_id[]' id='raw_id_" + nomor + "' value='" + nomor + "' class='dtlloop'>";
 			Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='' class='dtlloop'>";
 			Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value=''></td>";
-			Rows += "<td data-header='Jenis'>";
+			Rows += "<td data-header='Type'>";
 			Rows += "<select name='coa[]' id='coa_" + nomor + "' required='required' class='form-control select2' style='width:100%'>" + combocoa + "</select>";
 			Rows += "</td>";
-			Rows += "<td data-header='Tanggal'>";
-			Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Tanggal' name='tanggal[]' id='tanggal_" + nomor + "' />";
+			Rows += "<td data-header='Date'>";
+			Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Date' name='tanggal[]' id='tanggal_" + nomor + "' />";
 			Rows += "</td>";
-			Rows += "<td data-header='Barang / Jasa'>";
+			Rows += "<td data-header='Goods / Services'>";
 			Rows += "<textarea class='form-control input-sm' placeholder='Deskripsi' name='deskripsi[]' id='deskripsi_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
 			Rows += "</td>";
 			Rows += "<td data-header='Spesifikasi'>";
-			Rows += "<textarea class='form-control input-sm' placeholder='Keterangan' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
+			Rows += "<textarea class='form-control input-sm' placeholder='Description' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
 			Rows += "</td>";
 			Rows += "<td data-header='Qty'>";
 			Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='0' id='qty_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:60px' />";
 			Rows += "</td>";
-			Rows += "<td data-header='Harga Satuan'>";
+			Rows += "<td data-header='Unit Price'>";
 			Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='0' id='harga_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:90px' />";
 			Rows += "</td>";
 			Rows += "<td data-header='Expense'>";
@@ -681,7 +681,7 @@ foreach($data_budget as $keys=>$val){
 			Rows += "<input type='file'  name='doc_file_" + nomor + "' id='doc_file_" + nomor + "'  />";
 			Rows += "</td>";
 			Rows += "<th align='center' th scope='row'>";
-			Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+			Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
 			Rows += "</th>";
 			Rows += "</tr>";
 			$("#tanggal_" + nomor).focus();
@@ -758,12 +758,12 @@ foreach($data_budget as $keys=>$val){
 
 		function data_approve() {
 			Swal.fire({
-				title: "Setujui Expense Petty Cash?",
-				text: "Dokumen akan disetujui dan diteruskan ke tahap berikutnya!",
+				title: "Approve Petty Cash Expense?",
+				text: "The document will be approved and forwarded to the next stage!",
 				icon: "question",
 				showCancelButton: true,
-				confirmButtonText: "Ya, Setujui!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Approve!",
+				cancelButtonText: "Cancel",
 				confirmButtonColor: "#28a745"
 			}).then((next) => {
 				if (next.isConfirmed) {
@@ -775,8 +775,8 @@ foreach($data_budget as $keys=>$val){
 						success: function(msg) {
 							if (msg['save'] == '1' || msg['save'] == 1 || msg['save'] === true) {
 								Swal.fire({
-									title: "Sukses!",
-									text: "Data Berhasil Disetujui",
+									title: "Success!",
+									text: "Data Approved Successfully",
 									icon: "success",
 									timer: 1500,
 									showConfirmButton: false
@@ -789,16 +789,16 @@ foreach($data_budget as $keys=>$val){
 								});
 							} else {
 								Swal.fire({
-									title: "Gagal!",
-									text: "Data Gagal Disetujui",
+									title: "Failed!",
+									text: "Data Failed to Approve",
 									icon: "error"
 								});
 							}
 						},
 						error: function(msg) {
 							Swal.fire({
-								title: "Gagal!",
-								text: "Ajax Data Gagal Diproses",
+								title: "Failed!",
+								text: "Ajax Data Failed to Process",
 								icon: "error"
 							});
 						}
@@ -809,17 +809,17 @@ foreach($data_budget as $keys=>$val){
 
 		function data_reject() {
 			Swal.fire({
-				title: "Tolak Dokumen Expense Petty Cash",
+				title: "Reject Petty Cash Expense Document",
 				input: "textarea",
 				inputLabel: "Alasan Penolakan (Reject Reason)",
-				inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+				inputPlaceholder: "Write the rejection reason here...",
 				showCancelButton: true,
-				confirmButtonText: "Tolak Dokumen",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Reject Document",
+				cancelButtonText: "Cancel",
 				confirmButtonColor: "#dc3545",
 				inputValidator: (value) => {
 					if (!value || !value.trim()) {
-						return "Alasan penolakan wajib diisi!";
+						return "A rejection reason is required!";
 					}
 				}
 			}).then((res) => {
@@ -837,8 +837,8 @@ foreach($data_budget as $keys=>$val){
 						success: function(msg) {
 							if (msg['save'] == '1' || msg['save'] == 1 || msg['save'] === true) {
 								Swal.fire({
-									title: "Ditolak!",
-									text: "Dokumen telah ditolak",
+									title: "Rejected!",
+									text: "The document has been rejected",
 									icon: "info",
 									timer: 1500,
 									showConfirmButton: false
@@ -851,16 +851,16 @@ foreach($data_budget as $keys=>$val){
 								});
 							} else {
 								Swal.fire({
-									title: "Gagal!",
-									text: "Data Gagal Ditolak",
+									title: "Failed!",
+									text: "Data Failed to Reject",
 									icon: "error"
 								});
 							}
 						},
 						error: function(msg) {
 							Swal.fire({
-								title: "Gagal!",
-								text: "Ajax Data Gagal Diproses",
+								title: "Failed!",
+								text: "Ajax Data Failed to Process",
 								icon: "error"
 							});
 						}
@@ -935,22 +935,22 @@ foreach($data_budget as $keys=>$val){
 					Rows += "<input type='hidden' name='detail_id[]' id='raw_id_" + nomor + "' value='" + nomor + "' class='dtlloop'>";
 					Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='' class='dtlloop'>";
 					Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value=''></td>";
-					Rows += "<td data-header='Jenis'>";
+					Rows += "<td data-header='Type'>";
 					Rows += "<select name='coa[]' id='coa_" + nomor + "' required='required' class='form-control select2' style='width:100%'>" + combocoa + "</select>";
 					Rows += "</td>";
-					Rows += "<td data-header='Tanggal'>";
-					Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Tanggal' name='tanggal[]' id='tanggal_" + nomor + "' />";
+					Rows += "<td data-header='Date'>";
+					Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Date' name='tanggal[]' id='tanggal_" + nomor + "' />";
 					Rows += "</td>";
-					Rows += "<td data-header='Barang / Jasa'>";
-					Rows += "<textarea class='form-control input-sm' placeholder='Barang/Jasa' name='deskripsi[]' id='deskripsi_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'>" + result.keperluan + "</textarea>";
+					Rows += "<td data-header='Goods / Services'>";
+					Rows += "<textarea class='form-control input-sm' placeholder='Goods/Services' name='deskripsi[]' id='deskripsi_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'>" + result.keperluan + "</textarea>";
 					Rows += "</td>";
 					Rows += "<td data-header='Spesifikasi'>";
-					Rows += "<textarea class='form-control input-sm' placeholder='Keterangan' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
+					Rows += "<textarea class='form-control input-sm' placeholder='Description' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
 					Rows += "</td>";
 					Rows += "<td data-header='Qty'>";
 					Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='1' id='qty_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:60px' />";
 					Rows += "</td>";
-					Rows += "<td data-header='Harga Satuan'>";
+					Rows += "<td data-header='Unit Price'>";
 					Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='" + result.jumlah_kasbon + "' id='harga_" + nomor + "' style='width:90px' readonly/>";
 					Rows += "</td>";
 					Rows += "<td data-header='Expense'>";
@@ -963,7 +963,7 @@ foreach($data_budget as $keys=>$val){
 					Rows += "<input type='file'  name='doc_file_" + nomor + "' id='doc_file_" + nomor + "'  />";
 					Rows += "</td>";
 					Rows += "<th align='center' th scope='row'>";
-					Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+					Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
 					Rows += "</th>";
 					Rows += "</tr>";
 					$("#tanggal_" + nomor).focus();
@@ -1012,22 +1012,22 @@ foreach($data_budget as $keys=>$val){
 					Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='" + result.id_detail + "' class='dtlloop'>";
 					Rows += "<input type='hidden' name='no_docc[]' id='no_doc_" + nomor + "' value='" + result.no_doc2 + "' class='dtlloop'>";
 					Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value=''></td>";
-					Rows += "<td data-header='Jenis'>";
+					Rows += "<td data-header='Type'>";
 					Rows += "<select name='coa[]' id='coa_" + nomor + "' required='required' class='form-control select2' style='width:100%'>" + combocoa + "</select>";
 					Rows += "</td>";
-					Rows += "<td data-header='Tanggal'>";
-					Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Tanggal' name='tanggal[]' id='tanggal_" + nomor + "' />";
+					Rows += "<td data-header='Date'>";
+					Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Date' name='tanggal[]' id='tanggal_" + nomor + "' />";
 					Rows += "</td>";
-					Rows += "<td data-header='Barang / Jasa'>";
-					Rows += "<textarea class='form-control input-sm' placeholder='Barang/Jasa' name='deskripsi[]' id='deskripsi_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'>" + result.informasi + "</textarea>";
+					Rows += "<td data-header='Goods / Services'>";
+					Rows += "<textarea class='form-control input-sm' placeholder='Goods/Services' name='deskripsi[]' id='deskripsi_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'>" + result.informasi + "</textarea>";
 					Rows += "</td>";
 					Rows += "<td data-header='Spesifikasi'>";
-					Rows += "<textarea class='form-control input-sm' placeholder='Keterangan' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
+					Rows += "<textarea class='form-control input-sm' placeholder='Description' name='keterangan[]' id='keterangan_" + nomor + "' style='min-height:80px;min-width:200px;font-size:14px;'></textarea>";
 					Rows += "</td>";
 					Rows += "<td data-header='Qty'>";
 					Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='1' id='qty_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:60px' />";
 					Rows += "</td>";
-					Rows += "<td data-header='Harga Satuan'>";
+					Rows += "<td data-header='Unit Price'>";
 					Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='" + result.jumlah + "' id='harga_" + nomor + "' style='width:90px' readonly/>";
 					Rows += "</td>";
 					Rows += "<td data-header='Expense'>";
@@ -1040,7 +1040,7 @@ foreach($data_budget as $keys=>$val){
 					Rows += "<input type='file'  name='doc_file_" + nomor + "' id='doc_file_" + nomor + "'  />";
 					Rows += "</td>";
 					Rows += "<th align='center' th scope='row'>";
-					Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetailKembalian(" + nomor + ", " + '"' + result.no_doc + '"' + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+					Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetailKembalian(" + nomor + ", " + '"' + result.no_doc + '"' + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
 					Rows += "</th>";
 					Rows += "</tr>";
 					$("#tanggal_" + nomor).focus();

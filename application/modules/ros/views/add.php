@@ -33,7 +33,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
             <input type="hidden" id="inisial_supplier_hidden" value="<?= isset($inisial_supplier) ? $inisial_supplier : '' ?>">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="mb-0 fw-bold">Form Report of Shipment</h5>
-                <span class="text-muted small">(*) wajib diisi</span>
+                <span class="text-muted small">(*) required</span>
             </div>
             <hr class="mt-2">
             <div class="row mb-3">
@@ -91,10 +91,10 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <div class="col-md-4">
-                                        <label for="">Nomor PO</label>
+                                        <label for="">PO Number</label>
                                     </div>
                                     <div class="col-md-8">
-                                        <label><?= str_replace(',', ', ', $no_surat) ?></label>
+                                        <label><?= str_replace(',', ', ', $no_surat ?? '') ?></label>
                                         <input type="hidden" name="no_po" class="form-control no_po" value="<?= $no_po ?>" readonly>
                                         <input type="hidden" name="no_surat" value="<?= $no_surat ?>" readonly>
                                     </div>
@@ -167,7 +167,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
             </div>
 
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <h5 class="mb-0 fw-bold">F&C Cost Estimation | Pemberitahuan Import Barang</h5>
+                <h5 class="mb-0 fw-bold">F&C Cost Estimation | Import Declaration</h5>
             </div>
             <hr class="mt-2">
 
@@ -264,7 +264,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 <div class="col-md-6">
                     <div class="form-group row mb-3">
                         <div class="col-md-4">
-                            <label for="no_pengajuan_pib">Nomor Pengajuan PIB</label>
+                            <label for="no_pengajuan_pib">PIB Request Number</label>
                         </div>
                         <div class="col-md-8">
                             <input type="text" name="no_pengajuan_pib" id="no_pengajuan_pib" class="form-control form-control-sm" value="<?= $no_pengajuan_pib ?>">
@@ -272,7 +272,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                     </div>
                     <div class="form-group row mb-3">
                         <div class="col-md-4">
-                            <label for="no_billing">Nomor Billing</label>
+                            <label for="no_billing">Billing Number</label>
                         </div>
                         <div class="col-md-8">
                             <input type="text" name="no_billing" id="no_billing" class="form-control form-control-sm" value="<?= $no_billing ?>">
@@ -305,7 +305,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                 ?>
                                     <div class="d-flex align-items-center gap-2 flex-wrap mt-1" id="existing_pib_wrapper">
                                         <span class="badge bg-light text-dark border">
-                                            <i class="ti ti-file-description me-1"></i> File sudah diupload: <?= basename($existing_file) ?>
+                                            <i class="ti ti-file-description me-1"></i> File uploaded: <?= basename($existing_file) ?>
                                         </span>
                                         <a href="<?= base_url($existing_file) ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
                                             <i class="ti ti-eye me-1"></i> Preview
@@ -362,7 +362,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 </div>
                 <div class="form-group row mb-3">
                     <div class="col-md-1">
-                        <label for="">Keterangan</label>
+                        <label for="">Description</label>
                     </div>
                     <div class="col-md-8">
                         <textarea name="keterangan" id="" cols="30" rows="5" class="form-control form-control-sm"><?= isset($header_ros) ? $header_ros['keterangan'] : null ?></textarea>
@@ -379,24 +379,24 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                             <thead>
                                 <tr>
                                     <th class="text-center">No.</th>
-                                    <th class="text-center" style="min-width: 200px;">Nama Barang</th>
-                                    <th class="text-center" style="min-width: 200px;">Nama Lain</th>
-                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center" style="min-width: 200px;">Item Name</th>
+                                    <th class="text-center" style="min-width: 200px;">Other Name</th>
+                                    <th class="text-center">Unit</th>
                                     <th class="text-center">Currency</th>
                                     <th class="text-center">Price/Unit</th>
                                     <th class="text-center">Price/Unit (Rp)</th>
                                     <th class="text-center">Qty PO</th>
                                     <th class="text-center">Net Price</th>
-                                    <th class="text-center" style="min-width: 120px;">Berat Kotor</th>
-                                    <th class="text-center" style="min-width: 120px;">Berat Bersih</th>
+                                    <th class="text-center" style="min-width: 120px;">Gross Weight</th>
+                                    <th class="text-center" style="min-width: 120px;">Net Weight</th>
                                     <th class="text-center" style="min-width: 120px;">Length</th>
                                     <th class="text-center" style="min-width: 150px;">Price/Coil</th>
                                     <th class="text-center" style="min-width: 150px;">Price/Coil (Rp)</th>
-                                    <th class="text-center" style="min-width: 150px;">Biaya Masuk</th>
+                                    <th class="text-center" style="min-width: 150px;">Import Duty</th>
                                     <th class="text-center" style="min-width: 150px;">Forwarding Cost</th>
-                                    <th class="text-center" style="min-width: 150px;">Nilai Total</th>
+                                    <th class="text-center" style="min-width: 150px;">Total Value</th>
                                     <th class="text-center" style="min-width: 200px;">No. Coil</th>
-                                    <th class="text-center" style="min-width: 180px;">Kode Internal</th>
+                                    <th class="text-center" style="min-width: 180px;">Internal Code</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -551,8 +551,8 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         if (checked.length > 1) {
             $(this).prop('checked', false);
             swal({
-                title: 'Perhatian!',
-                text: 'Hanya boleh memilih 1 Nomor PO!',
+                title: 'Attention!',
+                text: 'Only one PO number may be selected!',
                 type: 'warning'
             });
             return;
@@ -864,7 +864,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         if (ttl_price <= 0) {
             swal({
                 title: 'Warning !',
-                text: 'Please input the data correctly (Biaya Masuk/Forwarding/Qty) before save !',
+                text: 'Please enter valid import duty, forwarding cost, and quantity before saving!',
                 type: 'warning'
             });
             return false; // Berhenti di sini
@@ -931,7 +931,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         if (berat_kotor > 0 && berat_bersih > berat_kotor) {
             swal({
                 title: 'Warning !',
-                text: 'Berat bersih tidak boleh lebih besar dari berat kotor!',
+                text: 'Net weight must not exceed gross weight!',
                 type: 'warning'
             });
             $(this).val('');
@@ -982,7 +982,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         if (berat_bersih > berat_kotor) {
             swal({
                 title: 'Warning !',
-                text: 'Berat kotor tidak boleh lebih kecil dari berat bersih!',
+                text: 'Gross weight must not be less than net weight!',
                 type: 'warning'
             });
             $(this).val('');
@@ -1050,7 +1050,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 }));
             },
             error: function() {
-                console.error("Gagal mengambil custom PIB");
+                console.error("Failed to retrieve PIB details");
             }
         });
     }

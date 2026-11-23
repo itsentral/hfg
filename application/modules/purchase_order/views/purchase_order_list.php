@@ -9,7 +9,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 <div class="box">
 	<div class="box-header">
 		<?php if ($ENABLE_ADD) : ?>
-			<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Tambah" onclick="data_add()"><i class="fa fa-plus">&nbsp;</i>Tambah</a>
+			<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Add" onclick="data_add()"><i class="fa fa-plus">&nbsp;</i>Add</a>
 		<?php endif; ?>
 	</div>
 	<!-- /.box-header -->
@@ -18,8 +18,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 		<thead>
 		<tr>
 			<th width="5">#</th>
-			<th>No Dokumen</th>
-			<th>Tanggal</th>
+			<th>Document No.</th>
+			<th>Date</th>
 			<th>No PR</th>
 			<th>Status</th>
 			<th width="90">
@@ -50,7 +50,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				endif;
 			if($ENABLE_DELETE) :
 				if ($record->status==0) {?>
-				<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Hapus" onclick="data_delete('<?=$record->id?>')"><i class="fa fa-trash"></i></a>
+				<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" onclick="data_delete('<?=$record->id?>')"><i class="fa fa-trash"></i></a>
 				<?php }
 				endif; ?>
 			</td>

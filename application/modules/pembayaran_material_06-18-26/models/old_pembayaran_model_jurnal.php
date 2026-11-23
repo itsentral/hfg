@@ -133,8 +133,8 @@ class Pembayaran_material_model extends BF_Model
 		$post = $this->input->post();
 
 		$id_payment = $post['id_payment'];
-		$payment_bank = str_replace(',', '', $post['payment_bank']);
-		$bank_charge = str_replace(',', '', $post['bank_charge']);
+		$payment_bank = str_replace(',', '', $post['payment_bank'] ?? '');
+		$bank_charge = str_replace(',', '', $post['bank_charge'] ?? '');
 		$bank = $post['bank'];
 
 		$hasil_jurnal = '';

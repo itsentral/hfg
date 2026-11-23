@@ -15,7 +15,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
         <div class="d-flex align-items-center">
             <?php if ($pending_count > 0): ?>
                 <span class="badge bg-warning text-dark border border-warning px-3 py-2 me-2">
-                    <i class="fa fa-clock-o me-1"></i> <strong><?= $pending_count ?></strong> Menunggu Approval GM
+                    <i class="fa fa-clock-o me-1"></i> <strong><?= $pending_count ?></strong> Awaiting GM Approval
                 </span>
             <?php endif; ?>
         </div>
@@ -40,8 +40,8 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                     <tr>
                         <th class="text-center" width="50">#</th>
                         <th>Product Category</th>
-                        <th class="text-end" width="160">Rate Aktif (%)</th>
-                        <th class="text-center" width="180">Status Pengajuan</th>
+                        <th class="text-end" width="160">Active Rate (%)</th>
+                        <th class="text-center" width="180">Request Status</th>
                         <th class="text-end" width="160">Rate Diajukan (%)</th>
                         <th class="text-center" width="150">Last Update</th>
                         <th width="150">Updated By</th>
@@ -97,7 +97,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                                 <?php if ($ENABLE_MANAGE): ?>
                                     <td class="text-center">
                                         <?php if ($is_pending): ?>
-                                            <button type="button" class="btn btn-sm btn-secondary" disabled title="Menunggu keputusan GM">
+                                            <button type="button" class="btn btn-sm btn-secondary" disabled title="Awaiting GM decision">
                                                 <i class="fa fa-clock-o me-1"></i> Menunggu GM
                                             </button>
                                         <?php elseif ($is_rejected): ?>
@@ -107,8 +107,8 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                                                 data-active="<?= ($r->active_rate !== null) ? (float)($r->active_rate * 100) : '' ?>"
                                                 data-req="<?= (float)($r->requested_rate * 100) ?>"
                                                 data-reason="<?= htmlspecialchars($r->reject_reason ?: '') ?>"
-                                                title="Ajukan Ulang">
-                                                <i class="fa fa-refresh me-1"></i> Ajukan Ulang
+                                                title="Resubmit">
+                                                <i class="fa fa-refresh me-1"></i> Resubmit
                                             </button>
                                         <?php else: ?>
                                             <button type="button" class="btn btn-sm btn-primary btn-request-nego shadow-sm"
@@ -117,8 +117,8 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                                                 data-active="<?= ($r->active_rate !== null) ? (float)($r->active_rate * 100) : '' ?>"
                                                 data-req=""
                                                 data-reason=""
-                                                title="Ajukan Perubahan">
-                                                <i class="fa fa-pencil me-1"></i> Ajukan Perubahan
+                                                title="Request Change">
+                                                <i class="fa fa-pencil me-1"></i> Request Change
                                             </button>
                                         <?php endif; ?>
                                     </td>
@@ -132,7 +132,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
     </div>
 </div>
 
-<!-- Modal Ajukan Perubahan Extra Margin -->
+<!-- Modal Request Extra Margin Change -->
 <div class="modal fade" id="modal-request" tabindex="-1" aria-labelledby="modalRequestLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
@@ -140,7 +140,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                 <input type="hidden" name="code_lv2" id="req_code_lv2">
 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title text-white" id="modalRequestLabel">Ajukan Perubahan Extra Margin</h5>
+                    <h5 class="modal-title text-white" id="modalRequestLabel">Request Extra Margin Change</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -155,14 +155,14 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                             <input type="text" id="req_category_name" class="form-control bg-light fw-bold" readonly>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label text-muted small mb-1">Rate Aktif Saat Ini</label>
+                            <label class="form-label text-muted small mb-1">Current Active Rate</label>
                             <div class="input-group">
                                 <input type="text" id="req_active_rate" class="form-control bg-light text-end fw-bold" readonly>
                                 <span class="input-group-text">%</span>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Rate Baru Diajukan (%) <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Requested New Rate (%) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" step="0.01" min="0" max="100" name="rate_negotiation_allowance" id="req_new_rate" class="form-control text-end fs-6 fw-bold text-primary" required placeholder="0.00">
                                 <span class="input-group-text fw-bold">%</span>
@@ -181,7 +181,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                         <div class="card-body p-0">
                             <div id="req_impact_loading" class="text-center py-4 text-muted" style="display:none;">
                                 <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
-                                <div>Memuat simulasi impact produk...</div>
+                                <div>Loading product impact simulation...</div>
                             </div>
                             <div class="table-responsive" id="req_impact_wrapper" style="max-height: 280px; overflow-y: auto;">
                                 <table class="table table-sm table-bordered table-hover align-middle mb-0" id="req_tbl_impact">
@@ -191,8 +191,8 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                                             <th>Category Produk</th>
                                             <th>Produk</th>
                                             <th class="text-end">Bottom Price</th>
-                                            <th class="text-end">Pricelist Saat Ini</th>
-                                            <th class="text-center">Pengajuan Ext. Margin</th>
+                                            <th class="text-end">Current Pricelist</th>
+                                            <th class="text-center">Ext. Margin Request</th>
                                             <th class="text-end" style="background-color: #fff3cd; color: #856404;">Pricelist/Meter</th>
                                             <th class="text-end">Selisih</th>
                                         </tr>
@@ -202,19 +202,19 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                             </div>
                         </div>
                         <div class="card-footer bg-light py-2 text-muted small">
-                            <i class="fa fa-lightbulb-o text-warning me-1"></i> Nilai <strong>Pricelist/Meter</strong> dan <strong>Selisih</strong> langsung terhitung otomatis saat persentase di atas diketik.
+                            <i class="fa fa-lightbulb-o text-warning me-1"></i> Value <strong>Pricelist/Meter</strong> dan <strong>Selisih</strong> langsung terhitung otomatis saat persentase di atas diketik.
                         </div>
                     </div>
 
                     <div class="p-3 bg-light rounded border text-muted small">
                         <i class="fa fa-info-circle text-primary me-1"></i>
-                        Rate baru ini akan masuk ke antrean <strong>Approval GM</strong> dan tidak akan mengubah rate aktif sebelum disetujui.
+                        This new rate will enter the <strong>GM Approval</strong> queue and will not change the active rate until it is approved.
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4" id="btn-submit-req">
-                        <i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM
+                        <i class="fa fa-paper-plane me-1"></i> Send Request to GM
                     </button>
                 </div>
             </form>
@@ -257,7 +257,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
             var $tbody = $('#' + tbodyId);
             $tbody.empty();
             if (!items || items.length === 0) {
-                $tbody.html('<tr><td colspan="8" class="text-center text-muted py-3">Tidak ada data produk / costing untuk kategori ini.</td></tr>');
+                $tbody.html('<tr><td colspan="8" class="text-center text-muted py-3">There is no product / costing data for this category.</td></tr>');
                 if (countId) $('#' + countId).text('0 Produk');
                 return;
             }
@@ -333,7 +333,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
             $('#req_impact_tbody').empty();
             $('#req_impact_loading').show();
             $('#req_impact_wrapper').hide();
-            $('#req_impact_count').text('Memuat...');
+            $('#req_impact_count').text('Loading...');
 
             $.ajax({
                 url: '<?= base_url('rate_negotiation_allowance/get_detail_impact') ?>',
@@ -351,14 +351,14 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                         var curVal = parseFloat($('#req_new_rate').val()) || 0;
                         renderImpactTable(currentImpactItems, 'req_impact_tbody', 'req_impact_count', curVal);
                     } else {
-                        $('#req_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Gagal memuat impact.') + '</td></tr>');
+                        $('#req_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Failed to load impact.') + '</td></tr>');
                         $('#req_impact_count').text('0 Produk');
                     }
                 },
                 error: function() {
                     $('#req_impact_loading').hide();
                     $('#req_impact_wrapper').show();
-                    $('#req_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">Terjadi kesalahan jaringan saat memuat impact.</td></tr>');
+                    $('#req_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">A network error occurred while loading the impact.</td></tr>');
                     $('#req_impact_count').text('0 Produk');
                 }
             });
@@ -375,7 +375,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
             if (val === '' || isNaN(val) || Number(val) < 0 || Number(val) > 100) {
                 Swal.fire({
                     title: 'Validasi',
-                    text: 'Rate Extra Margin harus antara 0% dan 100%',
+                    text: 'Extra Margin Rate must be between 0% and 100%',
                     icon: 'warning'
                 });
                 return;
@@ -392,11 +392,11 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                     rate_negotiation_allowance: val
                 },
                 success: function(resp) {
-                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
+                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Send Request to GM');
                     if (resp.status == 1) {
                         $('#modal-request').modal('hide');
                         Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1800,
@@ -407,14 +407,14 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                             });
                     } else {
                         Swal.fire({
-                            title: 'Perhatian',
+                            title: 'Attention',
                             text: resp.pesan,
                             icon: 'warning'
                         });
                     }
                 },
                 error: function(xhr) {
-                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
+                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Send Request to GM');
                     Swal.fire({
                         title: 'Error!',
                         text: 'Request error: ' + xhr.status,

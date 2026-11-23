@@ -24,8 +24,8 @@
                             <th class="text-center">No. Incoming</th>
                             <th class="text-center">No. PO</th>
                             <th class="text-center">Nominal Incoming</th>
-                            <th class="text-center">Tanggal Incoming</th>
-                            <th class="text-center">Nama Supplier</th>
+                            <th class="text-center">Incoming Date</th>
+                            <th class="text-center">Supplier Name</th>
                         </tr>
                     </thead>
                     <tbody>

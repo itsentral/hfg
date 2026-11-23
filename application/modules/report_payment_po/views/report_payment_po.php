@@ -89,7 +89,7 @@
                 <h5 class="fw-bold text-dark mb-0">
                     <i class="fa fa-credit-card text-primary me-2"></i>Report Payment PO
                 </h5>
-                <small class="text-muted">Monitoring status pembayaran dan outstanding per Purchase Order</small>
+                <small class="text-muted">Monitor payment status and outstanding balances by purchase order</small>
             </div>
             <div>
                 <a href="<?= site_url('report_payment_po/download_excel'); ?>" class="btn btn-success btn-sm btn-download-excel shadow-sm" id="btn-download">
@@ -107,7 +107,7 @@
                         <th style="width: 170px;">No. PO</th>
                         <th>Supplier</th>
                         <th class="text-center" style="width: 100px;">Currency</th>
-                        <th class="text-end" style="width: 150px;">Nilai PO</th>
+                        <th class="text-end" style="width: 150px;">PO Value</th>
                         <th class="text-end" style="width: 150px;">PO Terbayar</th>
                         <th class="text-end" style="width: 150px;">Outstanding PO</th>
                     </tr>
@@ -123,7 +123,7 @@
                                     <a href="javascript:void(0)"
                                         class="btn-detail-po"
                                         data-no-po="<?= htmlspecialchars((string) $row->no_po, ENT_QUOTES, 'UTF-8'); ?>"
-                                        title="Klik untuk melihat rincian transaksi pembayaran"
+                                        title="Click to view payment transaction details"
                                         style="text-decoration: underline;">
                                         <i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars((string) $row->no_po, ENT_QUOTES, 'UTF-8'); ?>
                                     </a>
@@ -167,12 +167,12 @@
             <div class="modal-body p-4" id="modal_detail_content" style="max-height: 75vh; overflow-y: auto;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 text-muted">Memuat rincian transaksi pembayaran...</p>
+                    <p class="mt-2 text-muted">Loading payment transaction details...</p>
                 </div>
             </div>
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Tutup
+                    <i class="fa fa-times me-1"></i> Close
                 </button>
             </div>
         </div>
@@ -201,11 +201,11 @@
                     searchable: false
                 }],
                 language: {
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ data",
-                    info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ PO",
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ PO",
                     infoEmpty: "Menampilkan 0 data",
-                    zeroRecords: "Tidak ada data PO yang sesuai",
+                    zeroRecords: "No matching purchase orders found",
                     paginate: {
                         previous: "Prev",
                         next: "Next"
@@ -218,7 +218,7 @@
         $('#btn-download').on('click', function() {
             Swal.fire({
                 title: 'Downloading...',
-                text: 'Harap tunggu, sistem sedang memproses laporan Excel Anda.',
+                text: 'Please wait while the system generates your Excel report.',
                 icon: 'info',
                 showConfirmButton: false,
                 timer: 3000
@@ -230,9 +230,9 @@
             e.preventDefault();
             var no_po = $(this).data('no-po');
 
-            $('#modalPaymentLabel').html('<i class="fa fa-file-text-o me-2"></i>Detail Payment PO: <span class="badge bg-white text-primary ms-2">' + no_po + '</span>');
+            $('#modalPaymentLabel').html('<i class="fa fa-file-text-o me-2"></i>PO Payment Details: <span class="badge bg-white text-primary ms-2">' + no_po + '</span>');
             $('#modal_detail_payment').modal('show');
-            $('#modal_detail_content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Memuat rincian transaksi pembayaran...</p></div>');
+            $('#modal_detail_content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Loading payment transaction details...</p></div>');
 
             $.ajax({
                 type: 'POST',
@@ -244,7 +244,7 @@
                     $('#modal_detail_content').html(html);
                 },
                 error: function() {
-                    $('#modal_detail_content').html('<div class="alert alert-danger mb-0">Gagal memuat detail transaksi payment PO! Silakan coba lagi.</div>');
+                    $('#modal_detail_content').html('<div class="alert alert-danger mb-0">Failed to load PO payment details. Please try again.</div>');
                 }
             });
         });

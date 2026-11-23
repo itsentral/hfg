@@ -29,16 +29,16 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>No Dokumen</th>
+						<th>Document No.</th>
 						<th>Request By</th>
-						<th>Tanggal</th>
+						<th>Date</th>
 						<th>Keperluan</th>
 						<th>Tipe</th>
-						<th>Nilai Pengajuan</th>
-						<th>Diajukan Oleh</th>
-						<th>Tanggal Pengajuan</th>
-						<th>Dibayar Oleh</th>
-						<th>Tanggal Pembayaran</th>
+						<th>Request Value</th>
+						<th>Requested By</th>
+						<th>Request Date</th>
+						<th>Paid By</th>
+						<th>Payment Date</th>
 						<th>Status</th>
 					</tr>
 				</thead>
@@ -178,12 +178,12 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 		var errors = "";
 		if (errors == "") {
 			swal({
-					title: "Anda Yakin?",
-					text: "Data Akan Disimpan!",
+					title: "Are you sure?",
+					text: "The Data Will Be Saved!",
 					type: "info",
 					showCancelButton: true,
-					confirmButtonText: "Ya, simpan!",
-					cancelButtonText: "Tidak!",
+					confirmButtonText: "Yes, save!",
+					cancelButtonText: "No!",
 					closeOnConfirm: false,
 					closeOnCancel: true
 				},
@@ -200,8 +200,8 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 							success: function(msg) {
 								if (msg['save'] == '1') {
 									swal({
-										title: "Sukses!",
-										text: "Data Berhasil Di Update",
+										title: "Success!",
+										text: "Data Updated Successfully",
 										type: "success",
 										timer: 1500,
 										showConfirmButton: false
@@ -209,8 +209,8 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 									window.location.href = window.location.href;
 								} else {
 									swal({
-										title: "Gagal!",
-										text: "Data Gagal Di Update",
+										title: "Failed!",
+										text: "Data Failed to Update",
 										type: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -220,8 +220,8 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 							},
 							error: function(msg) {
 								swal({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Di Proses",
+									title: "Failed!",
+									text: "Ajax request failed to process.",
 									type: "error",
 									timer: 1500,
 									showConfirmButton: false

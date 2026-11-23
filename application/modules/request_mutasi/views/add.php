@@ -19,11 +19,11 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle-o me-2"></i>Form Realisasi Mutasi Bank
             </h5>
-            <small class="text-muted">Eksekusi pencatatan aktual transfer bank untuk request <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
+            <small class="text-muted">Execute the actual bank transfer record for request <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
         </div>
         <div>
             <a href="<?= site_url('request_mutasi/approval_mutasi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </a>
         </div>
     </div>
@@ -41,7 +41,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                     <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $kd_mutasi) ?></div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-muted small fw-semibold">Tanggal Request</label>
+                    <label class="form-label text-muted small fw-semibold">Request Date</label>
                     <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $tanggal)) ?></div>
                 </div>
                 <div class="col-md-3">
@@ -49,7 +49,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                     <div class="fw-semibold text-dark"><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($darinama ?: $dari) ?></div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-muted small fw-semibold">Bank Tujuan</label>
+                    <label class="form-label text-muted small fw-semibold">Destination Bank</label>
                     <div class="fw-semibold text-dark"><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($kenama ?: $ke) ?></div>
                 </div>
             </div>
@@ -58,7 +58,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
 
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <label for="tgl" class="form-label fw-semibold text-muted small">Tanggal Mutasi Aktual <span class="text-danger">*</span></label>
+                    <label for="tgl" class="form-label fw-semibold text-muted small">Actual Mutation Date <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-calendar"></i></span>
                         <input type="text" name="tgl" id="tgl" class="form-control flatpickr-date border-start-0" value="<?= date('Y-m-d') ?>" required>
@@ -66,7 +66,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                 </div>
 
                 <div class="col-md-4">
-                    <label for="nilai" class="form-label fw-semibold text-muted small">Nilai Request (Valas/IDR)</label>
+                    <label for="nilai" class="form-label fw-semibold text-muted small">Request Value (Foreign Currency/IDR)</label>
                     <input type="text" name="nilai" class="form-control text-end bg-light fw-bold" id="nilai" value="<?= number_format((float) $nilai, 0, ',', '.') ?>" readonly>
                 </div>
 
@@ -76,7 +76,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                 </div>
 
                 <div class="col-md-4">
-                    <label for="rupiah" class="form-label fw-semibold text-muted small">Nilai Aktual IDR <span class="text-danger">*</span></label>
+                    <label for="rupiah" class="form-label fw-semibold text-muted small">Actual IDR Value <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">Rp</span>
                         <input type="text" name="rupiah" class="form-control text-end fw-bold text-success divide" id="rupiah" value="<?= number_format((float) $nilai, 0, ',', '.') ?>" required>
@@ -84,7 +84,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                 </div>
 
                 <div class="col-md-8">
-                    <label for="keterangan" class="form-label fw-semibold text-muted small">Keterangan Tambahan</label>
+                    <label for="keterangan" class="form-label fw-semibold text-muted small">Additional Notes</label>
                     <textarea name="keterangan" class="form-control" id="keterangan" rows="2"><?= htmlspecialchars((string) $keterangan) ?></textarea>
                 </div>
             </div>
@@ -93,7 +93,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
 
             <div class="d-flex align-items-center justify-content-end gap-2">
                 <a class="btn btn-secondary px-3" onclick="history.back(); return false;">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </a>
                 <button type="submit" name="save" class="btn btn-success px-4 shadow-sm" id="submit">
                     <i class="fa fa-save me-1"></i> Simpan Realisasi Mutasi
@@ -126,19 +126,19 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
             e.preventDefault();
 
             Swal.fire({
-                title: "Konfirmasi Realisasi Mutasi",
-                text: "Sistem akan menyimpan mutasi aktual dan membuat jurnal BUM.",
+                title: "Confirm Mutation Realization",
+                text: "The system will save the actual mutation and create a BUM journal.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#198754",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Menyimpan...",
-                        text: "Sedang memproses realisasi mutasi",
+                        text: "Processing mutation realization",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -151,18 +151,18 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                         success: function(res) {
                             if (res.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
+                                    title: "Success!",
                                     text: res.pesan + ' No: ' + (res.nomor || ''),
                                     icon: "success"
                                 }).then(function() {
                                     window.location.href = base_url + 'request_mutasi/mutasi';
                                 });
                             } else {
-                                Swal.fire("Gagal!", res.pesan || "Gagal menyimpan mutasi.", "error");
+                                Swal.fire("Failed!", res.pesan || "Failed to save the mutation.", "error");
                             }
                         },
                         error: function() {
-                            Swal.fire("Error!", "Terjadi kesalahan sistem, silakan coba lagi.", "error");
+                            Swal.fire("Error!", "A system error occurred, please try again.", "error");
                         }
                     });
                 }

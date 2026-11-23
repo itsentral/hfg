@@ -81,12 +81,12 @@ $this->load->view('include/side_menu');
 							<tr class='bg-blue'>
 								<th class="text-center mid">Material Name</th>
 								<th class="text-center mid" width='8%'>Price From Supplier</th>
-								<!-- <th class="text-center mid" width='10%'>Harga (IDR)</th> -->
+								<!-- <th class="text-center mid" width='10%'>Price (IDR)</th> -->
 								<th class="text-center mid" width='7%'>Qty PR</th>
 								<th class="text-center mid" width='7%'>MOQ (Kg)</th>
 								<th class="text-center mid" width='7%'>Lead Time (Day)</th>
-								<th class="text-center mid" width='10%'>Tanggal Dibutuhkan</th>
-								<th class="text-center mid" width='12%'>Total Harga</th>
+								<th class="text-center mid" width='10%'>Required Date</th>
+								<th class="text-center mid" width='12%'>Total Price</th>
 							</tr>
 						</thead>
 					<tbody>

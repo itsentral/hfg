@@ -136,8 +136,8 @@ $ENABLE_DELETE  = has_permission('Master_tensile.Delete');
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
-				confirmButtonText: "Ya, Simpan!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Save!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			}, function(isConfirm) {
 				if (!isConfirm) {
@@ -187,8 +187,8 @@ $ENABLE_DELETE  = has_permission('Master_tensile.Delete');
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
-				confirmButtonText: "Ya, Hapus!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Delete!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			}, function(isConfirm) {
 				if (!isConfirm) {

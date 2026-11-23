@@ -18,7 +18,7 @@ class Accessories_category extends Admin_Controller
         $this->load->model(array(
           'Accessories_category/accessories_category_model'
         ));
-        $this->template->title('Manage Category Stok');
+        $this->template->title('Manage Stock Category');
         $this->template->page_icon('fa fa-building-o');
 
         date_default_timezone_set('Asia/Bangkok');
@@ -44,7 +44,7 @@ class Accessories_category extends Admin_Controller
         
         history("View index category stok");
         $this->template->set($data);
-        $this->template->title('Category Stok');
+        $this->template->title('Stock Category');
         $this->template->render('index');
     }
 
@@ -110,7 +110,7 @@ class Accessories_category extends Admin_Controller
             $this->load->view('add', $data);
         } else {
             $this->template->set($data);
-            $this->template->title(empty($id) ? 'Add Category Stok' : 'Edit Category Stok');
+            $this->template->title(empty($id) ? 'Add Stock Category' : 'Edit Stock Category');
             $this->template->render('add');
         }
       }

@@ -9,7 +9,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-random me-2"></i>Form Pembuatan Request Mutasi
             </h5>
-            <small class="text-muted">Buat pengajuan transfer / pemindahan saldo antar rekening bank</small>
+            <small class="text-muted">Create a transfer / balance move request between bank accounts</small>
         </div>
         <div>
             <a href="<?= site_url('request_mutasi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
@@ -30,36 +30,36 @@
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="tgl_request" class="form-label fw-semibold text-muted small">Tanggal Request <span class="text-danger">*</span></label>
+                    <label for="tgl_request" class="form-label fw-semibold text-muted small">Request Date <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-calendar"></i></span>
-                        <input type="text" name="tgl_request" id="tgl_request" class="form-control flatpickr-date border-start-0" value="<?= date('Y-m-d') ?>" placeholder="Pilih tanggal..." required>
+                        <input type="text" name="tgl_request" id="tgl_request" class="form-control flatpickr-date border-start-0" value="<?= date('Y-m-d') ?>" placeholder="Select date..." required>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="dari" class="form-label fw-semibold text-muted small">Bank Asal (Sumber) <span class="text-danger">*</span></label>
+                    <label for="dari" class="form-label fw-semibold text-muted small">Source Bank (Source) <span class="text-danger">*</span></label>
                     <?php
                     echo form_dropdown('dari', $datbank, '', array('id' => 'dari', 'required' => 'required', 'class' => 'form-select select2', 'style' => 'width: 100%;'));
                     ?>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="ke" class="form-label fw-semibold text-muted small">Bank Tujuan <span class="text-danger">*</span></label>
+                    <label for="ke" class="form-label fw-semibold text-muted small">Destination Bank <span class="text-danger">*</span></label>
                     <?php
                     echo form_dropdown('ke', $datbank, '', array('id' => 'ke', 'required' => 'required', 'class' => 'form-select select2', 'style' => 'width: 100%;'));
                     ?>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="matauang" class="form-label fw-semibold text-muted small">Mata Uang <span class="text-danger">*</span></label>
+                    <label for="matauang" class="form-label fw-semibold text-muted small">Currency <span class="text-danger">*</span></label>
                     <?php
                     echo form_dropdown('matauang', $matauang, '', array('id' => 'matauang', 'required' => 'required', 'class' => 'form-select select2', 'style' => 'width: 100%;'));
                     ?>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="nilai" class="form-label fw-semibold text-muted small">Nilai Transfer <span class="text-danger">*</span></label>
+                    <label for="nilai" class="form-label fw-semibold text-muted small">Transfer Value <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">Rp</span>
                         <input type="text" name="nilai" class="form-control text-end fw-bold divide" id="nilai" placeholder="0" onblur="fn_terbilang()" required>
@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="col-md-12 col-lg-6">
-                    <label for="keterangan" class="form-label fw-semibold text-muted small">Keterangan / Keperluan <span class="text-danger">*</span></label>
+                    <label for="keterangan" class="form-label fw-semibold text-muted small">Description / Purpose <span class="text-danger">*</span></label>
                     <textarea name="keterangan" class="form-control" id="keterangan" rows="2" placeholder="Tuliskan keterangan keperluan mutasi bank..." required></textarea>
                 </div>
 
@@ -81,7 +81,7 @@
 
             <div class="d-flex align-items-center justify-content-end gap-2">
                 <a class="btn btn-secondary px-3" onclick="history.back(); return false;">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </a>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="submit">
                     <i class="fa fa-save me-1"></i> Simpan Request Mutasi
@@ -119,19 +119,19 @@
             e.preventDefault();
 
             let errors = {
-                '#tgl_request': 'Tanggal Tidak Boleh Kosong!',
-                '#matauang': 'Mata uang tidak boleh kosong!',
-                '#dari': 'Bank Asal tidak boleh kosong!',
-                '#ke': 'Bank Tujuan tidak boleh kosong!',
-                '#nilai': 'Nilai tidak boleh kosong!',
-                '#keterangan': 'Keterangan tidak boleh kosong!',
+                '#tgl_request': 'Date Cannot Be Empty!',
+                '#matauang': 'Currency cannot be empty!',
+                '#dari': 'Source Bank cannot be empty!',
+                '#ke': 'Destination Bank cannot be empty!',
+                '#nilai': 'Value cannot be empty!',
+                '#keterangan': 'Description cannot be empty!',
             };
 
             for (let field in errors) {
                 if ($(field).val() === "" || $(field).val() === "0" || $(field).val() === null) {
                     Swal.fire({
                         title: errors[field],
-                        text: "Silakan lengkapi data dengan benar!",
+                        text: "Please complete the data correctly!",
                         icon: "warning"
                     });
                     $(field).focus();
@@ -141,27 +141,27 @@
 
             if ($('#dari').val() === $('#ke').val()) {
                 Swal.fire({
-                    title: "Bank Asal dan Bank Tujuan Sama!",
-                    text: "Bank tujuan harus berbeda dengan bank asal.",
+                    title: "The Source Bank and Destination Bank Are the Same!",
+                    text: "The destination bank must be different from the source bank.",
                     icon: "warning"
                 });
                 return;
             }
 
             Swal.fire({
-                title: "Simpan Request Mutasi?",
-                text: "Pastikan data bank dan nilai transfer sudah sesuai.",
+                title: "Save Mutation Request?",
+                text: "Make sure the bank data and transfer value are correct.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#0d6efd",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Menyimpan...",
-                        text: "Sedang memproses request mutasi",
+                        text: "Processing mutation request",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -174,7 +174,7 @@
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
+                                    title: "Success!",
                                     text: data.pesan + " (" + (data.nomor || '') + ")",
                                     icon: "success"
                                 }).then(function() {
@@ -182,8 +182,8 @@
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
-                                    text: data.pesan || "Gagal menyimpan request mutasi.",
+                                    title: "Failed!",
+                                    text: data.pesan || "Failed to save the mutation request.",
                                     icon: "error"
                                 });
                             }
@@ -191,7 +191,7 @@
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: "Terjadi kesalahan sistem saat menyimpan data.",
+                                text: "A system error occurred while saving the data.",
                                 icon: "error"
                             });
                         }
@@ -228,7 +228,7 @@
                 $("#terbilang").val(response);
             },
             error: function() {
-                console.warn("Gagal mengambil teks terbilang");
+                console.warn("Failed to fetch the amount-in-words text");
             }
         });
     }

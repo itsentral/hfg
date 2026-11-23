@@ -39,7 +39,7 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 					<tr>
 						<th style="width:60px;">#</th>
 						<th>MenusID</th>
-						<th>Nama Menu</th>
+						<th>Menu Name</th>
 						<th>Link</th>
 						<th>Target</th>
 						<th>Group</th>
@@ -99,7 +99,7 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 					<tr>
 						<th>#</th>
 						<th>MenusID</th>
-						<th>Nama Menu</th>
+						<th>Menu Name</th>
 						<th>Link</th>
 						<th>Target</th>
 						<th>Group</th>
@@ -139,7 +139,7 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-					<i class="fa fa-times me-1"></i> Tutup
+					<i class="fa fa-times me-1"></i> Close
 				</button>
 			</div>
 
@@ -183,8 +183,8 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 	// Delete
 	function delete_data(id) {
 		swal({
-				title: "Anda Yakin?",
-				text: "Data Akan Terhapus secara Permanen!",
+				title: "Are you sure?",
+				text: "The data will be permanently deleted!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonColor: "#DD6B55",
@@ -201,14 +201,14 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 						type: 'POST',
 						success: function(msg) {
 							if (msg['delete'] == '1') {
-								swal({ title: "Terhapus!", text: "Data berhasil dihapus", type: "success", timer: 1500, showConfirmButton: false });
+								swal({ title: "Deleted!", text: "Data deleted successfully", type: "success", timer: 1500, showConfirmButton: false });
 								window.location.reload();
 							} else {
-								swal({ title: "Gagal!", text: "Data gagal dihapus", type: "error", timer: 1500, showConfirmButton: false });
+								swal({ title: "Failed!", text: "Failed to delete data", type: "error", timer: 1500, showConfirmButton: false });
 							}
 						},
 						error: function() {
-							swal({ title: "Gagal!", text: "Gagal Eksekusi Ajax", type: "error", timer: 1500, showConfirmButton: false });
+							swal({ title: "Failed!", text: "Ajax execution failed", type: "error", timer: 1500, showConfirmButton: false });
 						}
 					});
 				}

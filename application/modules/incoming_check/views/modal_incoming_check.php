@@ -12,13 +12,13 @@
 				<td class="text-left" style='vertical-align:middle;'><?= $no_pr; ?></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>No Transaksi</td>
+				<td class="text-left" style='vertical-align:middle;'>Transaction No.</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= $no_surat . " | " . $kode_trans; ?></td>
 				<td colspan="3"></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>Tanggal Penerimaan</td>
+				<td class="text-left" style='vertical-align:middle;'>Receipt Date</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= $resv; ?></td>
 				<td colspan="3"></td>
@@ -37,16 +37,16 @@
 		<thead id='head_table'>
 			<tr class='bg-blue'>
 				<th class="text-center" style='vertical-align:middle;' width='3%'>#</th>
-				<th class="text-center" style='vertical-align:middle;'>Nama Barang</th>
+				<th class="text-center" style='vertical-align:middle;'>Item Name</th>
 				<th class="text-center" style='vertical-align:middle;' width='8%'>Qty Order</th>
 				<th class="text-center" style='vertical-align:middle;' width='5%'>UoM Order</th>
-				<th class="text-center" style='vertical-align:middle;' width='10%'>Qty Diterima</th>
-				<th class="text-center" style='vertical-align:middle;' width='8%'>Qty Kurang</th>
+				<th class="text-center" style='vertical-align:middle;' width='10%'>Received Qty</th>
+				<th class="text-center" style='vertical-align:middle;' width='8%'>Qty Short</th>
 				<th class="text-center" style='vertical-align:middle;' width='8%'>Qty</th>
 				<th class="text-center" style='vertical-align:middle;' width='8%'>Qty NG</th>
 				<th class="text-center" style='vertical-align:middle;' width='8%'>Expired Date</th>
 				<th class="text-center" style='vertical-align:middle;' width='8%'>Konversi (Kg)</th>
-				<th class="text-center" style='vertical-align:middle;' width='10%'>Keterangan</th>
+				<th class="text-center" style='vertical-align:middle;' width='10%'>Description</th>
 				<th class="text-center" style='vertical-align:middle;' width='3%'>#</th>
 			</tr>
 		</thead>
@@ -106,8 +106,8 @@
 						<th class="text-center" style="min-width: 100px;">Qty KW 2</th>
 						<th class="text-center" style="min-width: 100px;">Qty OK</th>
 						<th class="text-center" style="min-width: 100px;">Qty Pack</th>
-						<th class="text-center hidden" style="min-width: 200px;">Harga Satuan</th>
-						<th class="text-center hidden" style="min-width: 200px;">Total Harga</th>
+						<th class="text-center hidden" style="min-width: 200px;">Unit Price</th>
+						<th class="text-center hidden" style="min-width: 200px;">Total Price</th>
 						<th class="text-center">Expired Date</th>
 						<th class="text-center">Document</th>
 						<th class="text-center">Lot Description</th>
@@ -202,7 +202,7 @@
 				</tbody>
 				<tfoot hidden>
 					<tr>
-						<td class="text-right" colspan="12">Total Harga</td>
+						<td class="text-right" colspan="12">Total Price</td>
 						<td colspan="2"><input type="text" id="grandTotal" class="form-control form-control-sm"></td>
 					</tr>
 				</tfoot>
@@ -266,7 +266,7 @@
 					</tbody>
 					<tbody class="list_masuk_stock">
 						<tr>
-							<td colspan="3" class="text-right">Masuk ke Stock</td>
+							<td colspan="3" class="text-right">Into Stock</td>
 							<td class="text-center">
 								<span style="color: red;"><?= number_format((float) $stok_tidak_masuk) ?></span>
 							</td>
@@ -336,13 +336,13 @@
 
 	<div class="row">
 		<div class="col-md-12">
-			<b>Informasi Jurnal</b>
+			<b>Journal Information</b>
 			<div class="table-responsive">
 				<table class="table table-bordered table-hover">
 					<thead>
 						<tr bgcolor='#9acfea'>
 							<th>
-								<center>Tanggal</center>
+								<center>Date</center>
 							</th>
 							<th>
 								<center>Tipe</center>
@@ -351,7 +351,7 @@
 								<center>No. COA</center>
 							</th>
 							<th>
-								<center>Nama. COA</center>
+								<center>COA Name</center>
 							</th>
 							<th>
 								<center>Debit</center>
@@ -366,7 +366,7 @@
 							<td><input type="date" id="tgl_jurnal1" name="tgl_jurnal[]" value="<?= date('Y-m-d') ?>" class="form-control" readonly /></td>
 							<td><input type="text" id="type1" name="type[]" value="JV" class="form-control" readonly /></td>
 							<td><input type="text" id="no_coa1" name="no_coa[]" value="1104-01-01" class="form-control" readonly /></td>
-							<td><input type="text" id="nama_coa1" name="nama_coa[]" value="Persediaan Barang Warehouse" class="form-control" readonly /></td>
+							<td><input type="text" id="nama_coa1" name="nama_coa[]" value="Warehouse Inventory" class="form-control" readonly /></td>
 							<td>
 								<input type="hidden" id="debet1" name="debet[]" value="<?= $total_nilai ?>" class="form-control" readonly />
 								<input type="text" id="debet21" name="debet2[]" value="<?= $total_nilai ?>" class="form-control" readonly />
@@ -393,7 +393,7 @@
 							<td><input type="date" id="tgl_jurnal3" name="tgl_jurnal[]" value="<?= date('Y-m-d') ?>" class="form-control" readonly /></td>
 							<td><input type="text" id="type3" name="type[]" value="JV" class="form-control" readonly /></td>
 							<td><input type="text" id="no_coa3" name="no_coa[]" value="1103-01-01" class="form-control" readonly /></td>
-							<td><input type="text" id="nama_coa3" name="nama_coa[]" value="Uang Muka Pembelian" class="form-control" readonly /></td>
+							<td><input type="text" id="nama_coa3" name="nama_coa[]" value="Purchase Down Payment" class="form-control" readonly /></td>
 							<td><input type="hidden" id="debet3" name="debet[]" value="0" class="form-control" readonly />
 								<input type="text" id="debet23" name="debet2[]" value="0" class="form-control" readonly />
 							</td>

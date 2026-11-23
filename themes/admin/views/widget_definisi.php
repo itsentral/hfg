@@ -189,7 +189,7 @@
 </style>
 
 <!-- Floating Button -->
-<button id="definisi-fab" title="Glossary / Definisi Istilah">
+<button id="definisi-fab" title="Glossary / Term Definitions">
   <i class="ti ti-book"></i>
 </button>
 
@@ -201,12 +201,12 @@
   </div>
 
   <div class="panel-search">
-    <input type="text" id="definisi-search" placeholder="Cari istilah..." autocomplete="off">
+    <input type="text" id="definisi-search" placeholder="Search terms..." autocomplete="off">
   </div>
 
   <div class="panel-body" id="definisi-list">
     <div class="definisi-loading">
-      <i class="ti ti-loader"></i> Memuat data...
+      <i class="ti ti-loader"></i> Loading data...
     </div>
   </div>
 </div>
@@ -353,7 +353,7 @@
       let url = base_url + 'master_definisi/get_all';
       if (query) url += '?q=' + encodeURIComponent(query);
 
-      listContainer.innerHTML = '<div class="definisi-loading"><i class="ti ti-loader"></i> Memuat data...</div>';
+      listContainer.innerHTML = '<div class="definisi-loading"><i class="ti ti-loader"></i> Loading data...</div>';
 
       $.ajax({
         type: 'GET',
@@ -366,7 +366,7 @@
           }
         },
         error: function() {
-          listContainer.innerHTML = '<div class="definisi-empty">Gagal memuat data</div>';
+          listContainer.innerHTML = '<div class="definisi-empty">Failed to load data</div>';
         },
         complete: function() {
           // Tinggi panel bisa berubah setelah data masuk -> reposisi ulang
@@ -391,7 +391,7 @@
     // Render list
     function renderList(data) {
       if (!data || data.length === 0) {
-        listContainer.innerHTML = '<div class="definisi-empty"><i class="ti ti-mood-empty" style="font-size:32px;display:block;margin-bottom:8px;"></i>Tidak ada data ditemukan</div>';
+        listContainer.innerHTML = '<div class="definisi-empty"><i class="ti ti-mood-empty" style="font-size:32px;display:block;margin-bottom:8px;"></i>No data found</div>';
         return;
       }
 

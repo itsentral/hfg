@@ -16,8 +16,8 @@ $is_edit   = !empty($id_kurs);
         <div class="spinner-border text-primary" style="width: 2.8rem; height: 2.8rem;" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <h6 class="mt-3 text-dark fw-bold mb-1">Memuat Form...</h6>
-        <small class="text-muted">Sedang mengambil daftar negara dan mata uang via API</small>
+        <h6 class="mt-3 text-dark fw-bold mb-1">Loading form...</h6>
+        <small class="text-muted">Fetching the list of countries and currencies via API</small>
     </div>
 <?php endif; ?>
 
@@ -26,7 +26,7 @@ $is_edit   = !empty($id_kurs);
     <!-- NEGARA -->
     <div class="col-12">
         <label for="negara" class="form-label fw-semibold">
-            Negara <span class="text-danger">*</span>
+            Country <span class="text-danger">*</span>
         </label>
 
         <?php if ($is_edit) : ?>
@@ -49,12 +49,12 @@ $is_edit   = !empty($id_kurs);
             <div class="input-group">
                 <span class="input-group-text bg-light text-primary"><i class="ti ti-world"></i></span>
                 <select id="negara" name="negara" class="form-select" required style="width: calc(100% - 45px);">
-                    <option value="">-- Pilih Negara --</option>
+                    <option value="">-- Select Country --</option>
                 </select>
             </div>
             <div class="form-text mt-1 text-muted">
                 <i class="ti ti-info-circle me-1 text-primary"></i>
-                Daftar negara dimuat via API. Negara yang <strong>sudah terdaftar</strong> otomatis <strong>dinonaktifkan (disabled)</strong>.
+                Daftar negara dimuat via API. Negara yang <strong>is already registered</strong> otomatis <strong>dinonaktifkan (disabled)</strong>.
             </div>
             <div id="negara_status_hint" class="mt-1"></div>
         <?php endif; ?>
@@ -76,13 +76,13 @@ $is_edit   = !empty($id_kurs);
                 placeholder="Contoh: USD, IDR"
                 value="<?= htmlspecialchars((string) $kode, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
-        <small class="text-muted">Kode ISO mata uang (biasanya 3 huruf)</small>
+        <small class="text-muted">Currency ISO code (usually 3 letters)</small>
     </div>
 
     <!-- NAMA MATA UANG -->
     <div class="col-md-6">
         <label for="mata_uang" class="form-label fw-semibold">
-            Nama Mata Uang <span class="text-danger">*</span>
+            Currency Name <span class="text-danger">*</span>
         </label>
         <div class="input-group">
             <span class="input-group-text bg-light text-primary"><i class="ti ti-coin"></i></span>
@@ -94,7 +94,7 @@ $is_edit   = !empty($id_kurs);
                 placeholder="Contoh: Dollar, Rupiah"
                 value="<?= htmlspecialchars((string) $mata_uang, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
-        <small class="text-muted">Nama resmi atau penyebutan mata uang</small>
+        <small class="text-muted">Official name of the currency</small>
     </div>
 
     <!-- NOMINAL KURS TERHADAP IDR -->
@@ -112,20 +112,20 @@ $is_edit   = !empty($id_kurs);
                 placeholder="Contoh: 17,863.00"
                 value="<?= (!empty($kurs) && (float)$kurs > 0) ? number_format((float)$kurs, 2, '.', ',') : (($kode === 'IDR') ? '1.00' : ''); ?>">
         </div>
-        <small class="text-muted">Nilai tukar konversi 1 satuan mata uang ke Rupiah (Contoh: 1 USD = Rp 17.863,00. Untuk Rupiah/IDR diisi 1.00).</small>
+        <small class="text-muted">Exchange rate for 1 unit of the currency to Rupiah (Example: 1 USD = Rp 17,863.00. For Rupiah/IDR enter 1.00).</small>
     </div>
 
     <!-- STATUS AKTIVASI: IPHONE STYLE TOGGLE DENGAN TEKS DI DALAM -->
     <div class="col-md-12">
-        <label class="form-label fw-semibold d-block mb-2">Status Mata Uang</label>
+        <label class="form-label fw-semibold d-block mb-2">Currency Status</label>
         <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light border">
             <div>
                 <div class="fw-bold text-dark">Status Keaktifan</div>
-                <div class="small text-muted mt-1">Status keaktifan mata uang untuk transaksi di sistem</div>
+                <div class="small text-muted mt-1">Currency active status for transactions in the system</div>
             </div>
 
             <div class="d-flex align-items-center">
-                <label class="ios-toggle-labeled" title="Klik untuk beralih status">
+                <label class="ios-toggle-labeled" title="Click to toggle status">
                     <input type="checkbox" id="status_toggle" <?= ($activation === 'active') ? 'checked' : ''; ?>>
                     <span class="toggle-track">
                         <span class="toggle-text-active">Active</span>
@@ -176,12 +176,12 @@ $is_edit   = !empty($id_kurs);
                     if (res.status == 1 && res.data) {
                         var $select = $('#negara');
                         $select.empty();
-                        $select.append('<option value="">-- Cari / Pilih Negara --</option>');
+                        $select.append('<option value="">-- Search / Select Country --</option>');
 
                         $.each(res.data, function(idx, item) {
                             var opt = $('<option></option>');
                             opt.val(item.name);
-                            opt.text(item.name + (item.is_disabled ? ' [Sudah Terdaftar (' + (item.currency_code || '') + ')]' : ''));
+                            opt.text(item.name + (item.is_disabled ? ' [Already Registered (' + (item.currency_code || '') + ')]' : ''));
                             opt.attr('data-kode', item.currency_code || '');
 
                             if (item.is_disabled) {
@@ -200,17 +200,17 @@ $is_edit   = !empty($id_kurs);
                         // Inisialisasi Select2
                         $select.select2({
                             dropdownParent: $('#dialog-popup'),
-                            placeholder: '-- Cari / Pilih Negara --',
+                            placeholder: '-- Search / Select Country --',
                             allowClear: true,
                             width: 'resolve'
                         });
                     } else {
-                        $('#modal_loading').html('<div class="alert alert-warning mb-0">Gagal memuat daftar negara via API. Silakan coba kembali.</div>');
+                        $('#modal_loading').html('<div class="alert alert-warning mb-0">Failed to load the country list via API. Please try again.</div>');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('Error load countries API:', error);
-                    $('#modal_loading').html('<div class="alert alert-danger mb-0">Gagal menghubungi server untuk memuat daftar negara.</div>');
+                    $('#modal_loading').html('<div class="alert alert-danger mb-0">Failed to contact the server to load the country list.</div>');
                 }
             });
 
@@ -235,7 +235,7 @@ $is_edit   = !empty($id_kurs);
                 var val = selectedOpt.val();
                 if (val) {
                     $('#negara_status_hint').html(
-                        '<span class="badge bg-light-success text-success"><i class="ti ti-check me-1"></i>Negara dapat ditambahkan' + (currencyCode ? ' (Mata uang: ' + currencyCode + ')' : '') + '</span>'
+                        '<span class="badge bg-light-success text-success"><i class="ti ti-check me-1"></i>Country can be added' + (currencyCode ? ' (Currency: ' + currencyCode + ')' : '') + '</span>'
                     );
                 } else {
                     $('#negara_status_hint').html('');

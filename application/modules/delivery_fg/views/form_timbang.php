@@ -9,7 +9,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Input Berat Timbang Aktual — <?= isset($do) ? $do->do_no : '' ?></h5>
+        <h5 class="mb-0">Input Actual Weighed Weight — <?= isset($do) ? $do->do_no : '' ?></h5>
     </div>
     <div class="card-body">
         <?php if (isset($do)): ?>
@@ -29,7 +29,7 @@
                         <td><?= $do->status ?></td>
                     </tr>
                     <tr>
-                        <td>Total Estimasi Berat</td>
+                        <td>Total Estimated Weight</td>
                         <td><strong><?= number_format(isset($total_estimasi) ? $total_estimasi : 0, 3) ?> kg</strong></td>
                     </tr>
                 </table>
@@ -40,13 +40,13 @@
         <form method="post" action="<?= base_url('delivery_fg/save_timbang/' . (isset($do) ? $do->do_no : '')) ?>">
             <div class="row">
                 <div class="col-md-4">
-                    <label class="form-label">Berat Aktual (kg) <span class="text-danger">*</span></label>
+                    <label class="form-label">Actual Weight (kg) <span class="text-danger">*</span></label>
                     <input type="number" name="berat_aktual" class="form-control" id="berat_aktual"
-                           min="0.001" step="0.001" placeholder="Masukkan berat aktual" required
+                           min="0.001" step="0.001" placeholder="Enter actual weight" required
                            oninput="hitungSelisih()">
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label">Keterangan</label>
+                    <label class="form-label">Description</label>
                     <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
                 </div>
             </div>
@@ -55,7 +55,7 @@
             <div class="mt-3 p-3 bg-light rounded" id="preview-selisih" style="display:none;">
                 <div class="row text-center">
                     <div class="col-md-4">
-                        <div class="fw-bold">Estimasi Berat</div>
+                        <div class="fw-bold">Estimated Weight</div>
                         <div class="fs-5"><?= number_format((float) $total_estimasi, 3) ?> kg</div>
                     </div>
                     <div class="col-md-4">
@@ -76,7 +76,7 @@
                 </button>
                 <?php if (isset($do)): ?>
                 <a href="<?= base_url('delivery_fg/view/' . $do->do_no) ?>" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Kembali
+                    <i class="fa fa-arrow-left"></i> Back
                 </a>
                 <?php endif; ?>
             </div>

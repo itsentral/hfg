@@ -18,7 +18,7 @@ class Price_ref_raw_material extends Admin_Controller
     $this->load->model(array(
       'Price_ref_raw_material/Price_ref_raw_material_model'
     ));
-    $this->template->title('Manage Material Jenis');
+    $this->template->title('Manage Material Type');
     $this->template->page_icon('fa fa-building-o');
 
     date_default_timezone_set('Asia/Bangkok');
@@ -65,8 +65,8 @@ class Price_ref_raw_material extends Admin_Controller
       $status_reject        = $post['status_reject'];
 
 
-      $price_ref_use_after          = str_replace(',', '', $post['price_ref_use_after']);
-      $price_ref_use_after_usd          = str_replace(',', '', $post['price_ref_use_after_usd']);
+      $price_ref_use_after          = str_replace(',', '', $post['price_ref_use_after'] ?? '');
+      $price_ref_use_after_usd          = str_replace(',', '', $post['price_ref_use_after_usd'] ?? '');
       $price_ref_expired_use_after  = $post['price_ref_expired_use_after'];
 
       $getPurchase = $this->db->get_where('new_inventory_4', array('id' => $id))->result_array();

@@ -479,7 +479,7 @@ class Request_payment_model extends BF_Model
             $is_ros = (strpos((string) $item->tipe, 'ros_') === 0);
             $row_key = $is_ros ? $item->id : $item->no_doc;
 
-            $input_tanggal_pembayaran = '<input type="text" class="form-control form-control-sm tanggal" name="tanggal_pembayaran_' . $row_key . '" placeholder="Pilih tanggal...">';
+            $input_tanggal_pembayaran = '<input type="text" class="form-control form-control-sm tanggal" name="tanggal_pembayaran_' . $row_key . '" placeholder="Select date...">';
 
             $action = '<input type="checkbox" class="pilih_data" name="pilih[]" value="' . $row_key . '" data-kategori="' . $item->tipe . '" ' . $checked . '>';
             $action .= '<input type="hidden" name="kategori_' . $row_key . '" value="' . $item->tipe . '">';

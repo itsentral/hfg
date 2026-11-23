@@ -35,11 +35,11 @@ $this->load->view('include/side_menu');
 					<thead>
 						<tr class='bg-blue'>
 							<th class="text-center" width='5%'>#</th>
-							<th class="text-center">Kode Asset</th>
+							<th class="text-center">Asset Code</th>
 							<th class="text-center">Asset Name</th>
 							<th class="text-center" width='8%'>Tgl Perolehan</th>
 							<th class="text-center" width='10%'>Category</th>
-							<th class="text-center" width='20%'>Kelompok Penyusutan</th>
+							<th class="text-center" width='20%'>Depreciation Group</th>
 							<th class="text-center" width='10%'>Costcenter</th>
 							<th class="text-center" width='8%'>Depreciation</th>
 							<th class="text-center" width='10%'>Acquisition</th>
@@ -125,14 +125,14 @@ $this->load->view('include/side_menu');
 	$(document).on('click', '.detail', function(e) {
 		e.preventDefault();
 		loading_spinner();
-		$("#head_title").html("<b>DETAIL ASSET</b>");
+		$("#head_title").html("<b>ASSET DETAIL</b>");
 		$("#view").load(base_url + active_controller + '/modal_view/' + $(this).data('id'));
 		$("#ModalView").modal();
 	});
 
 	$(document).on('click', '#jurnal', function(e) {
 		e.preventDefault();
-		$("#head_title").html("<b>TAMBAHKAN JURNAL BARU</b>");
+		$("#head_title").html("<b>ADD NEW JOURNAL</b>");
 		$("#view").load(base_url + active_controller + '/modal_jurnal');
 		$("#ModalView").modal();
 	});

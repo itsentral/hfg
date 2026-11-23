@@ -1,6 +1,6 @@
 <?php
 $is_view = (isset($mode) && $mode === 'view');
-$mode_text = 'Tambah Data';
+$mode_text = 'Add Data';
 $mode_badge = 'bg-primary-subtle text-primary border-primary-subtle';
 $mode_icon = 'fa-plus';
 
@@ -15,8 +15,8 @@ $mode_icon = 'fa-plus';
                 <i class="fa fa-calendar-check fs-5"></i>
             </div>
             <div>
-                <h5 class="card-title mb-0 fw-bold text-dark">Master Pembayaran Periodik</h5>
-                <small class="text-muted">Form pengisian post pengeluaran dan alokasi COA anggaran periodik</small>
+                <h5 class="card-title mb-0 fw-bold text-dark">Periodic Payment Master</h5>
+                <small class="text-muted">Form for filling in expense posts and periodic budget COA allocation</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -32,7 +32,7 @@ $mode_icon = 'fa-plus';
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <label for="departement" class="form-label fw-bold text-dark">
-                        <i class="fa fa-university text-primary me-1"></i> Departemen <span class="text-danger">*</span>
+                        <i class="fa fa-university text-primary me-1"></i> Department <span class="text-danger">*</span>
                     </label>
                     <?php if ($is_view) : ?>
                         <?php
@@ -46,7 +46,7 @@ $mode_icon = 'fa-plus';
                     <?php endif; ?>
                 </div>
                 <div class="col-md-6 text-md-end mt-2 mt-md-0">
-                    <small class="text-muted d-block">Penetapan anggaran rutin berlaku untuk seluruh periode tahun berjalan</small>
+                    <small class="text-muted d-block">The routine budget setting applies to all periods of the current year</small>
                 </div>
             </div>
         </div>
@@ -56,11 +56,11 @@ $mode_icon = 'fa-plus';
             <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div class="d-flex align-items-center">
                     <i class="fa fa-list text-primary me-2"></i>
-                    <h6 class="mb-0 fw-bold text-dark">Rincian Post Pengeluaran & Anggaran</h6>
+                    <h6 class="mb-0 fw-bold text-dark">Expense Post & Budget Details</h6>
                 </div>
                 <?php if (!$is_view) : ?>
                     <button type="button" class="btn btn-primary btn-sm rounded-2 shadow-sm" onclick="add_detail(0)" id="add-material">
-                        <i class="fa fa-plus me-1"></i> Tambah Baris Post
+                        <i class="fa fa-plus me-1"></i> Add Post Row
                     </button>
                 <?php endif; ?>
             </div>
@@ -70,12 +70,12 @@ $mode_icon = 'fa-plus';
                     <thead class="table-light">
                         <tr>
                             <th width="40" class="text-center">#</th>
-                            <th width="260">Post Pengeluaran (COA) <span class="text-danger">*</span></th>
-                            <th style="min-width: 320px;">Nama Barang / Jasa <span class="text-danger">*</span></th>
+                            <th width="260">Expense Post (COA) <span class="text-danger">*</span></th>
+                            <th style="min-width: 320px;">Item / Service Name <span class="text-danger">*</span></th>
                             <th style="min-width: 125px;">Periode</th>
-                            <th style="min-width: 125px;">Jadwal Bayar</th>
-                            <th style="min-width: 240px;" class="text-end">Perkiraan Biaya <span class="text-danger">*</span></th>
-                            <th width="180">Keterangan</th>
+                            <th style="min-width: 125px;">Payment Schedule</th>
+                            <th style="min-width: 240px;" class="text-end">Estimated Cost <span class="text-danger">*</span></th>
+                            <th width="180">Description</th>
                             <?php if (!$is_view) : ?>
                                 <th width="90" class="text-center">Aksi</th>
                             <?php endif; ?>
@@ -93,9 +93,9 @@ $mode_icon = 'fa-plus';
                             }
                         }
 
-                        $combowaktu = "<option value=''>Pilih Periode</option>";
+                        $combowaktu = "<option value=''>Select Period</option>";
                         $combocoa = "";
-                        $combotgl = "<option value=''>Pilih Tanggal</option>";
+                        $combotgl = "<option value=''>Select Date</option>";
                         if (!empty($datcoa)) {
                             foreach ($datcoa as $key => $val) {
                                 $combocoa .= "<option value='" . $key . "'>" . htmlspecialchars((string) $val) . "</option>";
@@ -130,7 +130,7 @@ $mode_icon = 'fa-plus';
                                             <select class="form-select select2" style="width:100%" name="coa[]" id="coa_<?= $idd; ?>" required>
                                                 <?php
                                                 if ($record->coa != '') {
-                                                    echo str_ireplace("value='" . $record->coa . "'", "value='" . $record->coa . "' selected", $combocoa);
+                                                    echo str_ireplace("value='" . $record->coa . "'", "value='" . $record->coa . "' selected", $combocoa ?? '');
                                                 } else {
                                                     echo $combocoa;
                                                 }
@@ -152,7 +152,7 @@ $mode_icon = 'fa-plus';
                                             <select class="form-select" name="tipe[]" id="tipe_<?= $idd; ?>" onchange="cektipe(<?= $idd; ?>)">
                                                 <?php
                                                 if ($record->tipe != '') {
-                                                    echo str_ireplace("value='" . $record->tipe . "'", "value='" . $record->tipe . "' selected", $combowaktu);
+                                                    echo str_ireplace("value='" . $record->tipe . "'", "value='" . $record->tipe . "' selected", $combowaktu ?? '');
                                                 } else {
                                                     echo $combowaktu;
                                                 }
@@ -166,7 +166,7 @@ $mode_icon = 'fa-plus';
                                                 <?= ($record->tipe == 'bulan') ? 'Tgl ' . $record->tanggal : 'MM-DD: ' . $record->tanggal ?>
                                             </span>
                                         <?php else : ?>
-                                            <input type="text" class="form-control tanggal <?= ($record->tipe == 'bulan' ? 'd-none' : ''); ?>" name="thn[]" id="thn_<?= $idd; ?>" value="<?= $record->tanggal; ?>" readonly style="background:#fff;cursor: pointer;" placeholder="Bulan-Tgl">
+                                            <input type="text" class="form-control tanggal <?= ($record->tipe == 'bulan' ? 'd-none' : ''); ?>" name="thn[]" id="thn_<?= $idd; ?>" value="<?= $record->tanggal; ?>" readonly style="background:#fff;cursor: pointer;" placeholder="Month-Date">
                                             <select class="form-select <?= ($record->tipe == 'bulan' ? '' : 'd-none'); ?>" name="bln[]" id="bln_<?= $idd; ?>">
                                                 <?php
                                                 for ($tgl = 1; $tgl <= 31; $tgl++) {
@@ -191,14 +191,14 @@ $mode_icon = 'fa-plus';
                                         <?php if ($is_view) : ?>
                                             <span class="text-muted small"><?= !empty($record->keterangan) ? htmlspecialchars((string) $record->keterangan) : '-' ?></span>
                                         <?php else : ?>
-                                            <input type="text" class="form-control" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Keterangan">
+                                            <input type="text" class="form-control" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Description">
                                         <?php endif; ?>
                                     </td>
                                     <?php if (!$is_view) : ?>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <button type='button' class='btn btn-outline-info btn-xs' onClick='add_alokasi(<?= $idd ?>)' title='Tambah alokasi COA'><i class='fa fa-cubes'></i></button>
-                                                <button type='button' class='btn btn-outline-danger btn-xs' onClick='delDetail(this, <?= $idd ?>)' title='Hapus baris ini'><i class='fa fa-trash'></i></button>
+                                                <button type='button' class='btn btn-outline-info btn-xs' onClick='add_alokasi(<?= $idd ?>)' title='Add COA allocation'><i class='fa fa-cubes'></i></button>
+                                                <button type='button' class='btn btn-outline-danger btn-xs' onClick='delDetail(this, <?= $idd ?>)' title='Delete this row'><i class='fa fa-trash'></i></button>
                                             </div>
                                         </td>
                                     <?php endif; ?>
@@ -221,7 +221,7 @@ $mode_icon = 'fa-plus';
                                                         <select class='form-select select2' style="width:100%" name='coa_alokasi[]' id='coa_alokasi_<?= $idalokasi ?>'>
                                                             <?php
                                                             if ($fields->coa != '') {
-                                                                echo str_ireplace("value='" . $fields->coa . "'", "value='" . $fields->coa . "' selected", $all_coa);
+                                                                echo str_ireplace("value='" . $fields->coa . "'", "value='" . $fields->coa . "' selected", $all_coa ?? '');
                                                             } else {
                                                                 echo $all_coa;
                                                             }
@@ -237,7 +237,7 @@ $mode_icon = 'fa-plus';
                                                 </td>
                                                 <td class="text-center" colspan="<?= ($is_view ? '1' : '2') ?>">
                                                     <?php if (!$is_view) : ?>
-                                                        <button type='button' class='btn btn-outline-danger btn-xs' onClick="delDetailalokasi(this)" title='Hapus alokasi'><i class='fa fa-times me-1'></i> Hapus</button>
+                                                        <button type='button' class='btn btn-outline-danger btn-xs' onClick="delDetailalokasi(this)" title='Delete allocation'><i class='fa fa-times me-1'></i> Delete</button>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
@@ -261,8 +261,8 @@ $mode_icon = 'fa-plus';
                 <div class="d-flex align-items-center gap-2 text-success">
                     <i class="fa fa-calculator fs-4"></i>
                     <div>
-                        <div class="fw-bold fs-6">Total Estimasi Perkiraan Biaya</div>
-                        <small class="text-muted">Akumulasi estimasi seluruh post pengeluaran periodik di atas</small>
+                        <div class="fw-bold fs-6">Total Estimated Cost</div>
+                        <small class="text-muted">Accumulated estimate of all periodic expense posts above</small>
                     </div>
                 </div>
                 <div class="fs-4 fw-bold text-success font-monospace" id="total-perkiraan-display">
@@ -278,7 +278,7 @@ $mode_icon = 'fa-plus';
             </button>
             <?php if (!$is_view) : ?>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="submit">
-                    <i class="fa fa-save me-1"></i> Simpan Data Budget
+                    <i class="fa fa-save me-1"></i> Save Budget Data
                 </button>
             <?php endif; ?>
         </div>
@@ -375,7 +375,7 @@ $mode_icon = 'fa-plus';
             '</div>' +
             '</td>' +
             '<td align="center" colspan="2">' +
-            '<button type="button" class="btn btn-outline-danger btn-xs" onClick="delDetailalokasi(this)" title="Hapus alokasi"><i class="fa fa-times me-1"></i> Hapus</button>' +
+            '<button type="button" class="btn btn-outline-danger btn-xs" onClick="delDetailalokasi(this)" title="Delete allocation"><i class="fa fa-times me-1"></i> Delete</button>' +
             '</td>' +
             '</tr>';
 
@@ -411,7 +411,7 @@ $mode_icon = 'fa-plus';
             '</select>' +
             '</td>' +
             '<td>' +
-            '<input type="text" class="form-control tanggal d-none" name="thn[]" value="" id="thn_' + nomor + '" readonly style="background:#fff;cursor: pointer;" placeholder="Bulan-Tgl" />' +
+            '<input type="text" class="form-control tanggal d-none" name="thn[]" value="" id="thn_' + nomor + '" readonly style="background:#fff;cursor: pointer;" placeholder="Month-Date" />' +
             '<select class="form-select" name="bln[]" id="bln_' + nomor + '">' +
             optTgl +
             '</select>' +
@@ -423,12 +423,12 @@ $mode_icon = 'fa-plus';
             '</div>' +
             '</td>' +
             '<td>' +
-            '<input type="text" class="form-control" name="keterangan[]" id="keterangan_' + nomor + '" placeholder="Keterangan" />' +
+            '<input type="text" class="form-control" name="keterangan[]" id="keterangan_' + nomor + '" placeholder="Description" />' +
             '</td>' +
             '<td class="text-center">' +
             '<div class="btn-group btn-group-sm" role="group">' +
-            '<button type="button" class="btn btn-outline-info btn-xs" onClick="add_alokasi(' + nomor + ')" title="Tambah alokasi COA"><i class="fa fa-cubes"></i></button>' +
-            '<button type="button" class="btn btn-outline-danger btn-xs" onClick="delDetail(this, ' + nomor + ')" title="Hapus baris"><i class="fa fa-trash"></i></button>' +
+            '<button type="button" class="btn btn-outline-info btn-xs" onClick="add_alokasi(' + nomor + ')" title="Add COA allocation"><i class="fa fa-cubes"></i></button>' +
+            '<button type="button" class="btn btn-outline-danger btn-xs" onClick="delDetail(this, ' + nomor + ')" title="Delete row"><i class="fa fa-trash"></i></button>' +
             '</div>' +
             '</td>' +
             '</tr>';
@@ -489,8 +489,8 @@ $mode_icon = 'fa-plus';
         var dept = $('#departement').val();
         if (!dept || dept == '0') {
             Swal.fire({
-                title: 'Perhatian',
-                text: 'Silakan pilih departemen terlebih dahulu',
+                title: 'Attention',
+                text: 'Please select a department first',
                 icon: 'warning'
             });
             return false;
@@ -499,27 +499,27 @@ $mode_icon = 'fa-plus';
         var rowCount = $('#detail_body tr.delAll:not([id*="dtl"])').length;
         if (rowCount < 1) {
             Swal.fire({
-                title: 'Perhatian',
-                text: 'Rincian anggaran minimal harus ada 1 baris',
+                title: 'Attention',
+                text: 'Budget details require at least 1 row',
                 icon: 'warning'
             });
             return false;
         }
 
         Swal.fire({
-            title: 'Simpan Anggaran?',
-            text: 'Apakah Anda yakin ingin menyimpan rincian anggaran periodik ini?',
+            title: 'Save Budget?',
+            text: 'Are you sure you want to save these periodic budget details?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: '<i class="fa fa-save me-1"></i> Ya, Simpan',
-            cancelButtonText: '<i class="fa fa-times me-1"></i> Batal',
+            confirmButtonText: '<i class="fa fa-save me-1"></i> Yes, Save',
+            cancelButtonText: '<i class="fa fa-times me-1"></i> Cancel',
             confirmButtonColor: '#0d6efd',
             cancelButtonColor: '#6c757d'
         }).then(function(result) {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Menyimpan...',
-                    text: 'Mohon tunggu',
+                    text: 'Please wait',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     didOpen: function() {
@@ -536,8 +536,8 @@ $mode_icon = 'fa-plus';
                     success: function(msg) {
                         if (msg['save'] == 1 || msg['save'] == true) {
                             Swal.fire({
-                                title: 'Berhasil!',
-                                text: msg['msg'] || 'Data berhasil disimpan',
+                                title: 'Success!',
+                                text: msg['msg'] || 'Data saved successfully',
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
@@ -546,8 +546,8 @@ $mode_icon = 'fa-plus';
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
-                                text: msg['msg'] || 'Data gagal disimpan',
+                                title: 'Failed!',
+                                text: msg['msg'] || 'Data failed to save',
                                 icon: 'error'
                             });
                         }
@@ -555,7 +555,7 @@ $mode_icon = 'fa-plus';
                     error: function() {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Gagal menghubungi server',
+                            text: 'Failed to contact the server',
                             icon: 'error'
                         });
                     }

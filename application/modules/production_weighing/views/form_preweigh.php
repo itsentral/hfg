@@ -11,7 +11,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Form Timbang Awal Coil</h5>
         <a href="<?= base_url('production_weighing') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -28,7 +28,7 @@
                             <label class="form-label fw-semibold">No Coil <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="text" id="input-no-coil" class="form-control form-control-lg"
-                                    placeholder="Scan atau ketik no coil..." autofocus>
+                                    placeholder="Scan or type coil no..." autofocus>
                                 <button type="button" class="btn btn-primary" id="btn-cari-coil">
                                     <i class="fa fa-search"></i> Cari
                                 </button>
@@ -82,33 +82,33 @@
                                 <label class="form-label">Gross Aktual (kg) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.001" name="gross_actual" id="gross_actual"
                                     class="form-control calc-input" placeholder="0.000" required>
-                                <small class="text-muted">Berat kotor aktual timbangan</small>
+                                <small class="text-muted">Actual scale gross weight</small>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Berat Kulit (kg)</label>
+                                <label class="form-label">Tare Weight (kg)</label>
                                 <input type="number" step="0.001" name="berat_kulit" id="berat_kulit"
                                     class="form-control" placeholder="0.000" value="0">
-                                <small class="text-muted">Packaging luar (tidak masuk net)</small>
+                                <small class="text-muted">Outer packaging (not included in net)</small>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Berat Clamp/Ring (kg)</label>
+                                <label class="form-label">Clamp/Ring Weight (kg)</label>
                                 <input type="number" step="0.001" name="berat_clamp_ring" id="berat_clamp_ring"
                                     class="form-control" placeholder="0.000" value="0">
-                                <small class="text-muted">Clamp/ring (tidak masuk net)</small>
+                                <small class="text-muted">Clamp/ring (not included in net)</small>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <label class="form-label">Berat Coil + Tong (kg) <span class="text-danger">*</span></label>
+                                <label class="form-label">Coil + Drum Weight (kg) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.001" name="berat_coil_tong" id="berat_coil_tong"
                                     class="form-control calc-input" placeholder="0.000" required>
-                                <small class="text-muted">Masuk perhitungan net</small>
+                                <small class="text-muted">Included in net calculation</small>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Berat Cover Wrapping (kg) <span class="text-danger">*</span></label>
+                                <label class="form-label">Cover Wrapping Weight (kg) <span class="text-danger">*</span></label>
                                 <input type="number" step="0.001" name="berat_cover_wrapping" id="berat_cover_wrapping"
                                     class="form-control calc-input" placeholder="0.000" required>
-                                <small class="text-muted">Masuk perhitungan net</small>
+                                <small class="text-muted">Included in net calculation</small>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Net Weight Timbang Awal (kg)</label>
@@ -145,7 +145,7 @@
                                 <div class="border rounded p-3">
                                     <div class="text-muted small">Deviasi %</div>
                                     <div class="fs-5 fw-bold" id="display-selisih-pct">-</div>
-                                    <div class="text-muted small">dari net PL</div>
+                                    <div class="text-muted small">of net PL</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -159,8 +159,8 @@
                         <!-- Warning Exception -->
                         <div id="warning-exception" class="alert alert-danger mt-3 d-none">
                             <i class="fa fa-exclamation-triangle fa-lg"></i>
-                            <strong>PERHATIAN!</strong> Selisih berat melebihi toleransi yang ditetapkan.
-                            Record akan ditandai sebagai <strong>Exception</strong> dan notifikasi akan dikirim ke Supervisor/QC.
+                            <strong>ATTENTION!</strong> The weight difference exceeds the set tolerance.
+                            The record will be marked as an <strong>Exception</strong> and a notification will be sent to the Supervisor/QC.
                         </div>
                     </div>
                 </div>
@@ -169,7 +169,7 @@
                     <button type="submit" class="btn btn-primary btn-lg" id="btn-simpan">
                         <i class="fa fa-save"></i> Simpan Timbang Awal
                     </button>
-                    <a href="<?= base_url('production_weighing') ?>" class="btn btn-secondary btn-lg">Batal</a>
+                    <a href="<?= base_url('production_weighing') ?>" class="btn btn-secondary btn-lg">Cancel</a>
                 </div>
             </div><!-- /section-pl -->
 
@@ -230,7 +230,7 @@ $(document).ready(function () {
             $('#section-pl').removeClass('d-none');
             $('#gross_actual').focus();
         }, 'json').fail(function () {
-            $('#coil-error-msg').text('Gagal menghubungi server, silakan coba lagi.');
+            $('#coil-error-msg').text('Failed to contact the server, please try again.');
             $('#coil-error-box').removeClass('d-none');
         });
     });

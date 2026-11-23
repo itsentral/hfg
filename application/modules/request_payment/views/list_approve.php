@@ -14,13 +14,13 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 				<thead>
 					<tr>
 						<th width="5">#</th>
-						<th>No Dokumen</th>
+						<th>Document No.</th>
 						<th>Request By</th>
-						<th>Tanggal</th>
+						<th>Date</th>
 						<th>Keperluan</th>
 						<th>Tipe</th>
-						<th>Nilai Pengajuan</th>
-						<th>Tanggal Pembayaran</th>
+						<th>Request Value</th>
+						<th>Payment Date</th>
 						<th>Status</th>
 						<th width="120">Action</th>
 					</tr>
@@ -38,7 +38,7 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 								$rows++; ?>
 								<tr class="exclass">
 									<td></td>
-									<td colspan=9>Rencana Pembayaran Tanggal <?= $record->tanggal ?> <a href="javascript:trshow(<?= $rows ?>)" class="btn btn-xs btn-warning"><i class="fa fa-search"></i> Lihat</a></td>
+									<td colspan=9>Planned Payment Date <?= $record->tanggal ?> <a href="javascript:trshow(<?= $rows ?>)" class="btn btn-xs btn-warning"><i class="fa fa-search"></i> Lihat</a></td>
 								</tr>
 							<?php } ?>
 							<tr class="trows rowshow<?= $rows ?> hidden">
@@ -120,12 +120,12 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 		var errors = "";
 		if (errors == "") {
 			swal({
-					title: "Anda Yakin?",
-					text: "Data Akan Di Setujui!",
+					title: "Are you sure?",
+					text: "The Data Will Be Approved!",
 					type: "info",
 					showCancelButton: true,
-					confirmButtonText: "Ya, Setujui!",
-					cancelButtonText: "Tidak!",
+					confirmButtonText: "Yes, Approve!",
+					cancelButtonText: "No!",
 					closeOnConfirm: false,
 					closeOnCancel: true
 				},
@@ -142,8 +142,8 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 							success: function(msg) {
 								if (msg['save'] == '1') {
 									swal({
-										title: "Sukses!",
-										text: "Data Berhasil Di Setujui",
+										title: "Success!",
+										text: "Data approved successfully",
 										type: "success",
 										timer: 1500,
 										showConfirmButton: false
@@ -151,8 +151,8 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 									window.location.href = window.location.href;
 								} else {
 									swal({
-										title: "Gagal!",
-										text: "Data Gagal Di Setujui",
+										title: "Failed!",
+										text: "Failed to approve data",
 										type: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -162,8 +162,8 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 							},
 							error: function(msg) {
 								swal({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Di Proses",
+									title: "Failed!",
+									text: "Ajax request failed to process.",
 									type: "error",
 									timer: 1500,
 									showConfirmButton: false

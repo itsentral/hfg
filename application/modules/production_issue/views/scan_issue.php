@@ -39,13 +39,13 @@
                     <label class="form-label fw-bold">Scan / Input No Coil <span class="text-danger">*</span></label>
                     <div class="input-group input-group-lg">
                         <input type="text" id="input-barcode" class="form-control"
-                               placeholder="Scan barcode atau ketik no coil..."
+                               placeholder="Scan barcode or type coil no..."
                                autocomplete="off" autofocus>
                         <button type="button" class="btn btn-primary" id="btn-scan">
                             <i class="fa fa-check"></i> Issue
                         </button>
                     </div>
-                    <small class="text-muted">Tekan Enter atau klik tombol Issue setelah scan</small>
+                    <small class="text-muted">Press Enter or click the Issue button after scanning</small>
                 </div>
 
                 <!-- Hasil Scan -->
@@ -87,7 +87,7 @@
                         <i class="fa fa-refresh"></i>
                     </button>
                     <a href="<?= base_url('production_issue') ?>" class="btn btn-sm btn-secondary">
-                        <i class="fa fa-arrow-left"></i> Kembali
+                        <i class="fa fa-arrow-left"></i> Back
                     </a>
                 </div>
             </div>
@@ -101,13 +101,13 @@
                                 <th>No SPK</th>
                                 <th class="text-center">Waktu</th>
                                 <th class="text-center">Status</th>
-                                <th>Keterangan</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-scan-log">
                             <tr>
                                 <td colspan="6" class="text-center text-muted py-3">
-                                    Pilih SPK untuk melihat log scan
+                                    Select an SPK to view the scan log
                                 </td>
                             </tr>
                         </tbody>
@@ -167,11 +167,11 @@ $(document).ready(function () {
     function doScan() {
         var no_coil = $('#input-barcode').val().trim();
         if (!no_coil) {
-            showScanResult(false, 'No coil tidak boleh kosong');
+            showScanResult(false, 'Coil No cannot be empty');
             return;
         }
         if (!currentSpkNo) {
-            showScanResult(false, 'Pilih SPK terlebih dahulu');
+            showScanResult(false, 'Select an SPK first');
             return;
         }
 
@@ -190,7 +190,7 @@ $(document).ready(function () {
                     // Cek apakah semua coil sudah ter-scan
                     if (res.data && res.data.all_scanned) {
                         setTimeout(function () {
-                            swal('Selesai!', 'Semua coil sudah di-issue. SPK berubah ke status In Process.', 'success');
+                            swal('Done!', 'All coils have been issued. The SPK changed to status In Process.', 'success');
                         }, 500);
                     }
                 }
@@ -198,7 +198,7 @@ $(document).ready(function () {
                 focusBarcode();
             },
             error: function () {
-                showScanResult(false, 'Terjadi kesalahan koneksi, silakan coba lagi');
+                showScanResult(false, 'A connection error occurred, please try again');
                 focusBarcode();
             },
             complete: function () {
@@ -211,7 +211,7 @@ $(document).ready(function () {
         var cls  = success ? 'alert-success' : 'alert-danger';
         var icon = success ? 'fa-check-circle' : 'fa-times-circle';
         var html = '<div class="alert ' + cls + ' py-2 mb-0">';
-        html += '<i class="fa ' + icon + '"></i> <strong>' + (success ? 'Berhasil' : 'Gagal') + ':</strong> ' + message;
+        html += '<i class="fa ' + icon + '"></i> <strong>' + (success ? 'Success' : 'Failed') + ':</strong> ' + message;
         if (success && data && data.progress) {
             html += '<div class="mt-1 small">Progress: ' + data.progress.scanned + ' / ' + data.progress.total + ' coil ter-scan</div>';
         }
@@ -264,8 +264,8 @@ $(document).ready(function () {
                 if (res.data && res.data.length > 0) {
                     $.each(res.data, function (i, row) {
                         var statusBadge = row.status_scan === 'success'
-                            ? '<span class="badge bg-success">Sukses</span>'
-                            : '<span class="badge bg-danger">Ditolak</span>';
+                            ? '<span class="badge bg-success">Success</span>'
+                            : '<span class="badge bg-danger">Rejected</span>';
                         var rowClass = row.status_scan === 'success' ? '' : 'table-danger';
                         html += '<tr class="' + rowClass + '">';
                         html += '<td class="text-center">' + (i + 1) + '</td>';
@@ -278,7 +278,7 @@ $(document).ready(function () {
                     });
                     $('#badge-log-count').text(res.data.length + ' scan');
                 } else {
-                    html = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada log scan hari ini</td></tr>';
+                    html = '<tr><td colspan="6" class="text-center text-muted py-3">No scan logs today yet</td></tr>';
                     $('#badge-log-count').text('0 scan');
                 }
                 $('#tbody-scan-log').html(html);

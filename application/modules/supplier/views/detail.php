@@ -37,9 +37,9 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 						<th style="width:60px;">#</th>
 						<th>Material Type</th>
 						<th>Material Category</th>
-						<th>Material Jenis</th>
+						<th>Material Type</th>
 						<th>Material Name</th>
-						<th class="text-end" style="width:140px;">Berat (Kg)</th>
+						<th class="text-end" style="width:140px;">Weight (Kg)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -64,15 +64,15 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 							? $GET_LEVEL4[$valx['code_material']]['code_lv3']
 							: '-';
 
-						$nm_category = strtolower(get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
+						$nm_category = strtolower((string) get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
 
 						$SUM += $valx['weight'];
 					?>
 						<tr>
 							<td><?= $no; ?></td>
-							<td><?= strtoupper(get_name('new_inventory_1', 'nama', 'code_lv1', $code_lv1)); ?></td>
+							<td><?= strtoupper((string) get_name('new_inventory_1', 'nama', 'code_lv1', $code_lv1)); ?></td>
 							<td><?= strtoupper((string) $nm_category); ?></td>
-							<td><?= strtoupper(get_name('new_inventory_3', 'nama', 'code_lv3', $code_lv3)); ?></td>
+							<td><?= strtoupper((string) get_name('new_inventory_3', 'nama', 'code_lv3', $code_lv3)); ?></td>
 							<td class="fw-semibold"><?= strtoupper((string) $nm_material); ?></td>
 							<td class="text-end"><?= number_format((float) $valx['weight'], 4); ?></td>
 						</tr>
@@ -81,7 +81,7 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 					<!-- TOTAL -->
 					<tr class="table-light">
 						<td></td>
-						<td colspan="4" class="fw-semibold">Total Berat</td>
+						<td colspan="4" class="fw-semibold">Total Weight</td>
 						<td class="text-end fw-bold"><?= number_format((float) $SUM, 4); ?> Kg</td>
 					</tr>
 

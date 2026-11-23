@@ -95,7 +95,7 @@ class Stock_from_warehouse_model extends BF_Model
             $hist_count   = isset($row['total_hist']) ? (int) $row['total_hist'] : 0;
             $act_btn = '<button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 btn-kartu-pemakaian" '
                 . 'data-id="' . (int) $row['id'] . '" '
-                . 'title="Lihat Kartu Pemakaian Material">'
+                . 'title="View Material Usage Card">'
                 . '<i class="fa fa-history"></i> Kartu Pemakaian</button>';
 
             $data[] = [
@@ -303,7 +303,7 @@ class Stock_from_warehouse_model extends BF_Model
                 if (strpos((string) $row['dec_aksis'], 'Lanjut Produksi') !== false) {
                     $status_material = '<span class="badge bg-success">Dapat Dipakai (Release)</span>';
                 } elseif (strpos((string) $row['dec_aksis'], 'Jual Material') !== false) {
-                    $status_material = '<span class="badge bg-info text-dark">Dijual (Gudang Slitting)</span>';
+                    $status_material = '<span class="badge bg-info text-dark">Sold (Slitting Warehouse)</span>';
                 } elseif (strpos((string) $row['dec_aksis'], 'Retur') !== false) {
                     $status_material = '<span class="badge bg-warning text-dark">Dalam Retur</span>';
                 } elseif (strpos((string) $row['dec_aksis'], 'Debit Note') !== false) {
@@ -316,9 +316,9 @@ class Stock_from_warehouse_model extends BF_Model
             // Tombol Action Lihat Claim
             if (!empty($row['no_claim'])) {
                 $claim_q = urlencode((string) $row['no_claim']);
-                $act_btn = '<a href="' . site_url('claim_material?q=' . $claim_q) . '" class="btn btn-outline-primary btn-sm py-0 px-2" title="Buka Detail Claim di Modul Claim Material"><i class="fa fa-external-link"></i> Lihat Claim</a>';
+                $act_btn = '<a href="' . site_url('claim_material?q=' . $claim_q) . '" class="btn btn-outline-primary btn-sm py-0 px-2" title="Buka Detail Claim di Modul Claim Material"><i class="fa fa-external-link"></i> View Claim</a>';
             } else {
-                $clean_coil = str_replace('-HOLD', '', $row['no_coil']);
+                $clean_coil = str_replace('-HOLD', '', $row['no_coil'] ?? '');
                 $claim_q = urlencode((string) $clean_coil);
                 $act_btn = '<a href="' . site_url('claim_material?q=' . $claim_q) . '" class="btn btn-outline-secondary btn-sm py-0 px-2" title="Cari Claim berdasarkan No. Coil"><i class="fa fa-search"></i> Cari Claim</a>';
             }
@@ -408,10 +408,10 @@ class Stock_from_warehouse_model extends BF_Model
         // ── Header ─────────────────────────────────────────────────────────
         $headers = [
             'A' => 'No',
-            'B' => 'Nama Material',
+            'B' => 'Material Name',
             'C' => 'Trade Name',
             'D' => 'No. Coil',
-            'E' => 'Kode Internal',
+            'E' => 'Internal Code',
             'F' => 'Nett Weight (Kg)',
             'G' => 'Gross Weight (Kg)',
             'H' => 'Length (M)',
@@ -648,7 +648,7 @@ class Stock_from_warehouse_model extends BF_Model
     public function get_history_for_export($date_filter, $kd_gudang)
     {
         if (empty($date_filter)) {
-            echo 'Tanggal tidak boleh kosong.';
+            echo 'Date cannot be empty.';
             return;
         }
 
@@ -680,7 +680,7 @@ class Stock_from_warehouse_model extends BF_Model
         ")->result_array();
 
         // ── Label ──────────────────────────────────────────────────────────
-        $label_source = 'Semua Sumber';
+        $label_source = 'All Sources';
         if ($kd_gudang === 'PRO') $label_source = 'Production (PRO)';
         if ($kd_gudang === 'WIP') $label_source = 'WIP';
 
@@ -706,10 +706,10 @@ class Stock_from_warehouse_model extends BF_Model
         // ── Header ─────────────────────────────────────────────────────────
         $headers = [
             'A' => 'No',
-            'B' => 'Nama Material',
+            'B' => 'Material Name',
             'C' => 'No. Coil',
-            'D' => 'Kode Internal',
-            'E' => 'Gudang Asal',
+            'D' => 'Internal Code',
+            'E' => 'Source Warehouse',
             'F' => 'Nett Weight (Kg)',
             'G' => 'Gross Weight (Kg)',
             'H' => 'Length (M)',
@@ -856,10 +856,10 @@ class Stock_from_warehouse_model extends BF_Model
             return '<span class="badge bg-danger">On Hold</span>';
         }
         if ($status === 0) {
-            return '<span class="badge bg-dark">Tidak Aktif / Habis</span>';
+            return '<span class="badge bg-dark">Inactive / Depleted</span>';
         }
 
-        $label = $status_proses !== '' ? ucwords(str_replace('_', ' ', $status_proses)) : 'Aktif';
+        $label = $status_proses !== '' ? ucwords(str_replace('_', ' ', $status_proses ?? '')) : 'Active';
         return '<span class="badge bg-light text-dark border">' . htmlspecialchars((string) $label) . '</span>';
     }
 
@@ -964,7 +964,7 @@ class Stock_from_warehouse_model extends BF_Model
                 }
                 return $a['seq'] <=> $b['seq'];
             }
-            return strcmp($a['ts'], $b['ts']);
+            return strcmp($a['ts'] ?? '', $b['ts'] ?? '');
         });
 
         $in_added          = 0;

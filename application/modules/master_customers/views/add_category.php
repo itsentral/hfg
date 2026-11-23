@@ -4,7 +4,7 @@ $category = $results['category'] ?? null;
 <div class="row g-3">
 
 	<div class="col-md-3">
-		<label class="form-label mb-0">ID Kategori Customer</label>
+		<label class="form-label mb-0">Customer Category ID</label>
 	</div>
 	<div class="col-md-9">
 		<input type="text"
@@ -16,7 +16,7 @@ $category = $results['category'] ?? null;
 
 	<div class="col-md-3">
 		<label class="form-label mb-0">
-			Kategori Customer <span class="text-danger">*</span>
+			Customer Category <span class="text-danger">*</span>
 		</label>
 	</div>
 	<div class="col-md-9">

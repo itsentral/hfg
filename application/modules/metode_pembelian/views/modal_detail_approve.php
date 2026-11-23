@@ -6,16 +6,16 @@
 			<tr class='bg-blue'>
 				<th class="text-center" width='7%'>No RFQ</th>
 				<th class="text-center" width='13%'>Supplier Name</th>
-				<th class="text-center">Pengiriman</th>
+				<th class="text-center">Shipment</th>
 				<th class="text-center" width='15%'>Material Name</th>
 				<th class="text-center" width='6%'>Price Ref ($)</th>
 				<th class="text-center" width='8%'>Price From Supplier</th>
-				<th class="text-center" width='8%'>Harga (IDR)</th>
+				<th class="text-center" width='8%'>Price (IDR)</th>
 				<th class="text-center" width='5%'>Qty PR</th>
 				<th class="text-center" width='5%'>MOQ (Kg)</th>
 				<th class="text-center" width='5%'>Lead Time (Days)</th>
 				<th class="text-center" width='6%'>Tgl Dibutuhkan</th>
-				<th class="text-center" width='8%'>Total Harga</th>
+				<th class="text-center" width='8%'>Total Price</th>
 			</tr>
 		</thead>
 		<tbody>

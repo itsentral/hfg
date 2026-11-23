@@ -15,7 +15,7 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                         <td><span class="fw-bold text-primary"><?= $no_pr ?></span></td>
                     </tr>
                     <tr>
-                        <th>Tanggal PR</th>
+                        <th>PR Date</th>
                         <td>:</td>
                         <td><?= $tgl_pr ?></td>
                     </tr>
@@ -42,9 +42,9 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                 <thead class="text-center">
                     <tr>
                         <th width="5%">#</th>
-                        <th>Nama Barang / Asset</th>
+                        <th>Item / Asset Name</th>
                         <th width="10%">Qty</th>
-                        <th width="18%" class="text-end">Nilai PR</th>
+                        <th width="18%" class="text-end">PR Value</th>
                         <th width="15%">Tgl Dibutuhkan</th>
                         <th width="15%">Status</th>
                     </tr>
@@ -80,7 +80,7 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                             }
                         }
                     } else {
-                        echo "<tr><td colspan='6' class='text-center text-muted'>Tidak ada detail barang.</td></tr>";
+                        echo "<tr><td colspan='6' class='text-center text-muted'>No item details.</td></tr>";
                     }
                     ?>
                 </tbody>

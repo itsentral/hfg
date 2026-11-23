@@ -28,10 +28,10 @@ width:90%;
 			</th>
 			<th>No Cash Advance</th>
 			<th>No PR</th>
-			<th>Tanggal Cash Advance</th>
+			<th>Cash Advance Date</th>
 			<th>PIC</th>
-			<th>Nilai Cash Advance</th>
-			<th>Nilai Aktual</th>
+			<th>Cash Advance Value</th>
+			<th>Actual Value</th>
 			<th>Selisih</th>
 		</tr>
 		</thead>
@@ -45,11 +45,11 @@ width:90%;
 			if ($record->sts_buk == 1){
 			?>
 			
-			   <!-- <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Jurnal Penerimaan" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
+			   <!-- <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Receipt Journal" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
 				</a>
-				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Jurnal Permintaan Bayar" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
+				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Payment Request Journal" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
 				</a> -->
-				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Jurnal Pembayaran" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
+				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Payment Journal" data-id_material="<?=$record->no_pr?>"><i class="fa fa-eye"></i>
 				</a>
 			<?php  }
 			endif; ?>
@@ -108,7 +108,7 @@ width:90%;
 		var id = $(this).data('id_material');
 		var pp = 'pp';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_approval/'+id+'/'+pp,
@@ -126,7 +126,7 @@ width:90%;
 		var pp = 'kasbonstok';
 		var akses = 'approval_jurnal_kasbon_stok';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_buk/'+id+'/'+pp+'/'+akses,
@@ -142,7 +142,7 @@ width:90%;
 	$(document).on('click', '.view3', function(){
 		var id = $(this).data('id_material');
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_penerimaan/'+id,

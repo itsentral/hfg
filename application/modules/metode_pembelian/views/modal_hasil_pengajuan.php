@@ -11,7 +11,7 @@
 				<th class="text-center mid" width='10%'>MOQ</th>
 				<th class="text-center mid" width='10%'>LEAD TIME</th>
 				<th class="text-center mid" width='10%'>QTY</th>
-				<th class="text-center mid" width='10%'>TOTAL HARGA</th>
+				<th class="text-center mid" width='10%'>TOTAL PRICE</th>
 				<th class="text-center mid" width='10%'>STATUS</th>
 			</tr>
 		</thead>

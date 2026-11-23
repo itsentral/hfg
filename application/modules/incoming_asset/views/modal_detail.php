@@ -1,15 +1,15 @@
 <div class="p-2">
     <div class="row g-3 mb-4 bg-light p-3 rounded-3 border">
         <div class="col-md-4 col-12">
-            <span class="text-muted small d-block">Nomor PO / Non-PO:</span>
+            <span class="text-muted small d-block">PO / Non-PO Number:</span>
             <span class="fw-bold text-primary fs-6"><?= !empty($no_po) ? html_escape($no_po) : '-'; ?></span>
         </div>
         <div class="col-md-4 col-12">
-            <span class="text-muted small d-block">Kode Transaksi:</span>
+            <span class="text-muted small d-block">Transaction Code:</span>
             <span class="fw-bold text-dark fs-6"><?= html_escape($kode_trans); ?></span>
         </div>
         <div class="col-md-4 col-12">
-            <span class="text-muted small d-block">Tanggal Penerimaan:</span>
+            <span class="text-muted small d-block">Receipt Date:</span>
             <span class="fw-bold text-dark fs-6"><?= html_escape($resv); ?></span>
         </div>
     </div>
@@ -19,9 +19,9 @@
             <thead class="table-primary text-center">
                 <tr>
                     <th width="5%">No</th>
-                    <th>Nama Barang / Asset</th>
-                    <th width="12%">Qty Diterima</th>
-                    <th width="25%">Keterangan</th>
+                    <th>Item / Asset Name</th>
+                    <th width="12%">Received Qty</th>
+                    <th width="25%">Description</th>
                     <th width="20%">Pemeriksa</th>
                 </tr>
             </thead>
@@ -52,7 +52,7 @@
                 } else {
                 ?>
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-3">Tidak ada data detail penerimaan.</td>
+                        <td colspan="5" class="text-center text-muted py-3">No receipt detail data.</td>
                     </tr>
                 <?php } ?>
             </tbody>

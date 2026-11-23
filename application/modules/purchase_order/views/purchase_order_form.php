@@ -9,9 +9,9 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="po_no" name="po_no" value="<?php echo (isset($data->po_no) ? $data->po_no: ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 control-label">Tanggal Purchase Order<b class="text-red">*</b></label>
+					<label class="col-sm-2 control-label">Purchase Order Date<b class="text-red">*</b></label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control tanggal" id="po_date" name="po_date" value="<?php echo (isset($data->trans_date) ? $data->po_date: date("Y-m-d")); ?>" placeholder="Tanggal Purchase Request" required>
+						<input type="text" class="form-control tanggal" id="po_date" name="po_date" value="<?php echo (isset($data->trans_date) ? $data->po_date: date("Y-m-d")); ?>" placeholder="Purchase Request Date" required>
 					</div>
 				</div>
 				<div class="form-group ">
@@ -44,7 +44,7 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="pic" name="pic" value="<?php echo (isset($data->pic) ? $data->pic: ""); ?>" placeholder="Buyer">
 					</div>
-					<label class="col-sm-2 control-label">Keterangan</label>
+					<label class="col-sm-2 control-label">Description</label>
 					<div class="col-sm-4">
 						<textarea class="form-control" id="po_info" name="po_info"><?php echo (isset($data->po_info) ? $data->po_info: ""); ?></textarea>
 					</div>
@@ -59,7 +59,7 @@
 					<th>Qty Order</th>
 					<th>Unit</th>
 					<th>Price Reference</th>
-					<th>Harga / unit</th>
+					<th>Price / unit</th>
 					<th>Total</th>
 				</thead>
 				<tbody id="tbl_detail">
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 	</div>
-	<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+	<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Back</a>
 </div>
 <script src="<?= base_url('assets/js/number-divider.min.js')?>"></script>
 <script type="text/javascript">
@@ -106,9 +106,9 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="po_no" name="po_no" value="<?php echo (isset($data->po_no) ? $data->po_no: ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 control-label">Tanggal Purchase Order<b class="text-red">*</b></label>
+					<label class="col-sm-2 control-label">Purchase Order Date<b class="text-red">*</b></label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control tanggal" id="po_date" name="po_date" value="<?php echo (isset($data->trans_date) ? $data->po_date: date("Y-m-d")); ?>" placeholder="Tanggal Purchase Request" required>
+						<input type="text" class="form-control tanggal" id="po_date" name="po_date" value="<?php echo (isset($data->trans_date) ? $data->po_date: date("Y-m-d")); ?>" placeholder="Purchase Request Date" required>
 					</div>
 				</div>
 				<div class="form-group ">
@@ -141,7 +141,7 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="pic" name="pic" value="<?php echo (isset($data->pic) ? $data->pic: ""); ?>" placeholder="Buyer">
 					</div>
-					<label class="col-sm-2 control-label">Keterangan</label>
+					<label class="col-sm-2 control-label">Description</label>
 					<div class="col-sm-4">
 						<textarea class="form-control" id="po_info" name="po_info"><?php echo (isset($data->po_info) ? $data->po_info: ""); ?></textarea>
 					</div>
@@ -155,8 +155,8 @@
 							}
 						}
 						?>
-						<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-						<a class="btn btn-warning btn-sm" onclick="location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+						<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>
+						<a class="btn btn-warning btn-sm" onclick="location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Cancel</a>
 					</div>
 				</div>
 			</div>
@@ -169,9 +169,9 @@
 					<th>Qty Order</th>
 					<th>Unit</th>
 					<th>Price Reference</th>
-					<th>Harga / unit</th>
+					<th>Price / unit</th>
 					<th>Total
-					<div class="pull-right"><a class="btn btn-success btn-xs" href="javascript:void(0)" title="Tambah" onclick="add_material()" id="add-material"><i class="fa fa-plus">&nbsp;</i>Tambah</a></div></th>
+					<div class="pull-right"><a class="btn btn-success btn-xs" href="javascript:void(0)" title="Add" onclick="add_material()" id="add-material"><i class="fa fa-plus">&nbsp;</i>Add</a></div></th>
 				</thead>
 				<tbody id="tbl_detail">
 				<?php if(!empty($data_material)){
@@ -265,7 +265,7 @@
 					$("#tbl_detail").after(data);
 					$(".divide").divide();
 				}else{
-					swal("Data tidak ditemukan");
+					swal("Data not found");
 				}
 //				console.log(data);
 			}
@@ -273,12 +273,12 @@
 	}
 	function data_approve(){
 		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Disetujui!",
+		  title: "Are you sure?",
+		  text: "The data will be approved!",
 		  type: "info",
 		  showCancelButton: true,
-		  confirmButtonText: "Ya, setuju!",
-		  cancelButtonText: "Tidak!",
+		  confirmButtonText: "Yes, approve!",
+		  cancelButtonText: "No!",
 		  closeOnConfirm: false,
 		  closeOnCancel: true
 		},
@@ -292,8 +292,8 @@
 				success: function(msg){
 					if(msg['save']=='1'){
 						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di Setujui",
+							title: "Success!",
+							text: "Data approved successfully",
 							type: "success",
 							timer: 1500,
 							showConfirmButton: false
@@ -301,8 +301,8 @@
 						window.location.reload();
 					} else {
 						swal({
-							title: "Gagal!",
-							text: "Data Gagal Di Setujui",
+							title: "Failed!",
+							text: "Failed to approve data",
 							type: "error",
 							timer: 1500,
 							showConfirmButton: false
@@ -312,8 +312,8 @@
 				},
 				error: function(msg){
 					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
+						title: "Failed!",
+						text: "Ajax request failed to process.",
 						type: "error",
 						timer: 1500,
 						showConfirmButton: false

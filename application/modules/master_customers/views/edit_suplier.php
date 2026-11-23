@@ -96,7 +96,7 @@ foreach ($results['inven'] as $inven){
 				 	<hr>
 					<center>
 					<!--<button type="submit" class="btn btn-primary btn-sm add_field_button2" name="save"><i class="fa fa-plus"></i>Add Main Produk</button>
-					--><button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+					--><button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 					</center>
 					
 				  </form>
@@ -177,7 +177,7 @@ foreach ($results['inven'] as $inven){
 			Template	+='<td align="left">';
 					Template	+='<input type="text" class="form-control input-sm" name="data1['+loop+'][name_compotition]" id="data1_'+loop+'_name_compotition" label="FALSE" div="FALSE">';
 			Template	+='</td>';
-			Template	+='<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem('+loop+');"><i class="fa fa-trash-o"></i></button></td>';
+			Template	+='<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Delete Data" data-role="qtip" onClick="return DelItem('+loop+');"><i class="fa fa-trash-o"></i></button></td>';
 			Template	+='</tr>';
 			$('#list_payment').append(Template);
 			$('input[data-role="tglbayar"]').datepicker({
@@ -191,13 +191,13 @@ foreach ($results['inven'] as $inven){
 		var id = $(this).data('id_compotition');
 		// alert(id);
 		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Inventory akan di hapus.",
+		  title: "Are you sure?",
+		  text: "The inventory data will be deleted.",
 		  type: "warning",
 		  showCancelButton: true,
 		  confirmButtonClass: "btn-info",
-		  confirmButtonText: "Ya, Hapus!",
-		  cancelButtonText: "Batal",
+		  confirmButtonText: "Yes, Delete!",
+		  cancelButtonText: "Cancel",
 		  closeOnConfirm: false
 		},
 		function(isConfirm){
@@ -211,12 +211,12 @@ foreach ($results['inven'] as $inven){
 			  data:{'id':id},
 			  success:function(result){
 				  if(result.status == '1'){
-					  swal("Sukses", "Data Inventory berhasil dihapus", "success");
+					  swal("Success", "Inventory data deleted successfully", "success");
 					return false;
 				  } else {
 					swal({
 					  title : "Error",
-					  text  : "Data error. Gagal hapus data",
+					  text  : "Data error. Failed to delete data.",
 					  type  : "error"
 					})
 					
@@ -225,7 +225,7 @@ foreach ($results['inven'] as $inven){
 			  error : function(){
 				swal({
 					  title : "Error",
-					  text  : "Data error. Gagal request Ajax",
+					  text  : "Data error. Ajax request failed.",
 					  type  : "error"
 					})
 			  }

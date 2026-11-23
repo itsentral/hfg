@@ -20,10 +20,10 @@ $id_dept = implode(',', $id_dept ?? []);
         <input type="hidden" name="adjustment" id="adjustment" value="IN">
 
         <div class="row align-items-center mb-3">
-            <label class="col-sm-2 col-form-label fw-bold">Upload Dokumen</label>
+            <label class="col-sm-2 col-form-label fw-bold">Upload Document</label>
             <div class="col-sm-5">
                 <input type="file" name="upload_doc" class="form-control form-control-sm">
-                <small class="text-muted">Opsional (Surat Jalan / Bukti Terima)</small>
+                <small class="text-muted">Optional (Delivery Note / Proof of Receipt)</small>
             </div>
         </div>
 
@@ -32,13 +32,13 @@ $id_dept = implode(',', $id_dept ?? []);
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="40">#</th>
-                        <th width="160">Departemen</th>
-                        <th>Nama Barang / Jasa</th>
+                        <th width="160">Department</th>
+                        <th>Item / Service Name</th>
                         <th>Spec / Requirement</th>
                         <th class="text-center" width="100">Qty PO</th>
-                        <th class="text-center" width="110">Belum Dikirim</th>
-                        <th class="text-center" width="120">Qty Diterima <span class="text-danger">*</span></th>
-                        <th width="180">Catatan</th>
+                        <th class="text-center" width="110">Not Shipped</th>
+                        <th class="text-center" width="120">Received Qty <span class="text-danger">*</span></th>
+                        <th width="180">Notes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,14 +103,14 @@ $id_dept = implode(',', $id_dept ?? []);
                                            name="addInMat[<?= $No; ?>][keterangan]"
                                            data-no="<?= $No; ?>"
                                            class="form-control form-control-sm"
-                                           placeholder="Keterangan..."
+                                           placeholder="Description..."
                                            <?= $readonly; ?>>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-3">Data aktual belum tersedia atau sudah diterima penuh.</td>
+                            <td colspan="8" class="text-center text-muted py-3">Actual data is not available yet or has been fully received.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -118,9 +118,9 @@ $id_dept = implode(',', $id_dept ?? []);
         </div>
 
         <div class="d-flex justify-content-end gap-2 pt-2">
-            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Cancel</button>
             <button type="button" class="btn btn-sm btn-success px-4 shadow-sm" id="saveINMaterial">
-                <i class="fa fa-save me-1"></i> Simpan Penerimaan
+                <i class="fa fa-save me-1"></i> Save Receipt
             </button>
         </div>
     </div>

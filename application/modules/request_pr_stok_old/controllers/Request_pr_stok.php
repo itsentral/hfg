@@ -154,7 +154,7 @@ class Request_pr_stok extends Admin_Controller
     $data = $this->input->post();
 
     $id_material  = $data['id_material'];
-    $purchase     = str_replace(',', '', $data['purchase']);
+    $purchase     = str_replace(',', '', $data['purchase'] ?? '');
     // $purchase_pack     = str_replace(',', '', $data['purchase_pack']);
     $tanggal      = $data['tanggal'];
     $info         = $data['info'];
@@ -415,7 +415,7 @@ class Request_pr_stok extends Admin_Controller
     $ArrUpdate = [];
     foreach ($detail as $key => $value) {
       $ArrUpdate[$key]['id'] = $value['id'];
-      $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty']);
+      $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty'] ?? '');
     }
 
     $get_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row();

@@ -7,7 +7,7 @@
         </tr>
         <?php if (!empty($kategori_pr)) : ?>
         <tr>
-            <td class="fw-bold">Kategori PR</td>
+            <td class="fw-bold">PR Category</td>
             <td class="text-center fw-bold">:</td>
             <td><span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars((string) $kategori_pr) ?></span></td>
         </tr>
@@ -20,7 +20,7 @@
         <thead class="table-light">
             <tr>
                 <th class="text-center" style="width: 40px;">No</th>
-                <th class="text-start">Nama Barang / Material</th>
+                <th class="text-start">Item / Material Name</th>
                 <th class="text-end" style="width: 110px;">Qty</th>
                 <th class="text-end" style="width: 120px;">Qty Packing</th>
                 <th class="text-center" style="width: 100px;">Unit</th>
@@ -47,7 +47,7 @@
                     $no++;
                 }
             } else {
-                echo '<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada rincian material pada PR ini</td></tr>';
+                echo '<tr><td colspan="6" class="text-center py-4 text-muted">There are no material details in this PR</td></tr>';
             }
             ?>
         </tbody>

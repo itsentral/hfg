@@ -274,14 +274,14 @@ class Mata_uang_model extends CI_Model
 
             if (isset($existing_normalized[$clean])) {
                 $is_disabled = true;
-                $status_text = 'Sudah ditambahkan (' . $existing_normalized[$clean] . ')';
+                $status_text = 'Already added (' . $existing_normalized[$clean] . ')';
             }
 
             $is_current = false;
             if ($current_record && $this->clean_name($current_record->negara) === $clean) {
                 $is_disabled = false;
                 $is_current = true;
-                $status_text = 'Saat ini';
+                $status_text = 'Currently';
             }
 
             $result[] = [
@@ -290,12 +290,12 @@ class Mata_uang_model extends CI_Model
                 'is_disabled'   => $is_disabled,
                 'is_current'    => $is_current,
                 'status_text'   => $status_text,
-                'display_label' => $country_name . ($is_disabled ? ' — [Sudah Terdaftar (' . $existing_normalized[$clean] . ')]' : '')
+                'display_label' => $country_name . ($is_disabled ? ' — [Already Registered (' . $existing_normalized[$clean] . ')]' : '')
             ];
         }
 
         usort($result, function ($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
+            return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
         });
 
         return $result;

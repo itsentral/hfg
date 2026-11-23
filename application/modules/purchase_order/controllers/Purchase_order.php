@@ -209,7 +209,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan j ON j.id = f.id_unit
 				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND
 				(a.tipe IS NULL OR a.tipe = 'pr material')
 			GROUP BY id
 
@@ -249,7 +249,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
 				LEFT JOIN ms_satuan f ON f.id = e.satuan
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr depart'
 
 			UNION ALL
@@ -287,7 +287,7 @@ class Purchase_order extends Admin_Controller
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr asset'
 			GROUP BY id
 		")->result();
@@ -525,7 +525,7 @@ class Purchase_order extends Admin_Controller
 		$detail = $this->db->query("SELECT * FROM dt_trans_pr WHERE no_pr = '$id' ")->result();
 
 		$nm_depart = [];
-		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header[0]->id_dept) . "')")->result();
+		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header[0]->id_dept ?? '') . "')")->result();
 		if (!empty($get_nm_depart)) {
 			foreach ($get_nm_depart as $item_depart) {
 				$nm_depart[] = strtoupper((string) $item_depart->nama);
@@ -607,7 +607,7 @@ class Purchase_order extends Admin_Controller
 			echo "
 			<tr id='trmaterial_$loop'>
 			<th style='font-size:90%'><select style='font-size:90%' class='form-control chosen-select' id='dt_idpr_" . $loop . "' name='dt[" . $loop . "][idpr]'	onchange ='CariProperties(" . $loop . ")'>
-			<option value=''>--Pilih--</option>";
+			<option value=''>--Select--</option>";
 			foreach ($material as $material) {
 				$nopr = $material->no_pr;
 				$surat = $this->db->query("SELECT * FROM tr_purchase_request WHERE no_pr = '$nopr'")->row();
@@ -627,8 +627,8 @@ class Purchase_order extends Admin_Controller
 			<th id='qty_" . $loop . "'			hidden style='font-size:90%'><input style='font-size:90%' type='number' 			class='form-control' id='dt_qty_" . $loop . "' 			required name='dt[" . $loop . "][qty]' onkeyup='HitungUP(" . $loop . ")' ></th>
 			
 			<th 							style='font-size:90%' ><select		style='font-size:90%'				class='form-control' id='dt_ratelme_" . $loop . "' 		required name='dt[" . $loop . "][ratelme]' onchange='CariPrice(" . $loop . ")'>
-			<option value=''>-Pilih-</option>
-			<option value='Hari Ini'>Hari ini</option>
+			<option value=''>-Select-</option>
+			<option value='Hari Ini'>Today</option>
 			<option value='H-10'>H-10</option>
 			<option value='H-30'>H-30</option>
 			</select></th>
@@ -651,14 +651,14 @@ class Purchase_order extends Admin_Controller
 			<th								style='font-size:90%'><input style='font-size:90%' type='text' 			class='form-control' id='dt_note_" . $loop . "' 		required name='dt[" . $loop . "][note]' ></th>
 			
 			<th><button type='button' class='btn btn-sm btn-success' title='Lock' data-role='qtip' onClick='return LockMaterial(" . $loop . ");'><i class='fa fa-key'></i></button>
-			<button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem(" . $loop . ");'><i class='fa fa-close'></i></button></th>
+			<button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return HapusItem(" . $loop . ");'><i class='fa fa-close'></i></button></th>
 			</tr>
 			";
 		} else {
 			echo "
 			<tr id='trmaterial_$loop'>
 			<th style='font-size:90%'><select style='font-size:90%' class='form-control chosen-select' id='dt_idpr_" . $loop . "' name='dt[" . $loop . "][idpr]'	onchange ='CariProperties(" . $loop . ")'>
-			<option value=''>--Pilih--</option>";
+			<option value=''>--Select--</option>";
 			foreach ($material as $material) {
 				echo "<option value='$material->id_dt_pr'>$material->nama_material</option>";
 			};
@@ -670,8 +670,8 @@ class Purchase_order extends Admin_Controller
 			<th id='totalwidth_" . $loop . "'	><input  type='number' style='font-size:90%'	class='form-control' id='dt_totalwidth_" . $loop . "' 	required name='dt[" . $loop . "][totalwidth]' onkeyup='HitungHarga(" . $loop . ")' ></th>
 			<th id='qty_" . $loop . "'			hidden style='font-size:90%'><input style='font-size:90%' type='number' 			class='form-control' id='dt_qty_" . $loop . "' 			required name='dt[" . $loop . "][qty]' onkeyup='HitungUP(" . $loop . ")' ></th>
 			<th 							style='font-size:90%' ><select		style='font-size:90%'		class='form-control' id='dt_ratelme_" . $loop . "' 		required name='dt[" . $loop . "][ratelme]' onchange='CariPrice(" . $loop . ")'>
-			<option value=''>-Pilih-</option>
-			<option value='Hari Ini'>Hari ini</option>
+			<option value=''>-Select-</option>
+			<option value='Hari Ini'>Today</option>
 			<option value='H-10'>H-10</option>
 			<option value='H-30'>H-30</option>
 			</select></th>
@@ -685,7 +685,7 @@ class Purchase_order extends Admin_Controller
 			<th id='jumlahharga_" . $loop . "'	style='font-size:90%'><input style='font-size:90%' readonly type='text' 	class='form-control' id='dt_jumlahharga_" . $loop . "' 	required name='dt[" . $loop . "][jumlahharga]' ></th>
 			<th								style='font-size:90%'><input style='font-size:90%' type='text' 			class='form-control' id='dt_note_" . $loop . "' 		required name='dt[" . $loop . "][note]' ></th>
 			<th><button type='button' class='btn btn-sm btn-success' title='Lock' data-role='qtip' onClick='return LockMaterial(" . $loop . ");'><i class='fa fa-key'></i></button>
-			<button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem(" . $loop . ");'><i class='fa fa-close'></i></button></th>
+			<button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return HapusItem(" . $loop . ");'><i class='fa fa-close'></i></button></th>
 			</tr>
 		";
 		}
@@ -730,8 +730,8 @@ class Purchase_order extends Admin_Controller
 							</td>";
 			$LIST .= 	"<td hidden>
 								<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
-									<option value=''>-Pilih-</option>
-									<option value='Hari Ini'>Hari ini</option>
+									<option value=''>-Select-</option>
+									<option value='Hari Ini'>Today</option>
 									<option value='H-10'>H-10</option>
 									<option value='H-30'>H-30</option>
 								</select>
@@ -744,7 +744,7 @@ class Purchase_order extends Admin_Controller
 			$LIST .= 	"<td><input type='text' class='form-control input-sm ch_jumlah_ex' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . $total . "'></td>";
 			$LIST .= 	"<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>";
 			$LIST .= 	"<td>
-								<button type='button' class='btn btn-sm btn-danger hapus_baris' title='Hapus Data' data-role='qtip'><i class='fa fa-close'></i></button>
+								<button type='button' class='btn btn-sm btn-danger hapus_baris' title='Delete Data' data-role='qtip'><i class='fa fa-close'></i></button>
 							</td>";
 			$LIST .= "</tr>";
 		}
@@ -807,7 +807,7 @@ class Purchase_order extends Admin_Controller
 		<td	hidden><input		readonly	type='text' 	value='" . $pajak . "'				class='form-control' id='dt_pajak_" . $loop . "' 		required name='dt[" . $loop . "][pajak]' ></td>
 		<td ><input		readonly 	type='text' 	value='" . $jumlahharga . "'		class='form-control' id='dt_jumlahharga_" . $loop . "' 	required name='dt[" . $loop . "][jumlahharga]' ></td>
 		<td	><input		readonly  	type='text' 	value='" . $note . "'				class='form-control' id='dt_note_" . $loop . "' 		required name='dt[" . $loop . "][note]' ></td>
-		<td><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return CancelItem($loop);'><i class='fa fa-close'></i></button></td>
+		<td><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return CancelItem($loop);'><i class='fa fa-close'></i></button></td>
 		";
 	}
 	function CariPrice()
@@ -934,9 +934,9 @@ class Purchase_order extends Admin_Controller
 	}
 	function HitungUP()
 	{
-		$alloyprice = str_replace(",", "", $_GET['alloyprice']);
+		$alloyprice = str_replace(",", "", $_GET['alloyprice'] ?? '');
 		$fabcost = $_GET['fabcost'];
-		$hargasatuan = str_replace(",", "", $_GET['hargasatuan']);
+		$hargasatuan = str_replace(",", "", $_GET['hargasatuan'] ?? '');
 		// $total2 = round(($alloyprice+$fabcost)/1000,3);
 		// print_r( $alloyprice);
 		// echo "<PRE>";
@@ -954,9 +954,9 @@ class Purchase_order extends Admin_Controller
 	}
 	function Hitjumlah()
 	{
-		$alloyprice = str_replace(",", "", $_GET['alloyprice']);
-		$fabcost = str_replace(",", "", $_GET['fabcost']);
-		$hargasatuan = str_replace(",", "", $_GET['hargasatuan']);
+		$alloyprice = str_replace(",", "", $_GET['alloyprice'] ?? '');
+		$fabcost = str_replace(",", "", $_GET['fabcost'] ?? '');
+		$hargasatuan = str_replace(",", "", $_GET['hargasatuan'] ?? '');
 		$qty = $_GET['qty'];
 		$loi = $_GET['loi'];
 		$dt_width = $_GET['dt_width'];
@@ -1113,7 +1113,7 @@ class Purchase_order extends Admin_Controller
 		$loop = $_GET['id'];
 		$supplier	= $this->db->query("SELECT a.*, b.name_suplier as supname FROM child_inven_suplier as a INNER JOIN master_supplier as b on a.id_suplier = b.id_suplier WHERE a.id_category3 = '$id_category3' ")->result();
 		echo "<select class='form-control' id='dt_suplier_" . $loop . "' name='dt[" . $loop . "][suplier]'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 		foreach ($supplier as $supplier) {
 			echo "<option value='" . $supplier->id_suplier . "'>" . $supplier->supname . "</option>";
 		}
@@ -1121,82 +1121,82 @@ class Purchase_order extends Admin_Controller
 	}
 	function CariTHarga()
 	{
-		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$hargatotal = str_replace(',', '', $_GET['hargatotal'] ?? '');
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$isi = number_format($hargatotal + $jumlahharga);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='hargatotal'  onkeyup required name='hargatotal' >";
 	}
 	function CariTDiskon()
 	{
-		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$diskontotal = str_replace(',', '', $_GET['diskontotal'] ?? '');
+		$diskon = (float) str_replace(',', '', $_GET['diskon'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $diskon;
 		$isi = number_format($val1 + $diskontotal);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='diskontotal'  onkeyup required name='diskontotal' >";
 	}
 	function CariTPajak()
 	{
-		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$taxtotal = str_replace(',', '', $_GET['taxtotal'] ?? '');
+		$pajak = (float) str_replace(',', '', $_GET['pajak'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $pajak;
 		$isi = number_format($val1 + $taxtotal);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='taxtotal'  onkeyup required name='taxtotal' >";
 	}
 	function CariTSum()
 	{
-		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$taxtotal = str_replace(',', '', $_GET['taxtotal'] ?? '');
+		$pajak = (float) str_replace(',', '', $_GET['pajak'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $pajak;
 		$isi1 = $val1 + $taxtotal;
-		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
+		$diskontotal = str_replace(',', '', $_GET['diskontotal'] ?? '');
+		$diskon = (float) str_replace(',', '', $_GET['diskon'] ?? '') / 100;
 		$val2 = $jumlahharga * $diskon;
 		$isi2 = $val2 + $diskontotal;
-		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
+		$hargatotal = str_replace(',', '', $_GET['hargatotal'] ?? '');
 		$isi3 = $hargatotal + $jumlahharga;
 		$isi = number_format($isi1 - $isi2 + $isi3);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='subtotal'  onkeyup required name='subtotal' >";
 	}
 	function CariMinHarga()
 	{
-		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$hargatotal = str_replace(',', '', $_GET['hargatotal'] ?? '');
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$isi = number_format($hargatotal - $jumlahharga);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='hargatotal'  onkeyup required name='hargatotal' >";
 	}
 	function CariMinDiskon()
 	{
-		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$diskontotal = str_replace(',', '', $_GET['diskontotal'] ?? '');
+		$diskon = (float) str_replace(',', '', $_GET['diskon'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $diskon;
 		$isi = number_format($val1 - $diskontotal);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='diskontotal'  onkeyup required name='diskontotal' >";
 	}
 	function CariMinPajak()
 	{
-		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$taxtotal = str_replace(',', '', $_GET['taxtotal'] ?? '');
+		$pajak = (float) str_replace(',', '', $_GET['pajak'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $pajak;
 		$isi = number_format($taxtotal - $val1);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='taxtotal'  onkeyup required name='taxtotal' >";
 	}
 	function CariMinSum()
 	{
-		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
-		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
+		$taxtotal = str_replace(',', '', $_GET['taxtotal'] ?? '');
+		$pajak = (float) str_replace(',', '', $_GET['pajak'] ?? '') / 100;
+		$jumlahharga = str_replace(',', '', $_GET['jumlahharga'] ?? '');
 		$val1 = $jumlahharga * $pajak;
 		$isi1 = $val1 - $taxtotal;
-		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
+		$diskontotal = str_replace(',', '', $_GET['diskontotal'] ?? '');
+		$diskon = (float) str_replace(',', '', $_GET['diskon'] ?? '') / 100;
 		$val2 = $jumlahharga * $diskon;
 		$isi2 = $val2 - $diskontotal;
-		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
+		$hargatotal = str_replace(',', '', $_GET['hargatotal'] ?? '');
 		$isi3 = $hargatotal - $jumlahharga;
 		$isi = number_format($isi1 - $isi2 + $isi3);
 		echo "<input readonly type='text' value='" . $isi . "' class='form-control' id='subtotal'  onkeyup required name='subtotal' >";
@@ -1228,7 +1228,7 @@ class Purchase_order extends Admin_Controller
 		$id_customer = $_GET['id_customer'];
 		$kategory3	= $this->db->query("SELECT * FROM child_customer_pic WHERE id_customer = '$id_customer' ")->result();
 		echo "<select id='pic_customer' name='pic_customer' class='form-control select' required>
-				<option value=''>--Pilih--</option>";
+				<option value=''>--Select--</option>";
 		foreach ($kategory3 as $pic) {
 			echo "<option value='$pic->name_pic'>$pic->name_pic</option>";
 		}
@@ -1348,7 +1348,7 @@ class Purchase_order extends Admin_Controller
 		$inventory_1 = $_GET['inventory_1'];
 		$data = $this->Pr_model->level_2($inventory_1);
 		echo "<select id='inventory_2' name='hd1[1][inventory_2]' class='form-control onchange='get_inv3()'  input-sm select2'>";
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $key => $st) :
 			echo "<option value='$st->id_category1' set_select('inventory_2', $st->id_category1, isset($data->id_category1) && $data->id_category1 == $st->id_category1)>$st->nama
                     </option>";
@@ -1363,7 +1363,7 @@ class Purchase_order extends Admin_Controller
 		// print_r($data);
 		// exit();
 		echo "<select id='inventory_3' name='hd1[1][inventory_3]' class='form-control input-sm select2'>";
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $key => $st) :
 			echo "<option value='$st->id_category2' set_select('inventory_3', $st->id_category2, isset($data->id_category2) && $data->id_category2 == $st->id_category2)>$st->nama
                     </option>";
@@ -1462,7 +1462,7 @@ class Purchase_order extends Admin_Controller
 		$code = $this->Pr_model->generate_code($tgl);
 		$no_surat = $this->Pr_model->BuatNomor($tgl);
 
-		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
+		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs'] ?? '') : 0;
 		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept'] ?? []) : '';
 
 		$this->db->trans_start();
@@ -1493,19 +1493,19 @@ class Purchase_order extends Admin_Controller
 				'note'				=> $post['note_ket'],
 				'no_pr'				=> $post['no_pr'],
 				'matauang'			=> $post['matauang'],
-				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn']),
-				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn']),
-				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus']),
-				'hargatotal'		=> str_replace(',', '', $post['hargatotal']),
-				'diskontotal'		=> str_replace(',', '', $post['diskontotal']),
-				'taxtotal'			=> str_replace(',', '', $post['kirim']),
-				'subtotal'			=> str_replace(',', '', $post['subtotal']),
-				'total_ppn'			=> str_replace(',', '', $post['ppn']),
-				'total_barang'		=> str_replace(',', '', $post['hargatotal']),
+				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn'] ?? ''),
+				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn'] ?? ''),
+				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus'] ?? ''),
+				'hargatotal'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
+				'diskontotal'		=> str_replace(',', '', $post['diskontotal'] ?? ''),
+				'taxtotal'			=> str_replace(',', '', $post['kirim'] ?? ''),
+				'subtotal'			=> str_replace(',', '', $post['subtotal'] ?? ''),
+				'total_ppn'			=> str_replace(',', '', $post['ppn'] ?? ''),
+				'total_barang'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
 				'status'			=> '1',
-				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn']),
-				'persen_disc' 		=> str_replace(',', '', $post['persendisc']),
-				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc']),
+				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn'] ?? ''),
+				'persen_disc' 		=> str_replace(',', '', $post['persendisc'] ?? ''),
+				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc'] ?? ''),
 				'note' 				=> $post['keterangan'],
 				'delivery_address' 	=> $post['delivery_address'],
 				'delivery_date' 	=> $post['delivery_date'],
@@ -1528,19 +1528,19 @@ class Purchase_order extends Admin_Controller
 				'note'				=> $post['note_ket'],
 				'no_pr'				=> $post['no_pr'],
 				'matauang'			=> $post['matauang'],
-				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn']),
-				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn']),
-				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus']),
-				'hargatotal'		=> str_replace(',', '', $post['hargatotal']),
-				'diskontotal'		=> str_replace(',', '', $post['diskontotal']),
-				'taxtotal'			=> str_replace(',', '', $post['kirim']),
-				'subtotal'			=> str_replace(',', '', $post['subtotal']),
-				'total_ppn'			=> str_replace(',', '', $post['ppn']),
-				'total_barang'		=> str_replace(',', '', $post['hargatotal']),
+				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn'] ?? ''),
+				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn'] ?? ''),
+				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus'] ?? ''),
+				'hargatotal'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
+				'diskontotal'		=> str_replace(',', '', $post['diskontotal'] ?? ''),
+				'taxtotal'			=> str_replace(',', '', $post['kirim'] ?? ''),
+				'subtotal'			=> str_replace(',', '', $post['subtotal'] ?? ''),
+				'total_ppn'			=> str_replace(',', '', $post['ppn'] ?? ''),
+				'total_barang'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
 				'status'			=> '1',
-				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn']),
-				'persen_disc' 		=> str_replace(',', '', $post['persendisc']),
-				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc']),
+				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn'] ?? ''),
+				'persen_disc' 		=> str_replace(',', '', $post['persendisc'] ?? ''),
+				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc'] ?? ''),
 				'note' 				=> $post['keterangan'],
 				'delivery_date' 	=> $post['delivery_date'],
 				'delivery_address' 	=> $post['delivery_address'],
@@ -1563,18 +1563,18 @@ class Purchase_order extends Admin_Controller
 				// 'note'				=> $post['note_ket'],
 				'no_pr'				=> $post['no_pr'],
 				'matauang'			=> $post['matauang'],
-				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn']),
-				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn']),
-				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus']),
-				'diskontotal'		=> str_replace(',', '', $post['diskontotal']),
-				'taxtotal'			=> str_replace(',', '', $post['kirim']),
-				'subtotal'			=> str_replace(',', '', $post['subtotal']),
-				'total_ppn'			=> str_replace(',', '', $post['ppn']),
-				'total_barang'		=> str_replace(',', '', $post['hargatotal']),
+				'total_include_ppn'	=> str_replace(',', '', $post['totalinppn'] ?? ''),
+				'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn'] ?? ''),
+				'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus'] ?? ''),
+				'diskontotal'		=> str_replace(',', '', $post['diskontotal'] ?? ''),
+				'taxtotal'			=> str_replace(',', '', $post['kirim'] ?? ''),
+				'subtotal'			=> str_replace(',', '', $post['subtotal'] ?? ''),
+				'total_ppn'			=> str_replace(',', '', $post['ppn'] ?? ''),
+				'total_barang'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
 				'status'			=> '1',
-				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn']),
-				'persen_disc' 		=> str_replace(',', '', $post['persendisc']),
-				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc']),
+				'total_ppn_persen'	=> str_replace(',', '', $post['persenppn'] ?? ''),
+				'persen_disc' 		=> str_replace(',', '', $post['persendisc'] ?? ''),
+				'nilai_disc' 		=> str_replace(',', '', $post['totaldisc'] ?? ''),
 				'note' 				=> $post['keterangan'],
 				'delivery_date' 	=> $post['delivery_date'],
 				'delivery_address' 	=> $post['delivery_address'],
@@ -1606,27 +1606,27 @@ class Purchase_order extends Admin_Controller
 					'idmaterial'			=> $used['idmaterial'],
 					'namamaterial'			=> $used['namamaterial'],
 					'hscode'				=> $used['hscode'],
-					'kuota_internal'		=> str_replace(",", "", $used['kuota_internal']),
+					'kuota_internal'		=> str_replace(",", "", $used['kuota_internal'] ?? ''),
 					'description'			=> $used['description'],
-					'qty'					=> str_replace(",", "", $used['qty']),
-					'width'					=> str_replace(",", "", $used['width']),
+					'qty'					=> str_replace(",", "", $used['qty'] ?? ''),
+					'width'					=> str_replace(",", "", $used['width'] ?? ''),
 					'rate_lme'				=> $used['ratelme'],
-					'fabcost'				=> str_replace(",", "", $used['fabcost']),
-					'alloyprice'			=> str_replace(",", "", $used['alloyprice']),
-					'totalwidth'			=> str_replace(",", "", $used['totalweight']),
-					'hargasatuan'			=> str_replace(",", "", $used['hargasatuan']),
+					'fabcost'				=> str_replace(",", "", $used['fabcost'] ?? ''),
+					'alloyprice'			=> str_replace(",", "", $used['alloyprice'] ?? ''),
+					'totalwidth'			=> str_replace(",", "", $used['totalweight'] ?? ''),
+					'hargasatuan'			=> str_replace(",", "", $used['hargasatuan'] ?? ''),
 					'lebar'					=> $used['lebar'],
-					'panjang'				=> str_replace(",", "", $used['length']),
-					'diskon'				=> str_replace(",", "", $used['diskon']),
-					'pajak'					=> str_replace(",", "", $used['pajak']),
-					'jumlahharga'			=> str_replace(",", "", $used['jumlahharga']),
-					'ppn'					=> str_replace(",", "", $used['nilai_ppn']),
-					'ppn_persen'			=> str_replace(",", "", $used['persen_ppn']),
-					'persen_disc'			=> str_replace(",", "", $used['disc_persen']),
-					'nilai_disc'			=> str_replace(",", "", $used['disc_num']),
-					'harga_total'			=> str_replace(",", "", $used['totalharga']),
+					'panjang'				=> str_replace(",", "", $used['length'] ?? ''),
+					'diskon'				=> str_replace(",", "", $used['diskon'] ?? ''),
+					'pajak'					=> str_replace(",", "", $used['pajak'] ?? ''),
+					'jumlahharga'			=> str_replace(",", "", $used['jumlahharga'] ?? ''),
+					'ppn'					=> str_replace(",", "", $used['nilai_ppn'] ?? ''),
+					'ppn_persen'			=> str_replace(",", "", $used['persen_ppn'] ?? ''),
+					'persen_disc'			=> str_replace(",", "", $used['disc_persen'] ?? ''),
+					'nilai_disc'			=> str_replace(",", "", $used['disc_num'] ?? ''),
+					'harga_total'			=> str_replace(",", "", $used['totalharga'] ?? ''),
 					'note'					=> $used['note'],
-					'sisa_kuota'			=> str_replace(",", "", $used['sisa_kuota']),
+					'sisa_kuota'			=> str_replace(",", "", $used['sisa_kuota'] ?? ''),
 					'kode_barang'			=> $used['kode_barang'],
 					'tipe' 					=> (!empty($used['tipe_pr'])) ? $used['tipe_pr'] : 'pr material'
 				);
@@ -1707,8 +1707,8 @@ class Purchase_order extends Admin_Controller
 					$data_top = [
 						'no_po'      => $code,
 						'group_top'  => $group_top,
-						'progress'   => str_replace(',', '', $progress),
-						'nilai'      => str_replace(',', '', $nilai_top),
+						'progress'   => str_replace(',', '', $progress ?? ''),
+						'nilai'      => str_replace(',', '', $nilai_top ?? ''),
 						'keterangan' => $keterangan_top,
 						'tipe_bayar' => $tipe_bayar,
 						'jatuh_tempo' => $jatuh_tempo,
@@ -1728,7 +1728,7 @@ class Purchase_order extends Admin_Controller
 							'no_credit'         => $lc['no_credit'],
 							'issue_date'        => $lc['issue_date'],
 							'expiry_date'       => $lc['expiry_date'],
-							'value_contract'    => str_replace(',', '', $lc['value_contract']),
+							'value_contract'    => str_replace(',', '', $lc['value_contract'] ?? ''),
 							'tolerance_plus'    => $lc['tolerance_plus'],
 							'tolerance_minus'   => $lc['tolerance_minus'],
 							'type_of_lc'        => $lc['type_of_lc'],
@@ -1790,7 +1790,7 @@ class Purchase_order extends Admin_Controller
 		$code    = $is_edit ? $post['no_po'] : $this->Pr_model->generate_code($tgl);
 		$no_surat = $is_edit ? $post['no_surat'] : $this->Pr_model->BuatNomor($tgl);
 
-		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
+		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs'] ?? '') : 0;
 		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept'] ?? []) : '';
 
 		$this->db->trans_start();
@@ -1825,19 +1825,19 @@ class Purchase_order extends Admin_Controller
 			'cif'               => $post['cif'],
 			'no_pr'             => $post['no_pr'],
 			'matauang'          => $post['matauang'],
-			'total_include_ppn' => str_replace(',', '', $post['subtotal']),
-			'total_exclude_ppn' => str_replace(',', '', $post['totalinppn']),
-			'diskon_khusus'     => str_replace(',', '', $post['diskonkhusus']),
-			'hargatotal'        => str_replace(',', '', $post['hargatotal']),
-			'diskontotal'       => str_replace(',', '', $post['diskontotal']),
-			'taxtotal'          => str_replace(',', '', $post['kirim']),
-			'subtotal'          => str_replace(',', '', $post['subtotal']),
-			'total_ppn'         => str_replace(',', '', $post['ppn']),
-			'total_barang'      => str_replace(',', '', $post['hargatotal']),
+			'total_include_ppn' => str_replace(',', '', $post['subtotal'] ?? ''),
+			'total_exclude_ppn' => str_replace(',', '', $post['totalinppn'] ?? ''),
+			'diskon_khusus'     => str_replace(',', '', $post['diskonkhusus'] ?? ''),
+			'hargatotal'        => str_replace(',', '', $post['hargatotal'] ?? ''),
+			'diskontotal'       => str_replace(',', '', $post['diskontotal'] ?? ''),
+			'taxtotal'          => str_replace(',', '', $post['kirim'] ?? ''),
+			'subtotal'          => str_replace(',', '', $post['subtotal'] ?? ''),
+			'total_ppn'         => str_replace(',', '', $post['ppn'] ?? ''),
+			'total_barang'      => str_replace(',', '', $post['hargatotal'] ?? ''),
 			'status'            => '1',
-			'total_ppn_persen'  => str_replace(',', '', $post['persenppn']),
-			'persen_disc'       => str_replace(',', '', $post['persendisc']),
-			'nilai_disc'        => str_replace(',', '', $post['totaldisc']),
+			'total_ppn_persen'  => str_replace(',', '', $post['persenppn'] ?? ''),
+			'persen_disc'       => str_replace(',', '', $post['persendisc'] ?? ''),
+			'nilai_disc'        => str_replace(',', '', $post['totaldisc'] ?? ''),
 			'note'              => $post['keterangan'],
 			'delivery_address'  => $post['delivery_address'],
 			'delivery_date'     => $post['delivery_date'],
@@ -1882,27 +1882,27 @@ class Purchase_order extends Admin_Controller
 					'idmaterial'    => $used['idmaterial'],
 					'namamaterial'  => $used['namamaterial'],
 					'hscode'        => $used['hscode'],
-					'kuota_internal' => str_replace(",", "", $used['kuota_internal']),
+					'kuota_internal' => str_replace(",", "", $used['kuota_internal'] ?? ''),
 					'description'   => $used['description'],
-					'qty'           => str_replace(",", "", $used['qty']),
-					'width'         => str_replace(",", "", $used['width']),
+					'qty'           => str_replace(",", "", $used['qty'] ?? ''),
+					'width'         => str_replace(",", "", $used['width'] ?? ''),
 					'rate_lme'      => $used['ratelme'],
-					'fabcost'       => str_replace(",", "", $used['fabcost']),
-					'alloyprice'    => str_replace(",", "", $used['alloyprice']),
-					'totalwidth'    => str_replace(",", "", $used['totalweight']),
-					'hargasatuan'   => str_replace(",", "", $used['hargasatuan']),
+					'fabcost'       => str_replace(",", "", $used['fabcost'] ?? ''),
+					'alloyprice'    => str_replace(",", "", $used['alloyprice'] ?? ''),
+					'totalwidth'    => str_replace(",", "", $used['totalweight'] ?? ''),
+					'hargasatuan'   => str_replace(",", "", $used['hargasatuan'] ?? ''),
 					'lebar'         => $used['lebar'],
-					'panjang'       => str_replace(",", "", $used['length']),
-					'diskon'        => str_replace(",", "", $used['diskon']),
-					'pajak'         => str_replace(",", "", $used['pajak']),
-					'jumlahharga'   => str_replace(",", "", $used['jumlahharga']),
-					'ppn'           => str_replace(",", "", $used['nilai_ppn']),
-					'ppn_persen'    => str_replace(",", "", $used['persen_ppn']),
-					'persen_disc'   => str_replace(",", "", $used['disc_persen']),
-					'nilai_disc'    => str_replace(",", "", $used['disc_num']),
-					'harga_total'   => str_replace(",", "", $used['totalharga']),
+					'panjang'       => str_replace(",", "", $used['length'] ?? ''),
+					'diskon'        => str_replace(",", "", $used['diskon'] ?? ''),
+					'pajak'         => str_replace(",", "", $used['pajak'] ?? ''),
+					'jumlahharga'   => str_replace(",", "", $used['jumlahharga'] ?? ''),
+					'ppn'           => str_replace(",", "", $used['nilai_ppn'] ?? ''),
+					'ppn_persen'    => str_replace(",", "", $used['persen_ppn'] ?? ''),
+					'persen_disc'   => str_replace(",", "", $used['disc_persen'] ?? ''),
+					'nilai_disc'    => str_replace(",", "", $used['disc_num'] ?? ''),
+					'harga_total'   => str_replace(",", "", $used['totalharga'] ?? ''),
 					'note'          => $used['note'],
-					'sisa_kuota'    => str_replace(",", "", $used['sisa_kuota']),
+					'sisa_kuota'    => str_replace(",", "", $used['sisa_kuota'] ?? ''),
 					'kode_barang'   => $used['kode_barang'],
 					'tipe'          => (!empty($used['tipe_pr'])) ? $used['tipe_pr'] : 'pr material'
 				);
@@ -2008,7 +2008,7 @@ class Purchase_order extends Admin_Controller
 						$lc = json_decode((string) $detail_lc[$i], true);
 						$lc['id_top'] = $id_top;
 						$lc['no_po']  = $code;
-						$lc['value_contract'] = str_replace(',', '', $lc['value_contract']);
+						$lc['value_contract'] = str_replace(',', '', $lc['value_contract'] ?? '');
 						$lc['created_by'] = $this->auth->user_id();
 						$lc['created_on'] = date('Y-m-d H:i:s');
 						$this->db->insert('tr_po_detail_lc', $lc);
@@ -2053,7 +2053,7 @@ class Purchase_order extends Admin_Controller
 
 					foreach ($post['dt'] as $used) {
 						$k = !empty($used['idmaterial']) ? $used['idmaterial'] : (!empty($used['idpr']) ? $used['idpr'] : '');
-						$item_name = !empty($used['namamaterial']) ? $used['namamaterial'] : (!empty($used['kode_barang']) ? $used['kode_barang'] : 'Barang');
+						$item_name = !empty($used['namamaterial']) ? $used['namamaterial'] : (!empty($used['kode_barang']) ? $used['kode_barang'] : 'Item');
 
 						if ($k && isset($old_by_id[$k])) {
 							$old_it = $old_by_id[$k];
@@ -2107,7 +2107,7 @@ class Purchase_order extends Admin_Controller
 		$tgl  = $post['tanggal'];
 		$code = $this->Pr_model->generate_code($tgl);
 		$no_surat = $this->Pr_model->BuatNomor($tgl);
-		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
+		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs'] ?? '') : 0;
 
 		$this->db->trans_begin();
 
@@ -2128,21 +2128,21 @@ class Purchase_order extends Admin_Controller
 			// 'note'				=> $post['note_ket'],
 			'no_pr'				=> $post['no_pr'],
 			'matauang'			=> $post['matauang'],
-			'total_include_ppn'	=> str_replace(',', '', $post['totalinppn']),
-			'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn']),
-			'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus']),
-			'hargatotal'		=> str_replace(',', '', $post['hargatotal']),
-			'diskontotal'		=> str_replace(',', '', $post['diskontotal']),
-			'taxtotal'			=> str_replace(',', '', $post['kirim']),
-			'subtotal'			=> str_replace(',', '', $post['subtotal']),
-			'total_ppn'			=> str_replace(',', '', $post['ppn']),
-			'total_barang'		=> str_replace(',', '', $post['hargatotal']),
+			'total_include_ppn'	=> str_replace(',', '', $post['totalinppn'] ?? ''),
+			'total_exclude_ppn'	=> str_replace(',', '', $post['totalexppn'] ?? ''),
+			'diskon_khusus'		=> str_replace(',', '', $post['diskonkhusus'] ?? ''),
+			'hargatotal'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
+			'diskontotal'		=> str_replace(',', '', $post['diskontotal'] ?? ''),
+			'taxtotal'			=> str_replace(',', '', $post['kirim'] ?? ''),
+			'subtotal'			=> str_replace(',', '', $post['subtotal'] ?? ''),
+			'total_ppn'			=> str_replace(',', '', $post['ppn'] ?? ''),
+			'total_barang'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
 			'status'			=> '1',
 			'revisi'			=> $revisi_baru,
 			'reject_reason'		=> '',
-			'total_ppn_persen'	=> str_replace(',', '', $post['persenppn']),
-			'persen_disc'		=> str_replace(',', '', $post['persendisc']),
-			'nilai_disc'		=> str_replace(',', '', $post['totaldisc']),
+			'total_ppn_persen'	=> str_replace(',', '', $post['persenppn'] ?? ''),
+			'persen_disc'		=> str_replace(',', '', $post['persendisc'] ?? ''),
+			'nilai_disc'		=> str_replace(',', '', $post['totaldisc'] ?? ''),
 			'id_dept'		 	=> implode(',', $post['dept'] ?? []),
 			'delivery_address' 	=> $post['delivery_address'],
 			'delivery_date' 	=> $post['delivery_date'],
@@ -2159,13 +2159,13 @@ class Purchase_order extends Admin_Controller
 			$dt =  array(
 				'description'			=> $used['description'],
 				'qty'					=> $used['qty'],
-				'hargasatuan'			=> str_replace(",", "", $used['hargasatuan']),
-				'jumlahharga'			=> str_replace(",", "", $used['jumlahharga']),
-				'ppn'					=> str_replace(",", "", $used['nilai_ppn']),
-				'ppn_persen'			=> str_replace(",", "", $used['persen_ppn']),
-				'persen_disc' 			=> str_replace(",", "", $used['disc_persen']),
-				'nilai_disc' 			=> str_replace(",", "", $used['disc_num']),
-				'harga_total'			=> str_replace(",", "", $used['totalharga']),
+				'hargasatuan'			=> str_replace(",", "", $used['hargasatuan'] ?? ''),
+				'jumlahharga'			=> str_replace(",", "", $used['jumlahharga'] ?? ''),
+				'ppn'					=> str_replace(",", "", $used['nilai_ppn'] ?? ''),
+				'ppn_persen'			=> str_replace(",", "", $used['persen_ppn'] ?? ''),
+				'persen_disc' 			=> str_replace(",", "", $used['disc_persen'] ?? ''),
+				'nilai_disc' 			=> str_replace(",", "", $used['disc_num'] ?? ''),
+				'harga_total'			=> str_replace(",", "", $used['totalharga'] ?? ''),
 				'note'					=> $used['note']
 			);
 
@@ -2232,7 +2232,7 @@ class Purchase_order extends Admin_Controller
 								'no_credit'         => $lc['no_credit'],
 								'issue_date'        => $lc['issue_date'],
 								'expiry_date'       => $lc['expiry_date'],
-								'value_contract'    => str_replace(',', '', $lc['value_contract']),
+								'value_contract'    => str_replace(',', '', $lc['value_contract'] ?? ''),
 								'tolerance_plus'    => $lc['tolerance_plus'],
 								'tolerance_minus'   => $lc['tolerance_minus'],
 								'type_of_lc'        => $lc['type_of_lc'],
@@ -2296,7 +2296,7 @@ class Purchase_order extends Admin_Controller
 			'no_surat'			=> $no_surat,
 			'id_suplier'		=> $post['id_suplier'],
 			'loi'				=> $post['loi'],
-			'nominal_kurs'		=> str_replace(',', '', $post['nominal_kurs']),
+			'nominal_kurs'		=> str_replace(',', '', $post['nominal_kurs'] ?? ''),
 			'tanggal'			=> $post['tanggal'],
 			'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 			'term'				=> $post['term'],
@@ -2304,10 +2304,10 @@ class Purchase_order extends Admin_Controller
 			'note'				=> $post['note_ket'],
 			'no_pr'				=> $post['no_pr'],
 			'matauang'			=> $post['matauang'],
-			'hargatotal'		=> str_replace(',', '', $post['hargatotal']),
-			'diskontotal'		=> str_replace(',', '', $post['diskontotal']),
-			'taxtotal'			=> str_replace(',', '', $post['taxtotal']),
-			'subtotal'			=> str_replace(',', '', $post['subtotal']),
+			'hargatotal'		=> str_replace(',', '', $post['hargatotal'] ?? ''),
+			'diskontotal'		=> str_replace(',', '', $post['diskontotal'] ?? ''),
+			'taxtotal'			=> str_replace(',', '', $post['taxtotal'] ?? ''),
+			'subtotal'			=> str_replace(',', '', $post['subtotal'] ?? ''),
 			'status'			=> '1',
 			'created_on'		=> date('Y-m-d H:i:s'),
 			'created_by'		=> $this->auth->user_id()
@@ -2326,17 +2326,17 @@ class Purchase_order extends Admin_Controller
 				'namamaterial'			=> $used['namamaterial'],
 				'description'			=> $used['description'],
 				'qty'					=> $used['qty'],
-				'width'					=> str_replace(",", "", $used['width']),
+				'width'					=> str_replace(",", "", $used['width'] ?? ''),
 				'rate_lme'				=> $used['ratelme'],
-				'fabcost'				=> str_replace(",", "", $used['fabcost']),
-				'alloyprice'			=> str_replace(",", "", $used['alloyprice']),
-				'totalwidth'			=> str_replace(",", "", $used['totalweight']),
-				'hargasatuan'			=> str_replace(",", "", $used['hargasatuan']),
+				'fabcost'				=> str_replace(",", "", $used['fabcost'] ?? ''),
+				'alloyprice'			=> str_replace(",", "", $used['alloyprice'] ?? ''),
+				'totalwidth'			=> str_replace(",", "", $used['totalweight'] ?? ''),
+				'hargasatuan'			=> str_replace(",", "", $used['hargasatuan'] ?? ''),
 				'lebar'					=> $used['lebar'],
-				'panjang'				=> str_replace(",", "", $used['length']),
-				'diskon'				=> str_replace(",", "", $used['diskon']),
-				'pajak'					=> str_replace(",", "", $used['pajak']),
-				'jumlahharga'			=> str_replace(",", "", $used['jumlahharga']),
+				'panjang'				=> str_replace(",", "", $used['length'] ?? ''),
+				'diskon'				=> str_replace(",", "", $used['diskon'] ?? ''),
+				'pajak'					=> str_replace(",", "", $used['pajak'] ?? ''),
+				'jumlahharga'			=> str_replace(",", "", $used['jumlahharga'] ?? ''),
 				'note'					=> $used['note'],
 			);
 			$this->db->insert('dt_trans_po', $dt);
@@ -2415,7 +2415,7 @@ class Purchase_order extends Admin_Controller
 			", [$no_po])->row();
 
 		if (!$header) {
-			show_error('PO tidak ditemukan: ' . $no_po, 404);
+			show_error('PO not found: ' . $no_po, 404);
 			return;
 		}
 
@@ -2783,7 +2783,7 @@ class Purchase_order extends Admin_Controller
 		$data['data_supplier'] = $this->db->get_where('new_supplier', ['kode_supplier' => $data['header'][0]->id_suplier])->row();
 
 		$nm_depart = [];
-		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $data['header'][0]->id_dept) . "')")->result();
+		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $data['header'][0]->id_dept ?? '') . "')")->result();
 		if (!empty($get_nm_depart)) {
 			foreach ($get_nm_depart as $item_depart) {
 				$nm_depart[] = strtoupper((string) $item_depart->nama);
@@ -3481,7 +3481,7 @@ class Purchase_order extends Admin_Controller
 											GROUP BY 
 												b.no_pr ")->result_array();
 
-		$option 	= "<option value='0'>Pilih PR</option>";
+		$option 	= "<option value='0'>Select PR</option>";
 		foreach ($data as $key => $value) {
 			$sel = ($npo == $value['no_pr']) ? 'selected' : '';
 			$option .= "<option value='" . $value['no_pr'] . "'>" . $value['no_surat'] . "</option>";
@@ -3809,7 +3809,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan j ON j.id = f.id_unit
 				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND
 				(a.tipe IS NULL OR a.tipe = 'pr material')
 			GROUP BY id
 
@@ -3849,7 +3849,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
 				LEFT JOIN ms_satuan f ON f.id = e.satuan
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr depart'
 
 			UNION ALL
@@ -3887,7 +3887,7 @@ class Purchase_order extends Admin_Controller
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr asset'
 			GROUP BY id
 		")->result();
@@ -3909,7 +3909,7 @@ class Purchase_order extends Admin_Controller
 
 		$nm_depart = [];
 		if (!empty($get_po->id_dept)) {
-			$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
+			$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept ?? '') . "')")->result();
 			if (!empty($get_nm_depart)) {
 				foreach ($get_nm_depart as $item_depart) {
 					$nm_depart[] = strtoupper((string) $item_depart->nama);
@@ -3933,7 +3933,7 @@ class Purchase_order extends Admin_Controller
 		];
 
 		$this->template->set('results', $data);
-		$this->template->title('Detail Purchase Order');
+		$this->template->title('Purchase Order Detail');
 		$this->template->render('view');
 	}
 

@@ -41,7 +41,7 @@ foreach ($results['header'] as $header) {
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="customer">Tanggal Dibutuhkan</label>
+										<label for="customer">Required Date</label>
 									</div>
 									<div class="col-md-8">
 										<?= date('d F Y', strtotime((string) $header->tgl_dibutuhkan)) ?>

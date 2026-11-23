@@ -34,7 +34,7 @@ class Production_weighing extends Admin_Controller
         $components = $this->Production_weighing_model->get_preweigh_component($preweigh_no);
 
         if (!$preweigh) {
-            $this->session->set_flashdata('error', 'Data timbang awal tidak ditemukan');
+            $this->session->set_flashdata('error', 'Initial weighing data not found');
             redirect('production_weighing');
         }
 
@@ -97,7 +97,7 @@ class Production_weighing extends Admin_Controller
         $no_coil = $this->input->get('no_coil');
 
         if (empty($no_coil)) {
-            echo json_encode(['status' => 'error', 'message' => 'No coil tidak boleh kosong']);
+            echo json_encode(['status' => 'error', 'message' => 'Coil No cannot be empty']);
             return;
         }
 
@@ -127,7 +127,7 @@ class Production_weighing extends Admin_Controller
         $spk_no  = $this->input->post('spk_no');
 
         if (empty($no_coil) || empty($spk_no)) {
-            $this->session->set_flashdata('error', 'No coil dan SPK wajib diisi');
+            $this->session->set_flashdata('error', 'Coil No and SPK are required');
             redirect('production_weighing/add');
             return;
         }

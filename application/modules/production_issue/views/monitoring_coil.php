@@ -8,14 +8,14 @@
                 <i class="fa fa-refresh"></i> Refresh
             </button>
             <a href="<?= base_url('production_issue') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
     </div>
     <div class="card-body">
         <div class="alert alert-info py-2 mb-3">
             <i class="fa fa-info-circle"></i>
-            Halaman ini menampilkan coil yang sedang berada di area produksi (status <strong>issued</strong>).
+            This page shows coils that are currently in the production area (status <strong>issued</strong>).
         </div>
 
         <div class="table-responsive">
@@ -27,10 +27,10 @@
                         <th>No SPK</th>
                         <th>Produk FG</th>
                         <th>Material</th>
-                        <th class="text-end">Berat Bersih (kg)</th>
+                        <th class="text-end">Net Weight (kg)</th>
                         <th>Lokasi Asal</th>
-                        <th>Lokasi Tujuan</th>
-                        <th class="text-center">Waktu Mutasi</th>
+                        <th>Destination Location</th>
+                        <th class="text-center">Mutation Time</th>
                         <th class="text-center">Status SPK</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -74,7 +74,7 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="<?= base_url('production_issue/histori_coil/' . urlencode((string) $c->no_coil)) ?>"
-                                       class="btn btn-xs btn-info" title="Lihat Histori">
+                                       class="btn btn-xs btn-info" title="View History">
                                         <i class="fa fa-history"></i>
                                     </a>
                                 </td>
@@ -84,7 +84,7 @@
                         <tr>
                             <td colspan="11" class="text-center text-muted py-4">
                                 <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
-                                Tidak ada coil di area produksi saat ini
+                                No coils in the production area at this time
                             </td>
                         </tr>
                     <?php endif; ?>
@@ -109,9 +109,9 @@ $(document).ready(function () {
         pageLength: 25,
         order: [[8, 'desc']], // Sort by waktu mutasi desc
         language: {
-            search: 'Cari:',
-            lengthMenu: 'Tampilkan _MENU_ data',
-            info: 'Menampilkan _START_ - _END_ dari _TOTAL_ coil',
+            search: 'Search:',
+            lengthMenu: 'Show _MENU_ entries',
+            info: 'Showing _START_ - _END_ of _TOTAL_ coils',
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',

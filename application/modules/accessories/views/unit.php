@@ -61,7 +61,7 @@
 <!-- page script -->
 <script type="text/javascript">
     $(document).on('click', '#add', function(){
-        $("#head_title").html("Tambah Unit");
+        $("#head_title").html("Add Unit");
         $.ajax({
             type:'POST',
             url: siteurl + 'material/add_unit',
@@ -90,13 +90,13 @@
         e.preventDefault();
         var id = $(this).data('id');
         swal({
-            title: "Anda Yakin?",
-            text: "Data Inventory akan di hapus.",
+            title: "Are you sure?",
+            text: "The inventory data will be deleted.",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
-            confirmButtonText: "Ya, Hapus!",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Delete!",
+            cancelButtonText: "Cancel",
             closeOnConfirm: false
         },
         function(isConfirm){
@@ -111,8 +111,8 @@
                 success:function(result){
                     if(result.status == '1'){
                         swal({
-                            title: "Sukses",
-                            text : "Data berhasil dihapus.",
+                            title: "Success",
+                            text : "Data deleted successfully.",
                             type : "success"
                         },
                         function (){
@@ -121,7 +121,7 @@
                     } else {
                         swal({
                             title : "Error",
-                            text  : "Data error. Gagal hapus data",
+                            text  : "Data error. Failed to delete data.",
                             type  : "error"
                         });
                     }
@@ -129,7 +129,7 @@
                 error : function(){
                     swal({
                         title : "Error",
-                        text  : "Data error. Gagal request Ajax",
+                        text  : "Data error. Ajax request failed.",
                         type  : "error"
                     });
                 }
@@ -142,13 +142,13 @@
         var data = $('#data_form').serialize();
 
         swal({
-            title: "Anda Yakin?",
-            text: "Data akan di simpan.",
+            title: "Are you sure?",
+            text: "The data will be saved.",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
-            confirmButtonText: "Ya, Simpan!",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Save!",
+            cancelButtonText: "Cancel",
             closeOnConfirm: false
         },
         function(isConfirm){
@@ -163,8 +163,8 @@
                 success:function(result){
                     if(result.status == '1'){
                         swal({
-                            title: "Sukses",
-                            text : "Data Inventory berhasil disimpan.",
+                            title: "Success",
+                            text : "Inventory data saved successfully.",
                             type : "success"
                         },
                         function (){
@@ -173,7 +173,7 @@
                     } else {
                         swal({
                             title : "Error",
-                            text  : "Data error. Gagal insert data",
+                            text  : "Data error. Failed to insert data.",
                             type  : "error"
                         });
                     }
@@ -181,7 +181,7 @@
                 error : function(){
                     swal({
                         title : "Error",
-                        text  : "Data error. Gagal request Ajax",
+                        text  : "Data error. Ajax request failed.",
                         type  : "error"
                     });
                 }

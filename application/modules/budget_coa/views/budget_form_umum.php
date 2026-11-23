@@ -32,7 +32,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                         Input Detail Budget Umum
                     </h5>
                     <small class="text-muted">
-                        Departemen: <strong><?= $dept_name ?></strong>, Tahun: <strong><?= $dataset['tahun'] ?></strong>
+                        Department: <strong><?= $dept_name ?></strong>, Tahun: <strong><?= $dataset['tahun'] ?></strong>
                     </small>
                 </div>
             </div>
@@ -40,7 +40,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
                     UMUM
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Tutup Formulir">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Close Form">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -57,22 +57,22 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
         <!-- Info Strip & Quick Filter -->
         <div class="row g-3 mb-4 align-items-center bg-light p-3 rounded-3 border">
             <div class="col-md-3 col-sm-6">
-                <small class="text-muted d-block fw-semibold">Tahun Anggaran</small>
+                <small class="text-muted d-block fw-semibold">Budget Year</small>
                 <div class="fw-bold font-monospace fs-6 text-dark mt-1">
                     <i class="fa fa-calendar me-1 text-primary"></i> <?= $dataset['tahun'] ?>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6">
-                <small class="text-muted d-block fw-semibold">Penanggung Jawab / Departemen</small>
+                <small class="text-muted d-block fw-semibold">Person in Charge / Department</small>
                 <div class="fw-bold fs-6 text-dark mt-1">
                     <i class="fa fa-building me-1 text-secondary"></i> <?= $dept_name ?>
                 </div>
             </div>
             <div class="col-md-5 col-sm-12">
-                <small class="text-muted d-block fw-semibold">Cari Akun COA Cepat</small>
+                <small class="text-muted d-block fw-semibold">Quick COA Account Search</small>
                 <div class="input-group input-group-sm mt-1">
                     <span class="input-group-text bg-white text-muted"><i class="fa fa-search"></i></span>
-                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Ketik kode / nama COA...">
+                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Type COA code / name...">
                 </div>
             </div>
         </div>
@@ -84,8 +84,8 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                     <tr class="small text-uppercase fw-semibold text-secondary text-nowrap">
                         <th width="40" class="text-center">#</th>
                         <th width="240">Akun COA</th>
-                        <th width="200">Jenis Alokasi</th>
-                        <th>Parameter Nilai / Alokasi Bulan</th>
+                        <th width="200">Allocation Type</th>
+                        <th>Value Parameter / Month Allocation</th>
                         <th width="260">Variabel Acuan COA</th>
                     </tr>
                 </thead>
@@ -176,7 +176,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                     ?>
                         <tr>
                             <td colspan="5" class="text-center py-4 text-muted">
-                                Tidak ada akun perkiraan budget umum yang ditemukan.
+                                No general budget accounts found.
                             </td>
                         </tr>
                     <?php } ?>
@@ -186,14 +186,14 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
 
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top">
             <div class="text-muted small">
-                <i class="fa fa-info-circle text-primary me-1"></i> Pilih jenis alokasi (*Fix Cost Bulanan*, *Fix Cost Tahunan*, atau *Variable*) kemudian tentukan nilai parameternya.
+                <i class="fa fa-info-circle text-primary me-1"></i> Select the allocation type (*Monthly Fixed Cost*, *Annual Fixed Cost*, or *Variable*), then set its parameter value.
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-outline-secondary px-3" onclick="cancel()">
-                    <i class="fa fa-arrow-left me-1"></i> Batal
+                    <i class="fa fa-arrow-left me-1"></i> Cancel
                 </button>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="btn_submit_umum">
-                    <i class="fa fa-save me-1"></i> Simpan Budget Umum
+                    <i class="fa fa-save me-1"></i> Save General Budget
                 </button>
             </div>
         </div>
@@ -267,14 +267,14 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
         e.preventDefault();
 
         Swal.fire({
-            title: "Simpan Budget Umum?",
-            text: "Pastikan seluruh parameter jenis biaya dan nilai alokasi sudah benar.",
+            title: "Save General Budget?",
+            text: "Make sure all cost type parameters and allocation values are correct.",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#0d6efd",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 var $btn = $("#btn_submit_umum");
@@ -282,7 +282,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
 
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyimpan data budget umum...',
+                    text: 'Saving general budget data...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -294,12 +294,12 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                     type: 'POST',
                     data: formdata,
                     success: function(msg) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Budget Umum');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save General Budget');
                         if (msg['save'] == true || msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data budget umum berhasil disimpan.",
+                                title: "Success!",
+                                text: "General budget data saved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -308,19 +308,19 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data budget umum gagal disimpan.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "General budget data failed to save.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
                     error: function(xhr, status, error) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Budget Umum');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save General Budget');
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

@@ -121,7 +121,7 @@ class Expense_petty_cash extends Admin_Controller
         ];
 
         $this->template->set($data);
-        $this->template->title('Tambah Pencatatan Petty Cash');
+        $this->template->title('Add Petty Cash Record');
         $this->template->render('pencatatan/form');
     }
 
@@ -142,14 +142,14 @@ class Expense_petty_cash extends Admin_Controller
         $pencatatan = $this->Expense_petty_cash_model->get_pencatatan($id);
 
         if (!$pencatatan) {
-            Template::set_message('Data pencatatan tidak ditemukan.', 'error');
+            Template::set_message('Record data not found.', 'error');
             redirect('expense_petty_cash');
             return;
         }
 
         // Validate status must be 'draft' or 'reject'
         if (!in_array($pencatatan->header->status, ['draft', 'reject'])) {
-            Template::set_message('Pencatatan dengan status "' . $pencatatan->header->status . '" tidak dapat diedit.', 'error');
+            Template::set_message('Records with status "' . $pencatatan->header->status . '" tidak dapat diedit.', 'error');
             redirect('expense_petty_cash');
             return;
         }
@@ -195,7 +195,7 @@ class Expense_petty_cash extends Admin_Controller
         $pencatatan = $this->Expense_petty_cash_model->get_pencatatan($id);
 
         if (!$pencatatan) {
-            Template::set_message('Data pencatatan tidak ditemukan.', 'error');
+            Template::set_message('Record data not found.', 'error');
             redirect('expense_petty_cash');
             return;
         }
@@ -221,7 +221,7 @@ class Expense_petty_cash extends Admin_Controller
         ];
 
         $this->template->set($data);
-        $this->template->title('Detail Pencatatan Petty Cash');
+        $this->template->title('Petty Cash Record Detail');
         $this->template->render('pencatatan/view');
     }
 
@@ -293,7 +293,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->addPermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk membuat pelaporan'
+                'message' => 'You do not have access to create reports'
             ]);
             return;
         }
@@ -305,7 +305,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($pencatatan_ids) || !is_array($pencatatan_ids)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Minimal satu pencatatan harus dipilih untuk membuat pelaporan'
+                'message' => 'At least one record must be selected to create a report'
             ]);
             return;
         }
@@ -319,7 +319,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($pencatatan_ids)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'ID pencatatan tidak valid'
+                'message' => 'Invalid record ID'
             ]);
             return;
         }
@@ -336,7 +336,7 @@ class Expense_petty_cash extends Admin_Controller
         if (count($pencatatan_records ?? []) !== count($pencatatan_ids ?? [])) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Beberapa pencatatan tidak ditemukan'
+                'message' => 'Some records were not found'
             ]);
             return;
         }
@@ -352,7 +352,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!empty($non_draft)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Pencatatan dengan status selain "draft" tidak dapat dimasukkan ke pelaporan'
+                'message' => 'Records with a status other than "draft" cannot be added to a report'
             ]);
             return;
         }
@@ -374,7 +374,7 @@ class Expense_petty_cash extends Admin_Controller
 
             echo json_encode([
                 'status'  => false,
-                'message' => 'Pencatatan berikut sudah masuk dalam pelaporan aktif: ' . implode(', ', $existing_ids ?? [])
+                'message' => 'The following records are already in an active report: ' . implode(', ', $existing_ids ?? [])
             ]);
             return;
         }
@@ -389,7 +389,7 @@ class Expense_petty_cash extends Admin_Controller
         if (count($companies ?? []) > 1) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Pelaporan hanya dapat berisi pencatatan dari satu company yang sama'
+                'message' => 'A report can only contain records from the same company'
             ]);
             return;
         }
@@ -402,7 +402,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!$same_week) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Pelaporan hanya dapat berisi pencatatan dari minggu yang sama'
+                'message' => 'A report can only contain records from the same week'
             ]);
             return;
         }
@@ -427,7 +427,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($pelaporan_id === false) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Gagal membuat pelaporan. Silakan coba lagi.'
+                'message' => 'Failed to create the report. Please try again.'
             ]);
             return;
         }
@@ -435,7 +435,7 @@ class Expense_petty_cash extends Admin_Controller
         // Return success with redirect URL to view pelaporan
         echo json_encode([
             'status'      => true,
-            'message'     => 'Pelaporan berhasil dibuat',
+            'message'     => 'Report created successfully',
             'redirect_url' => site_url('expense_petty_cash/view_pelaporan/' . $pelaporan_id),
         ]);
     }
@@ -456,7 +456,7 @@ class Expense_petty_cash extends Admin_Controller
         $pelaporan = $this->Expense_petty_cash_pelaporan_model->get_pelaporan($id);
 
         if (!$pelaporan) {
-            Template::set_message('Data pelaporan tidak ditemukan.', 'error');
+            Template::set_message('Report data not found.', 'error');
             redirect('expense_petty_cash/pelaporan');
             return;
         }
@@ -492,7 +492,7 @@ class Expense_petty_cash extends Admin_Controller
         ];
 
         $this->template->set($data);
-        $this->template->title('Detail Pelaporan Petty Cash');
+        $this->template->title('Petty Cash Report Detail');
         $this->template->render('pelaporan/view');
     }
 
@@ -513,14 +513,14 @@ class Expense_petty_cash extends Admin_Controller
         $pelaporan = $this->Expense_petty_cash_pelaporan_model->get_pelaporan($id);
 
         if (!$pelaporan) {
-            Template::set_message('Data pelaporan tidak ditemukan.', 'error');
+            Template::set_message('Report data not found.', 'error');
             redirect('expense_petty_cash/pelaporan');
             return;
         }
 
         // Only draft pelaporan can be confirmed/submitted
         if ($pelaporan->header->status !== 'draft') {
-            Template::set_message('Hanya pelaporan berstatus "draft" yang dapat diajukan.', 'error');
+            Template::set_message('Only reports with status "draft" can be submitted.', 'error');
             redirect('expense_petty_cash/pelaporan');
             return;
         }
@@ -558,7 +558,7 @@ class Expense_petty_cash extends Admin_Controller
         ];
 
         $this->template->set($data);
-        $this->template->title('Konfirmasi Pelaporan Petty Cash');
+        $this->template->title('Confirm Petty Cash Report');
         $this->template->render('pelaporan/confirm');
     }
 
@@ -577,7 +577,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->addPermission) && !has_permission($this->managePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk mengajukan pelaporan'
+                'message' => 'You do not have access to submit reports'
             ]);
             return;
         }
@@ -586,7 +586,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($id)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'ID pelaporan tidak valid'
+                'message' => 'Invalid report ID'
             ]);
             return;
         }
@@ -600,7 +600,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!$pelaporan) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Data pelaporan tidak ditemukan'
+                'message' => 'Report data not found'
             ]);
             return;
         }
@@ -608,7 +608,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($pelaporan->status !== 'draft') {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Hanya pelaporan berstatus "draft" yang dapat diajukan'
+                'message' => 'Only reports with status "draft" can be submitted'
             ]);
             return;
         }
@@ -619,14 +619,14 @@ class Expense_petty_cash extends Admin_Controller
         if (!$result) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Gagal mengajukan pelaporan. Silakan coba lagi.'
+                'message' => 'Failed to submit the report. Please try again.'
             ]);
             return;
         }
 
         echo json_encode([
             'status'  => true,
-            'message' => 'Pelaporan berhasil diajukan untuk approval'
+            'message' => 'Report submitted for approval successfully'
         ]);
     }
 
@@ -753,14 +753,14 @@ class Expense_petty_cash extends Admin_Controller
         $pelaporan = $this->Expense_petty_cash_pelaporan_model->get_pelaporan($id);
 
         if (!$pelaporan) {
-            Template::set_message('Data pelaporan tidak ditemukan.', 'error');
+            Template::set_message('Report data not found.', 'error');
             redirect('expense_petty_cash/approval');
             return;
         }
 
         // Validate current user is the designated approver (or approver is unassigned)
         if (!empty($pelaporan->header->approver_id) && (int) $pelaporan->header->approver_id !== (int) $current_user_id) {
-            Template::set_message('Anda tidak memiliki akses untuk mereview pelaporan ini.', 'error');
+            Template::set_message('You do not have access to review this report.', 'error');
             redirect('expense_petty_cash/approval');
             return;
         }
@@ -822,7 +822,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->approvePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk melakukan approval'
+                'message' => 'You do not have access to approve'
             ]);
             return;
         }
@@ -831,7 +831,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($id)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'ID pelaporan tidak valid'
+                'message' => 'Invalid report ID'
             ]);
             return;
         }
@@ -844,14 +844,14 @@ class Expense_petty_cash extends Admin_Controller
         if (!$result) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Gagal melakukan approval. Pastikan pelaporan berstatus waiting dan Anda adalah approver yang ditunjuk.'
+                'message' => 'Failed to approve. Make sure the report has status waiting and you are the assigned approver.'
             ]);
             return;
         }
 
         echo json_encode([
             'status'  => true,
-            'message' => 'Pelaporan berhasil diapprove'
+            'message' => 'Report approved successfully'
         ]);
     }
 
@@ -870,7 +870,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->approvePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk melakukan reject'
+                'message' => 'You do not have access to reject'
             ]);
             return;
         }
@@ -879,7 +879,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($id)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'ID pelaporan tidak valid'
+                'message' => 'Invalid report ID'
             ]);
             return;
         }
@@ -891,7 +891,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($alasan)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Alasan reject wajib diisi'
+                'message' => 'Reject reason is required'
             ]);
             return;
         }
@@ -902,7 +902,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($alasan_length < 10) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Alasan reject wajib diisi minimal 10 karakter'
+                'message' => 'Reject reason is required minimal 10 karakter'
             ]);
             return;
         }
@@ -910,7 +910,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($alasan_length > 500) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Alasan reject maksimal 500 karakter'
+                'message' => 'The reject reason is limited to 500 characters'
             ]);
             return;
         }
@@ -923,14 +923,14 @@ class Expense_petty_cash extends Admin_Controller
         if (!$result) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Gagal melakukan reject. Pastikan pelaporan berstatus waiting dan Anda adalah approver yang ditunjuk.'
+                'message' => 'Failed to reject. Make sure the report has status waiting and you are the assigned approver.'
             ]);
             return;
         }
 
         echo json_encode([
             'status'  => true,
-            'message' => 'Pelaporan berhasil direject'
+            'message' => 'Report rejected successfully'
         ]);
     }
 
@@ -951,7 +951,7 @@ class Expense_petty_cash extends Admin_Controller
         $pelaporan = $this->Expense_petty_cash_pelaporan_model->get_pelaporan($id);
 
         if (!$pelaporan) {
-            Template::set_message('Data pelaporan tidak ditemukan.', 'error');
+            Template::set_message('Report data not found.', 'error');
             redirect('expense_petty_cash/pelaporan');
             return;
         }
@@ -1022,7 +1022,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!$budget_info) {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Data budget tidak ditemukan'
+                'message' => 'Budget data not found'
             ]);
             return;
         }
@@ -1154,7 +1154,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->addPermission) && !has_permission($this->managePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk upload file'
+                'message' => 'You do not have access to upload files'
             ]);
             return;
         }
@@ -1163,7 +1163,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($_FILES['evidence_file']['name'])) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Tidak ada file yang diupload'
+                'message' => 'No uploaded files'
             ]);
             return;
         }
@@ -1178,7 +1178,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!in_array($extension, $allowed_types ?? [])) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Format file tidak valid. Hanya diizinkan: png, jpg, pdf, xlsx, xls'
+                'message' => 'Invalid file format. Only allowed: png, jpg, pdf, xlsx, xls'
             ]);
             return;
         }
@@ -1187,7 +1187,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($file_size > 5242880) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Ukuran file melebihi batas maksimal 5 MB'
+                'message' => 'The file size exceeds the 5 MB limit'
             ]);
             return;
         }
@@ -1246,13 +1246,13 @@ class Expense_petty_cash extends Admin_Controller
     {
         // Check permission
         if (!has_permission($this->deletePermission)) {
-            echo json_encode(['status' => 0, 'msg' => 'Anda tidak memiliki akses untuk menghapus data.']);
+            echo json_encode(['status' => 0, 'msg' => 'You do not have access to delete data.']);
             return;
         }
 
         // Validate ID is provided
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'msg' => 'ID pencatatan tidak valid.']);
+            echo json_encode(['status' => 0, 'msg' => 'Invalid record ID.']);
             return;
         }
 
@@ -1277,7 +1277,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->addPermission) && !has_permission($this->managePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk menyimpan data'
+                'message' => 'You do not have access to save data'
             ]);
             return;
         }
@@ -1300,19 +1300,19 @@ class Expense_petty_cash extends Admin_Controller
         // Validate company
         $valid_companies = ['STM', 'VUCA', 'SUSTAIN'];
         if (empty($company) || !in_array($company, $valid_companies ?? [])) {
-            $errors['company'] = 'Company wajib dipilih (STM, VUCA, atau SUSTAIN)';
+            $errors['company'] = 'A company is required (STM, VUCA, or SUSTAIN)';
         }
 
         // Validate request_by
         if (empty(trim((string) $request_by))) {
-            $errors['request_by'] = 'Request By wajib diisi';
+            $errors['request_by'] = 'Request By is required';
         } elseif (strlen((string) $request_by) > 100) {
-            $errors['request_by'] = 'Request By maksimal 100 karakter';
+            $errors['request_by'] = 'Request By is limited to 100 characters';
         }
 
         // Validate at least 1 detail row
         if (empty($details_post) || !is_array($details_post) || count($details_post ?? []) === 0) {
-            $errors['details'] = 'Detail item harus diisi minimal 1 baris';
+            $errors['details'] = 'Item detail requires at least 1 row';
         } else {
             // Validate each detail row
             foreach ($details_post as $idx => $item) {
@@ -1321,15 +1321,15 @@ class Expense_petty_cash extends Admin_Controller
                 $nominal = isset($item['nominal']) ? (int) $item['nominal'] : 0;
 
                 if ($jumlah <= 0) {
-                    $errors['details_' . $idx . '_jumlah'] = "Baris {$row_num}: Jumlah harus lebih besar dari 0";
+                    $errors['details_' . $idx . '_jumlah'] = "Row {$row_num}: Quantity must be greater than 0";
                 }
                 if ($nominal <= 0) {
-                    $errors['details_' . $idx . '_nominal'] = "Baris {$row_num}: Nominal harus lebih besar dari 0";
+                    $errors['details_' . $idx . '_nominal'] = "Row {$row_num}: Amount must be greater than 0";
                 }
 
                 // Validasi evidence wajib diupload
                 if (empty($evidences_post[$idx]) || !is_array($evidences_post[$idx]) || count($evidences_post[$idx] ?? []) === 0) {
-                    $errors['details_' . $idx . '_evidence'] = "Baris {$row_num}: Evidence wajib diupload";
+                    $errors['details_' . $idx . '_evidence'] = "Row {$row_num}: Evidence must be uploaded";
                 }
             }
         }
@@ -1338,7 +1338,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!empty($errors)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Validasi gagal. Silakan periksa kembali data Anda.',
+                'message' => 'Validation failed. Please check your data again.',
                 'errors'  => $errors
             ]);
             return;
@@ -1354,7 +1354,7 @@ class Expense_petty_cash extends Admin_Controller
             if ($no_pencatatan === false) {
                 echo json_encode([
                     'status'  => false,
-                    'message' => 'Kapasitas nomor urut tahun ini telah habis (maks 9999). Tidak dapat menyimpan data baru.'
+                    'message' => 'This year\'s sequence number capacity is used up (max 9999). New data cannot be saved.'
                 ]);
                 return;
             }
@@ -1419,7 +1419,7 @@ class Expense_petty_cash extends Admin_Controller
         if ($result === false) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Gagal menyimpan data. Silakan coba lagi.'
+                'message' => 'Failed to save data. Please try again.'
             ]);
             return;
         }
@@ -1438,12 +1438,12 @@ class Expense_petty_cash extends Admin_Controller
         // =====================================================================
         $response = [
             'status'  => true,
-            'message' => 'Data berhasil disimpan',
+            'message' => 'Data saved successfully',
         ];
 
         // Add warning if journal failed
         if (!$journal_result['success']) {
-            $response['warning'] = 'Jurnal gagal disinkronisasi. Dapat di-retry melalui tombol Retry Jurnal.';
+            $response['warning'] = 'The journal failed to sync. It can be retried with the Retry Journal button.';
         }
 
         echo json_encode($response);
@@ -1464,7 +1464,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->managePermission)) {
             echo json_encode([
                 'status'  => '0',
-                'message' => 'Anda tidak memiliki akses untuk melakukan retry jurnal'
+                'message' => 'You do not have access to retry the journal'
             ]);
             return;
         }
@@ -1473,7 +1473,7 @@ class Expense_petty_cash extends Admin_Controller
         if (empty($id)) {
             echo json_encode([
                 'status'  => '0',
-                'message' => 'ID pencatatan tidak valid'
+                'message' => 'Invalid record ID'
             ]);
             return;
         }
@@ -1484,12 +1484,12 @@ class Expense_petty_cash extends Admin_Controller
         if ($result) {
             echo json_encode([
                 'status'  => '1',
-                'message' => 'Jurnal berhasil disinkronisasi'
+                'message' => 'Journal synced successfully'
             ]);
         } else {
             echo json_encode([
                 'status'  => '0',
-                'message' => 'Jurnal gagal disinkronisasi. Pastikan pencatatan memiliki status jurnal "failed" dan coba lagi nanti.'
+                'message' => 'The journal failed to sync. Make sure the record has journal status "failed" and try again later.'
             ]);
         }
     }
@@ -1510,7 +1510,7 @@ class Expense_petty_cash extends Admin_Controller
         if (!has_permission($this->addPermission) && !has_permission($this->managePermission)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'Anda tidak memiliki akses untuk menghapus file'
+                'message' => 'You do not have access to delete files'
             ]);
             return;
         }
@@ -1553,14 +1553,14 @@ class Expense_petty_cash extends Admin_Controller
         if (!$evidence && empty($encrypted_name)) {
             echo json_encode([
                 'status'  => false,
-                'message' => 'File tidak ditemukan'
+                'message' => 'File not found'
             ]);
             return;
         }
 
         echo json_encode([
             'status'  => true,
-            'message' => 'File berhasil dihapus'
+            'message' => 'File deleted successfully'
         ]);
     }
 }

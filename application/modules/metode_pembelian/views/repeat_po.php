@@ -258,7 +258,7 @@ $this->load->view('include/side_menu');
 		
 		swal({
 			  title: "Are you sure?",
-			  text: "Semua barang akan menjadi PR baru ...",
+			  text: "All items will become a new PR.",
 			  type: "warning",
 			  showCancelButton: true,
 			  confirmButtonClass: "btn-danger",
@@ -331,7 +331,7 @@ $this->load->view('include/side_menu');
 		
 		swal({
 		  title: "Are you sure?",
-		  text: "Barang yang di checklist akan menjadi RFQ baru ...",
+		  text: "Checked items will become a new RFQ.",
 		  type: "warning",
 		  showCancelButton: true,
 		  confirmButtonClass: "btn-danger",
@@ -405,7 +405,7 @@ $this->load->view('include/side_menu');
 		
 		swal({
 		  title: "Are you sure?",
-		  text: "Barang akan di hapus ...",
+		  text: "The item will be deleted.",
 		  type: "warning",
 		  showCancelButton: true,
 		  confirmButtonClass: "btn-danger",

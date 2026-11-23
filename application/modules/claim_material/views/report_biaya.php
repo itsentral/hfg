@@ -53,12 +53,12 @@
   <div class="cl-page-header">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h1 class="h5 fw-bold mb-1">Report Biaya Kompensasi vs Biaya Scrap</h1>
-        <p class="text-muted small mb-0">Beban yang tetap ditanggung <?= html_escape(get_company_code()) ?> setelah kompensasi (Debit Note) dan setelah Jual Material (Biaya Scrap yang diakui) atas material yang di-claim (FR-87).</p>
+        <h1 class="h5 fw-bold mb-1">Compensation Cost vs Scrap Cost Report</h1>
+        <p class="text-muted small mb-0">Cost still borne <?= html_escape(get_company_code()) ?> after compensation (Debit Note) and after Sell Material (recognized Scrap Cost) on the claimed materials (FR-87).</p>
       </div>
       <div>
         <a href="<?= site_url('claim_material') ?>" class="btn btn-outline-primary btn-sm">
-          <i class="fa fa-envelope-o me-1"></i> Ke Daftar Claim Material
+          <i class="fa fa-envelope-o me-1"></i> Ke Material Claim List
         </a>
       </div>
     </div>
@@ -69,16 +69,16 @@
       <table class="table cl-table">
         <thead>
           <tr>
-            <th>Jenis</th>
+            <th>Type</th>
             <th>No. Claim</th>
-            <th>Nama Supplier</th>
-            <th>Nama Material</th>
+            <th>Supplier Name</th>
+            <th>Material Name</th>
             <th>No. Coil Packing List</th>
             <th>Asal</th>
-            <th class="text-end">Berat (Kg)</th>
-            <th class="text-end">Biaya Material (Rp)</th>
-            <th class="text-end">Nilai Debit Note (Rp)</th>
-            <th class="text-end">Nilai Material KW (Rp)</th>
+            <th class="text-end">Weight (Kg)</th>
+            <th class="text-end">Material Cost (Rp)</th>
+            <th class="text-end">Debit Note Value (Rp)</th>
+            <th class="text-end">KW Material Value (Rp)</th>
             <th class="text-end">Beban Ditanggung <?= html_escape(get_company_code()) ?> (Rp)</th>
             <th>Akun Beban</th>
           </tr>
@@ -121,7 +121,7 @@
           ?>
             <tr>
               <td colspan="12" class="text-center py-4 text-muted">
-                Belum ada data claim berjalur Kompensasi (Debit Note atau Jual Material).
+                There is no claim data on the Compensation path (Debit Note or Sell Material) yet.
               </td>
             </tr>
           <?php endif; ?>
@@ -142,7 +142,7 @@
     </div>
 
     <p class="text-muted small mt-3 mb-0">
-      * <b>Beban Ditanggung <?= html_escape(get_company_code()) ?></b>: untuk Debit Note = Biaya Material &minus; Nilai Kompensasi (tanpa PPN); untuk Jual Material = Biaya Scrap yang diakui (Biaya Material &minus; Material KW). Retur dan Lanjut Produksi tidak ditampilkan karena tidak mengakui kompensasi atau kerugian (keputusan user 2026-10-28, G5). Biaya material = Berat &times; Harga Beli/Kg.
+      * <b>Cost Borne by <?= html_escape(get_company_code()) ?></b>: for Debit Note = Material Cost &minus; Compensation Value (excluding VAT); for Sell Material = recognized Scrap Cost (Material Cost &minus; KW Material). Return and Continue Production are not shown because they do not recognize compensation or loss (user decision 2026-10-28, G5). Material cost = Weight &times; Purchase Price/Kg.
     </p>
   </div>
 </div>

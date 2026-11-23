@@ -67,7 +67,7 @@
             &#128438; Cetak Surat Jalan
         </button>
         <a href="javascript:window.close()" style="margin-left:10px; padding:8px 20px; background:#666; color:#fff; text-decoration:none; border-radius:4px;">
-            Tutup
+            Close
         </a>
     </div>
 
@@ -98,11 +98,11 @@
                     <td>: <?= $do->do_no ?></td>
                 </tr>
                 <tr>
-                    <td>Tanggal</td>
+                    <td>Date</td>
                     <td>: <?= date('d/m/Y', strtotime((string) $do->tgl_delivery)) ?></td>
                 </tr>
                 <tr>
-                    <td>Tgl Cetak</td>
+                    <td>Print Date</td>
                     <td>: <?= date('d/m/Y H:i') ?></td>
                 </tr>
             </table>
@@ -115,7 +115,7 @@
                 </tr>
                 <?php if ($do->keterangan): ?>
                 <tr>
-                    <td>Keterangan</td>
+                    <td>Description</td>
                     <td>: <?= htmlspecialchars((string) $do->keterangan) ?></td>
                 </tr>
                 <?php endif; ?>
@@ -128,10 +128,10 @@
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th width="35%">Kode Produk</th>
-                <th width="30%">Nama Produk</th>
+                <th width="35%">Product Code</th>
+                <th width="30%">Product Name</th>
                 <th width="15%">Qty</th>
-                <th width="15%">Est. Berat (kg)</th>
+                <th width="15%">Est. Weight (kg)</th>
             </tr>
         </thead>
         <tbody>
@@ -158,11 +158,11 @@
     <div class="weight-summary">
         <table>
             <tr>
-                <td>Total Estimasi Berat</td>
+                <td>Total Estimated Weight</td>
                 <td>: <?= number_format((float) $total_estimasi, 3) ?> kg</td>
                 <td width="10%"></td>
                 <?php if ($berat_aktual !== null): ?>
-                <td style="font-weight:bold;">Berat Aktual Timbang</td>
+                <td style="font-weight:bold;">Actual Weighed Weight</td>
                 <td>: <?= number_format((float) $berat_aktual, 3) ?> kg</td>
                 <?php endif; ?>
             </tr>
@@ -173,22 +173,22 @@
     <div class="signature-section">
         <div class="signature-box">
             <div class="sign-area"></div>
-            <p><strong>Dibuat Oleh</strong></p>
+            <p><strong>Created By</strong></p>
             <p><?= isset($do->nama_created_by) ? $do->nama_created_by : '_______________' ?></p>
         </div>
         <div class="signature-box">
             <div class="sign-area"></div>
-            <p><strong>Pengirim</strong></p>
+            <p><strong>Sender</strong></p>
             <p>_______________</p>
         </div>
         <div class="signature-box">
             <div class="sign-area"></div>
-            <p><strong>Disetujui Oleh</strong></p>
+            <p><strong>Approved By</strong></p>
             <p><?= isset($do->nama_approved_by) && $do->nama_approved_by ? $do->nama_approved_by : '_______________' ?></p>
         </div>
         <div class="signature-box">
             <div class="sign-area"></div>
-            <p><strong>Penerima</strong></p>
+            <p><strong>Receiver</strong></p>
             <p>_______________</p>
         </div>
     </div>

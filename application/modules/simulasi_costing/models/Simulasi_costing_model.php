@@ -300,12 +300,12 @@ class Simulasi_costing_model extends CI_Model
 
         // 3. Cek Kekurangan Data
         $gaps = [];
-        if ($bpm <= 0) $gaps[] = 'Berat/Meter ≤ 0';
-        if (!isset($man_hour_map[$cat_code]) || $man_hour_map[$cat_code] <= 0) $gaps[] = 'Flow Process / Cycletime belum ada';
-        if (!isset($bpk_foh_map[$cat_code])) $gaps[] = 'Rate BPK & FOH belum diset';
-        if (!isset($borong_map[$cat_code])) $gaps[] = 'Rate Borongan Helper belum diset';
-        if (!isset($nego_map[$cat_code])) $gaps[] = 'Negotiation Allowance belum diset';
-        if ($pr_usd <= 0) $gaps[] = 'Price Reference belum ada';
+        if ($bpm <= 0) $gaps[] = 'Weight/Meter ≤ 0';
+        if (!isset($man_hour_map[$cat_code]) || $man_hour_map[$cat_code] <= 0) $gaps[] = 'Flow Process / Cycletime not available yet';
+        if (!isset($bpk_foh_map[$cat_code])) $gaps[] = 'BPK & FOH Rate not set';
+        if (!isset($borong_map[$cat_code])) $gaps[] = 'Rate Borongan Helper not set';
+        if (!isset($nego_map[$cat_code])) $gaps[] = 'Negotiation Allowance not set';
+        if ($pr_usd <= 0) $gaps[] = 'No Price Reference yet';
 
         // 4. Material Cost
         $material_meter = $pr_idr * $bpm;
@@ -654,14 +654,14 @@ class Simulasi_costing_model extends CI_Model
         }
 
         if (!$target) {
-            return ['status' => 0, 'pesan' => 'Varian BOM tidak ditemukan'];
+            return ['status' => 0, 'pesan' => 'BOM variant not found'];
         }
 
         if (!$target->is_lengkap) {
             $gaps_text = implode(', ', $target->gaps ?? []);
             return [
                 'status' => 0,
-                'pesan'  => "Tidak dapat mengajukan ke Draft Pricelist karena parameter belum lengkap: {$gaps_text}."
+                'pesan'  => "Cannot submit to the Draft Pricelist because the parameters are incomplete: {$gaps_text}."
             ];
         }
 
@@ -693,10 +693,10 @@ class Simulasi_costing_model extends CI_Model
         }
         $exists = $this->db->get('pricelist_detail')->row();
 
-        $label_item = !empty($target->no_uniq_id) ? "Varian {$target->no_uniq_id} ({$target->nm_product})" : $target->nm_product;
+        $label_item = !empty($target->no_uniq_id) ? "Variant {$target->no_uniq_id} ({$target->nm_product})" : $target->nm_product;
 
         if ($exists) {
-            return ['status' => 0, 'pesan' => "{$label_item} sudah ada di Draft Pricelist {$pl_no}."];
+            return ['status' => 0, 'pesan' => "{$label_item} is already in Draft Pricelist {$pl_no}."];
         }
 
         // Ambil snapshot id_product_costing_detail jika ada
@@ -724,7 +724,7 @@ class Simulasi_costing_model extends CI_Model
 
         return [
             'status' => 1,
-            'pesan'  => "{$label_item} berhasil dimasukkan ke Draft Pricelist {$pl_no}.",
+            'pesan'  => "{$label_item} added to Draft Pricelist {$pl_no}.",
             'no_pl'  => $pl_no,
         ];
     }

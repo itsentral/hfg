@@ -69,12 +69,12 @@
   <div class="cl-page-header">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h1 class="h5 fw-bold mb-1">Material Dijual &mdash; Gudang Slitting</h1>
-        <p class="text-muted small mb-0">Daftar baca material hasil claim yang diputuskan <b>Jual Material</b> (Inventory Material Khusus Dijual, FR-81, FR-96).</p>
+        <h1 class="h5 fw-bold mb-1">Material Sold &mdash; Slitting Warehouse</h1>
+        <p class="text-muted small mb-0">Read-only list of materials from decided claims <b>Jual Material</b> (Inventory Material Khusus Dijual, FR-81, FR-96).</p>
       </div>
       <div>
         <a href="<?= site_url('claim_material') ?>" class="btn btn-outline-primary btn-sm">
-          <i class="fa fa-envelope-o me-1"></i> Ke Daftar Claim Material
+          <i class="fa fa-envelope-o me-1"></i> Ke Material Claim List
         </a>
       </div>
     </div>
@@ -84,15 +84,15 @@
   <div class="cl-summary-cards">
     <div class="cl-stat-card">
       <div class="val text-primary" id="statSlitRows">0</div>
-      <div class="lbl">Baris Material Khusus Dijual</div>
+      <div class="lbl">Material Rows for Sale</div>
     </div>
     <div class="cl-stat-card">
       <div class="val text-dark" id="statSlitKg">0.00 Kg</div>
-      <div class="lbl">Total Berat Material</div>
+      <div class="lbl">Total Material Weight</div>
     </div>
     <div class="cl-stat-card">
       <div class="val text-success" id="statSlitNilai">Rp 0</div>
-      <div class="lbl">Total Nilai Material</div>
+      <div class="lbl">Total Material Value</div>
     </div>
   </div>
 
@@ -103,15 +103,15 @@
         <thead>
           <tr>
             <th width="40">No</th>
-            <th>Tgl Masuk</th>
+            <th>Entry Date</th>
             <th>No. Claim</th>
-            <th>Nama Supplier</th>
-            <th>Nama Material</th>
+            <th>Supplier Name</th>
+            <th>Material Name</th>
             <th>No. Coil Packing List</th>
-            <th class="text-end">Berat (Kg)</th>
-            <th class="text-end">Nilai Material (Rp)</th>
-            <th class="text-end">Nilai Material KW (Rp)</th>
-            <th class="text-end">Nilai Biaya Scrap (Rp)</th>
+            <th class="text-end">Weight (Kg)</th>
+            <th class="text-end">Material Value (Rp)</th>
+            <th class="text-end">KW Material Value (Rp)</th>
+            <th class="text-end">Scrap Cost Value (Rp)</th>
           </tr>
         </thead>
         <tbody id="slitTableBody">
@@ -138,7 +138,7 @@
       .then(res => {
         const tbody = document.getElementById('slitTableBody');
         if (!res.status || !res.data || !res.data.length) {
-          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">Belum ada material dijual. Baris muncul otomatis saat Process Decision memilih Kompensasi &rarr; Jual Material.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">No materials sold yet. Rows appear automatically when the Process Decision selects Compensation &rarr; Sell Material.</td></tr>';
           document.getElementById('statSlitRows').textContent = '0';
           document.getElementById('statSlitKg').textContent = '0.00 Kg';
           document.getElementById('statSlitNilai').textContent = 'Rp 0';
@@ -178,7 +178,7 @@
         document.getElementById('statSlitNilai').textContent = `Rp ${formatNum(totNilai, 2)}`;
       })
       .catch(err => {
-        document.getElementById('slitTableBody').innerHTML = '<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data</td></tr>';
+        document.getElementById('slitTableBody').innerHTML = '<tr><td colspan="10" class="text-center py-4 text-danger">Failed to load data</td></tr>';
       });
   }
 

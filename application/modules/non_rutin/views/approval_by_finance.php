@@ -19,11 +19,11 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Department_Finance.Delete');
 					<tr>
 						<th class="text-center" width="4%">#</th>
 						<th class="text-center">No PR</th>
-						<th class="text-center">Departemen</th>
-						<th class="text-center no-sort">Keterangan</th>
+						<th class="text-center">Department</th>
+						<th class="text-center no-sort">Description</th>
 						<th class="text-center no-sort">PIC</th>
 						<th class="text-center no-sort">Created Date</th>
-						<th class="text-center no-sort">Nama Pembuat PR</th>
+						<th class="text-center no-sort">PR Creator Name</th>
 						<th class="text-center no-sort">Tgl Dibuat PR</th>
 						<th class="text-center no-sort" width="10%">Tingkat PR</th>
 						<th class="text-center no-sort" width="12%">Status</th>

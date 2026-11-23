@@ -13,7 +13,7 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 					<tr>
 						<th class="text-center">#</th>
 						<th class="text-center">No. PR</th>
-						<th class="text-center">Kategori PR</th>
+						<th class="text-center">PR Category</th>
 						<th class="text-center">Request By</th>
 						<th class="text-center">Request Date</th>
 						<?php
@@ -36,12 +36,12 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 						echo '<td class="text-center">' . $item->request_date . '</td>';
 						if ($ENABLE_VIEW) {
 							if ($item->kategori_pr == 'PR Department') {
-								$view_detail = '<a href="' . base_url("/non_rutin/add/" . $item->id_pr . "/view") . '" class="btn btn-sm btn-info" target="_blank" title="View Detail PR"><i class="ti ti-eye"></i></a>';
+								$view_detail = '<a href="' . base_url("/non_rutin/add/" . $item->id_pr . "/view") . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
 							} else {
 								if ($item->kategori_pr == 'PR Material') {
-									$view_detail = '<a href="' . base_url("request_pr_material/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View Detail PR"><i class="ti ti-eye"></i></a>';
+									$view_detail = '<a href="' . base_url("request_pr_material/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
 								} else {
-									$view_detail = '<a href="' . base_url("request_pr_stok/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View Detail PR"><i class="ti ti-eye"></i></a>';
+									$view_detail = '<a href="' . base_url("request_pr_stok/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
 								}
 							}
 							$view_barang = '<button type="button" class="btn btn-sm btn-success view_barang_pr" title="View Barang PR" data-id_pr="' . $item->id_pr . '" data-no_pr="' . $item->no_pr . '" data-kategori_pr="' . $item->kategori_pr . '"><i class="ti ti-list"></i></button>';

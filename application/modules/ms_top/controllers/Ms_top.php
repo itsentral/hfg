@@ -64,8 +64,8 @@ class Ms_top extends Admin_Controller
 			// Nilai (angka -> end/right)
 			$nilai = $row['data1'] ?? '';
 			// kalau numeric, format biar rapi
-			if (is_numeric(str_replace([','], [''], $nilai))) {
-				$nilai = number_format((float)str_replace(',', '', $nilai));
+			if (is_numeric(str_replace([','], [''], $nilai ?? ''))) {
+				$nilai = number_format((float)str_replace(',', '', $nilai ?? ''));
 			}
 			$nestedData[] = "<div class='text-end'>{$nilai}</div>";
 

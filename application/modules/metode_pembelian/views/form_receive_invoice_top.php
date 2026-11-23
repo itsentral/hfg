@@ -21,11 +21,11 @@ $this->load->view('include/side_menu');
 					<input type="text" id="invoice_no" name="invoice_no" value="" class="form-control" required>
 				  </div>
 				  <div class="col-md-6">
-					<label class="control-label">Nilai Potongan DP</label>
+					<label class="control-label">DP Deduction Value</label>
 					<input type="text" class="form-control divide" id="potong_um" name="potong_um" value="<?= (isset($results->potong_um)?$results->potong_um:"0"); ?>" required>
 				  </div>
 				  <div class="col-md-6">
-					<label class="control-label">Nilai PPN</label>
+					<label class="control-label">VAT Value</label>
 					<input type="text" class="form-control divide" id="nilai_ppn" name="nilai_ppn" value="" required>
 				  </div>
 				  <div class="col-md-6">
@@ -33,7 +33,7 @@ $this->load->view('include/side_menu');
 					<input type="text" class="form-control divide" id="invoice_total" name="invoice_total" value="">
 				  </div>
 				  <div class="col-md-6">
-					<label class="control-label">Nomor Faktur Pajak</label>
+					<label class="control-label">Tax Invoice Number</label>
 					<input type="text" id="faktur_pajak" name="faktur_pajak" value="" class="form-control">
 				  </div>
 				  <div class="col-md-6">
@@ -47,11 +47,11 @@ $this->load->view('include/side_menu');
 			</div>
 			<div class="row">
 			  <div class="col-md-12">
-				<h4>Dokumen Incoming </h4>
+				<h4>Incoming Document </h4>
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th>No Dokumen</th>
+							<th>Document No.</th>
 							<th>Incoming Date</th>
 							<th>PIC</th>
 							<th></th>
@@ -77,7 +77,7 @@ $this->load->view('include/side_menu');
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?=base_url()?>pembelian/purchase_order" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>pembelian/purchase_order" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>

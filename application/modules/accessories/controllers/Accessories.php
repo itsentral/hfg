@@ -44,7 +44,7 @@ class Accessories extends Admin_Controller
     ];
 
     history("View index master barang stok");
-    $this->template->title('Master Barang Stok');
+    $this->template->title('Master Stock Items');
     $this->template->render('index', $data);
   }
 
@@ -68,7 +68,7 @@ class Accessories extends Admin_Controller
       $brand        = trim(strtolower((string) $data['brand']));
       $spec         = trim(strtolower((string) $data['spec']));
       $id_unit_gudang = $data['id_unit_gudang'];
-      $konversi         = str_replace(',', '', $data['konversi']);
+      $konversi         = str_replace(',', '', $data['konversi'] ?? '');
       $id_unit          = $data['id_unit'];
       $status           = (!empty($id)) ? $data['status'] : 1;
       $min_order = $data['min_order'];
@@ -119,13 +119,13 @@ class Accessories extends Admin_Controller
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $Arr_Data  = array(
-          'pesan'    => 'Save gagal disimpan ...',
+          'pesan'    => 'Failed to save data.',
           'status'  => 0
         );
       } else {
         $this->db->trans_commit();
         $Arr_Data  = array(
-          'pesan'    => 'Save berhasil disimpan. Thanks ...',
+          'pesan'    => 'Data saved successfully.',
           'status'  => 1
         );
         history($tanda . " data barang stok " . $id);
@@ -153,7 +153,7 @@ class Accessories extends Admin_Controller
         'list_coa' => $coa
       ];
 
-      $title = (empty($id)) ? 'Add Barang Stok' : (($tanda == 'view') ? 'Detail Barang Stok' : 'Edit Barang Stok');
+      $title = (empty($id)) ? 'Add Stock Item' : (($tanda == 'view') ? 'Stock Item Detail' : 'Edit Stock Item');
       $icon  = (empty($id)) ? 'fa fa-plus' : (($tanda == 'view') ? 'fa fa-eye' : 'fa fa-edit');
 
       $this->template->set('results', $data);
@@ -204,13 +204,13 @@ class Accessories extends Admin_Controller
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
       $Arr_Data  = array(
-        'pesan'    => 'Save gagal diproses ...',
+        'pesan'    => 'Failed to process data.',
         'status'  => 0
       );
     } else {
       $this->db->trans_commit();
       $Arr_Data  = array(
-        'pesan'    => 'Save berhasil diproses. Thanks ...',
+        'pesan'    => 'Data processed successfully.',
         'status'  => 1
       );
       history("Delete data barang stok " . $id);
@@ -243,7 +243,7 @@ class Accessories extends Admin_Controller
     $Row        = 1;
     $NewRow     = $Row + 1;
     $Col_Akhir  = $Cols = getColsChar(12);
-    $sheet->setCellValue('A' . $Row, "BARANG STOK MASTER");
+    $sheet->setCellValue('A' . $Row, "STOCK ITEMS MASTER");
     $sheet->getStyle('A' . $Row . ':' . $Col_Akhir . $NewRow)->applyFromArray($mainTitle);
     $sheet->mergeCells('A' . $Row . ':' . $Col_Akhir . $NewRow);
 
@@ -428,7 +428,7 @@ class Accessories extends Admin_Controller
       }
     }
 
-    $sheet->setTitle('Barang Stok Master');
+    $sheet->setTitle('Stock Items Master');
     //mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
     $objWriter      = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
     ob_end_clean();

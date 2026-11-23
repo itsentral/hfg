@@ -35,16 +35,16 @@ $tax_on   = ($show_tax !== 'N');
 
     <!-- ═══ INFORMASI PO (Readonly/Otomatis) ═══ -->
     <div class="col-12">
-        <p class="fw-bold mb-2 text-primary">Informasi PO</p>
+        <p class="fw-bold mb-2 text-primary">PO Information</p>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor PO</label>
+        <label class="form-label fw-semibold">PO Number</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $d['no_surat'] ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nama Supplier</label>
+        <label class="form-label fw-semibold">Supplier Name</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $d['nm_supplier'] ?>" readonly>
     </div>
@@ -56,7 +56,7 @@ $tax_on   = ($show_tax !== 'N');
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Jumlah PO</label>
+        <label class="form-label fw-semibold">PO Count</label>
         <input type="text" id="jumlah_po"
             class="form-control form-control-sm text-end"
             value="<?= number_format($is_view ? $d['hargatotal'] : 0, 4) ?>"
@@ -85,7 +85,7 @@ $tax_on   = ($show_tax !== 'N');
 
     <div class="col-md-6">
         <?php if ($tax_on): ?>
-            <label class="form-label fw-semibold">Nilai PPN</label>
+            <label class="form-label fw-semibold">VAT Value</label>
             <input type="text" name="nilai_ppn" class="form-control form-control-sm text-end"
                 value="<?= number_format($is_view ? $d['nilai_ppn'] : $nilai_ppn, 2) ?>" readonly>
         <?php endif; ?>
@@ -103,7 +103,7 @@ $tax_on   = ($show_tax !== 'N');
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
+        <label class="form-label fw-semibold">Invoice Amount (IDR)</label>
         <input type="text" name="jumlah_rupiah" id="jumlah_rupiah"
             class="form-control form-control-sm text-end"
             value="<?= number_format($is_view ? $d['jumlah_rupiah'] : 0, 2) ?>"
@@ -123,7 +123,7 @@ $tax_on   = ($show_tax !== 'N');
         <input type="text" name="invoice_date"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($d['invoice_date']) ? date('d M Y', strtotime((string) $d['invoice_date'])) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-6">
@@ -131,7 +131,7 @@ $tax_on   = ($show_tax !== 'N');
         <input type="text" name="invoice_date_real"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($d['invoice_date_real']) ? date('d M Y', strtotime((string) $d['invoice_date_real'])) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?>>
     </div>
 
@@ -145,18 +145,18 @@ $tax_on   = ($show_tax !== 'N');
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Number</label>
         <input type="text" name="nomor_faktur_pajak" class="form-control form-control-sm"
             value="<?= $d['nomor_faktur_pajak'] ?? '' ?>"
             placeholder="<?= !$is_view ? 'Masukkan nomor faktur pajak' : '' ?>"
             <?= $ro ?>>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Date</label>
         <input type="text" name="tanggal_faktur_pajak"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($d['tanggal_faktur_pajak']) ? date('d M Y', strtotime((string) $d['tanggal_faktur_pajak'])) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?>>
     </div>
 
@@ -192,7 +192,7 @@ $tax_on   = ($show_tax !== 'N');
             } elseif ($status === 'draft') {
                 echo '<span class="badge bg-warning text-dark">Draft</span>';
             } else {
-                echo '<span class="badge bg-warning text-dark">Menunggu Proses</span>';
+                echo '<span class="badge bg-warning text-dark">Waiting for Process</span>';
             }
             ?>
         </div>
@@ -207,7 +207,7 @@ $tax_on   = ($show_tax !== 'N');
 
     <div class="col-12">
         <hr class="my-1">
-        <p class="fw-bold mb-2">Informasi Bank</p>
+        <p class="fw-bold mb-2">Bank Information</p>
     </div>
 
     <div class="col-md-4">
@@ -216,7 +216,7 @@ $tax_on   = ($show_tax !== 'N');
         </label>
         <input type="text" name="bank" class="form-control form-control-sm"
             value="<?= $d['bank'] ?>"
-            placeholder="<?= !$is_view ? 'Nama Bank' : '' ?>"
+            placeholder="<?= !$is_view ? 'Bank Name' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-4">
@@ -225,7 +225,7 @@ $tax_on   = ($show_tax !== 'N');
         </label>
         <input type="text" name="no_bank" class="form-control form-control-sm"
             value="<?= $d['no_bank'] ?>"
-            placeholder="<?= !$is_view ? 'Nomor Rekening' : '' ?>"
+            placeholder="<?= !$is_view ? 'Account Number' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-4">
@@ -234,7 +234,7 @@ $tax_on   = ($show_tax !== 'N');
         </label>
         <input type="text" name="nm_acc_bank" class="form-control form-control-sm"
             value="<?= $d['nm_acc_bank'] ?>"
-            placeholder="<?= !$is_view ? 'Nama Pemilik Rekening' : '' ?>"
+            placeholder="<?= !$is_view ? 'Account Holder Name' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
 
@@ -284,7 +284,7 @@ $tax_on   = ($show_tax !== 'N');
                     kurs = parseFloat(kursRaw) || 0;
                 }
 
-                // Jumlah Invoice (IDR) = (Value DP + Nilai PPN) x kurs
+                // Invoice Amount (IDR) = (Value DP + Nilai PPN) x kurs
                 var jumlahRupiah = (valueDp + nilaiPpn) * kurs;
 
                 $('#jumlah_rupiah').val(formatNumber(jumlahRupiah));

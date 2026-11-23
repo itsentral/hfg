@@ -12,7 +12,7 @@
             <thead>
                 <tr>
                     <th class="text-center">No</th>
-                    <th class="text-center">No. Dokumen</th>
+                    <th class="text-center">Document No.</th>
                     <th class="text-center">Tipe</th>
                     <th class="text-center">Tgl</th>
                     <th class="text-center">Keperluan</th>

@@ -3,6 +3,26 @@ defined('BASEPATH') || exit('No direct script access allowed');
 
 class Production_report_model extends CI_Model
 {
+    private $stock_out_error = null;
+    private $stock_out_changes = [];
+    private $source_costbooks = [];
+
+    public function get_stock_out_error()
+    {
+        return $this->stock_out_error;
+    }
+
+    public function get_stock_out_changes()
+    {
+        return $this->stock_out_changes;
+    }
+
+    private function _stock_out_failed($message)
+    {
+        $this->stock_out_error = $message;
+        return false;
+    }
+
     public function __construct()
     {
         parent::__construct();
@@ -48,7 +68,14 @@ class Production_report_model extends CI_Model
         $this->db->order_by('h.tgl_spk', 'DESC');
         $this->db->order_by('h.spk_no', 'DESC');
 
-        return $this->db->get()->result_array();
+        $rows = $this->db->get()->result_array();
+        $this->load->helper('material_stock');
+        foreach ($rows as &$row) {
+            $row['harga_beli'] = material_stock_costbook($this->db, $row);
+            $row['weight'] = material_stock_book_weight($this->db, $row);
+        }
+        unset($row);
+        return $rows;
     }
 
     public function get_spk_header($spk_no)
@@ -192,6 +219,25 @@ class Production_report_model extends CI_Model
             $map[$r['rate_key']] = (float)$r['rate_value'];
         }
         return $map;
+    }
+
+    /**
+     * Rate General (modul rate_generals, baris id 1) untuk komponen HPP Laporan Produksi:
+     * - consumables : Rp/Kg  -> Consumable/Pcs  = rate x Berat/Pcs
+     * - koordinasi  : Rp/Kg  -> Koordinasi/Pcs  = rate x Berat/Pcs
+     * - scrap_pct   : fraksi (0.02 = 2%) -> Scrap/Pcs = rate x Biaya Material/Pcs
+     */
+    public function get_general_rates()
+    {
+        $row = $this->db->select('rate_consumables, rate_biaya_koordinasi, rate_scrap')
+            ->where('id', 1)
+            ->get('rate_generals')
+            ->row();
+        return [
+            'consumables' => $row ? (float) $row->rate_consumables : 0.0,
+            'koordinasi'  => $row ? (float) $row->rate_biaya_koordinasi : 0.0,
+            'scrap_pct'   => $row ? (float) $row->rate_scrap : 0.0,
+        ];
     }
 
     /**
@@ -358,11 +404,11 @@ class Production_report_model extends CI_Model
     {
         $report = $this->get_report_full($report_id);
         if (!$report) {
-            throw new Exception('Laporan produksi tidak ditemukan.');
+            throw new Exception('Production report not found.');
         }
 
         if (empty($report['header']['status_draft']) || (int)$report['header']['status_draft'] !== 1) {
-            throw new Exception('Hanya laporan berstatus Draft yang dapat diperbarui rate costing-nya.');
+            throw new Exception('Only reports with status Draft can have their costing rate updated.');
         }
 
         $header    = $report['header'];
@@ -390,6 +436,8 @@ class Production_report_model extends CI_Model
             c.nm_material,
             c.trade_name,
             c.kode_internal,
+            c.is_baby_coil,
+            c.id_gudang,
             c.kd_gudang,
             c.no_coil,
             c.gross_weight,
@@ -404,22 +452,13 @@ class Production_report_model extends CI_Model
         $this->db->from('warehouse_stock_coil c');
 
         if ($source === 'unpack') {
-            $this->db->group_start();
-            $this->db->where('c.status_proses', 'unpacked');
-            $this->db->or_where_in('c.kd_gudang', ['PRT', 'PRO']);
-            $this->db->group_end();
+            $this->db->where('c.kd_gudang', 'PRT')->where('c.is_baby_coil', 1)
+                ->where_in('c.status_proses', ['unpacked', 'in_transit']);
         } elseif ($source === 'wip') {
-            $this->db->group_start();
-            $this->db->where('c.status_proses', 'wip');
-            $this->db->or_where('c.Kd_gudang', 'WIP');
-            $this->db->group_end();
+            $this->db->where('c.kd_gudang', 'WIP')->where_in('c.status_proses', ['wip','in_warehouse']);
         } elseif ($source === 'hold') {
-            $this->db->group_start();
-            $this->db->where('c.status_proses', 'on_hold');
-            $this->db->or_where('c.kd_gudang', 'HLD');
-            $this->db->group_end();
+            $this->db->where('c.kd_gudang', 'HLD')->where_in('c.status_proses', ['on_hold','in_warehouse']);
         }
-
         $this->db->where('c.status', 1);
         $this->db->order_by('c.id', 'DESC');
         $this->db->limit(100);
@@ -450,9 +489,35 @@ class Production_report_model extends CI_Model
         return $res;
     }
 
-    public function save_production_report($header_data, $materials, $items, $scraps, $claims = [], $existing_report_id = null, $user_id = null)
+    public function save_production_report($header_data, $materials, $items, $scraps, $claims = [], $existing_report_id = null, $user_id = null, $journal_writer = null)
     {
+        $this->stock_out_error = null;
+        $this->stock_out_changes = [];
+        $this->source_costbooks = [];
         $this->db->trans_start();
+        try {
+        $this->load->helper(['material_stock', 'production_stock_repost']);
+        $user_id = $user_id ?: ($this->auth ? $this->auth->user_id() : 1);
+        $old_posted_report = null;
+        if ($existing_report_id) {
+            $old_posted_report = $this->db->query(
+                'SELECT * FROM production_reports WHERE id = ? FOR UPDATE', [$existing_report_id]
+            )->row_array();
+            if (!$old_posted_report) throw new RuntimeException('The edited report was not found.');
+            if ((int)$old_posted_report['status_draft'] === 0) {
+                if ((string)$old_posted_report['id_tr_spk_detail'] !== (string)$header_data['id_tr_spk_detail']) {
+                    throw new RuntimeException('The SPK reference of a final report cannot change during a correction.');
+                }
+                production_stock_unpost($this->db, $existing_report_id, $user_id, $this->stock_out_changes);
+            }
+        }
+        if (!empty($header_data['id_tr_spk_detail'])) {
+            // Serialisasikan finalisasi/edit untuk SPK yang sama.
+            $this->db->query(
+                'SELECT h.spk_no FROM tr_spk_material_header h JOIN tr_spk_material_detail d ON d.spk_no = h.spk_no WHERE d.id = ? FOR UPDATE',
+                [$header_data['id_tr_spk_detail']]
+            )->row_array();
+        }
 
         // 1. Tentukan fallback Varian BOM dari SPK untuk Stok Bebas & KW2 (FR-48, FR-74)
         $spk_prod_fallback = null;
@@ -470,69 +535,87 @@ class Production_report_model extends CI_Model
 
         // 2. Petakan Costbook (harga_beli) per Coil dari warehouse_stock_coil (fallback warehouse_stock)
         $coil_cb_map = [];
-        $coil_ids    = [];
-        $coil_codes  = [];
-        if (!empty($materials)) {
-            foreach ($materials as $m) {
-                if (!empty($m['id_unpack_baby_coil'])) $coil_ids[]   = (int)$m['id_unpack_baby_coil'];
-                if (!empty($m['coil_code']))            $coil_codes[] = trim((string) $m['coil_code']);
-            }
-        }
-
         $coils_db = [];
-        if (!empty($coil_ids) || !empty($coil_codes)) {
-            $this->db->select('id, no_coil, id_material, nm_material, net_weight, harga_beli');
-            $this->db->from('warehouse_stock_coil');
-            $this->db->group_start();
-            if (!empty($coil_ids)) {
-                $this->db->where_in('id', $coil_ids);
+        foreach ($materials as &$material) {
+            $coil_id = (int)($material['id_unpack_baby_coil'] ?? 0);
+            $code = trim((string)($material['coil_code'] ?? ''));
+            if ($coil_id) {
+                $coil = $this->db->query(
+                    'SELECT * FROM warehouse_stock_coil WHERE id = ? LIMIT 1 FOR UPDATE', [$coil_id]
+                )->row_array();
+            } else {
+                $candidates = $this->db->query(
+                    'SELECT * FROM warehouse_stock_coil WHERE no_coil = ? ORDER BY id ASC FOR UPDATE', [$code]
+                )->result_array();
+                if (count($candidates) !== 1) throw new RuntimeException('Coil source not found/ambiguous. Select again based on the coil ID.');
+                $coil = $candidates[0];
             }
-            if (!empty($coil_codes)) {
-                if (!empty($coil_ids)) {
-                    $this->db->or_where_in('no_coil', $coil_codes);
-                } else {
-                    $this->db->where_in('no_coil', $coil_codes);
-                }
+            if (!$coil || ($code !== '' && strcasecmp($code, (string)$coil['no_coil']) !== 0
+                && strcasecmp($code, (string)$coil['kode_internal']) !== 0)) {
+                throw new RuntimeException('The source coil ID and number do not match. Select the material again.');
             }
-            $this->db->group_end();
-            $coils_db = $this->db->get()->result_array();
+            $material['id_unpack_baby_coil'] = (int)$coil['id'];
+            $material['coil_code'] = $coil['no_coil'];
+            $coils_db[(int)$coil['id']] = $coil;
         }
+        unset($material);
+        $coils_db = array_values($coils_db);
 
         foreach ($coils_db as $cd) {
-            $cb = (float)$cd['harga_beli'];
-            // Jika harga_beli di warehouse_stock_coil masih 0, tarik dari master warehouse_stock
-            if ($cb <= 0 && !empty($cd['id_material'])) {
-                $master_stock = $this->db->select('harga_beli')
-                    ->where('code_lv4', $cd['id_material'])
-                    ->where('harga_beli >', 0)
-                    ->order_by('id', 'ASC')
-                    ->limit(1)
-                    ->get('warehouse_stock')
-                    ->row();
-                if ($master_stock && (float)$master_stock->harga_beli > 0) {
-                    $cb = (float)$master_stock->harga_beli;
-                    // Sinkronkan kembali ke warehouse_stock_coil agar data coil tidak 0 lagi
-                    $this->db->where('id', $cd['id'])->update('warehouse_stock_coil', [
-                        'harga_beli'  => $cb,
-                        'total_nilai' => round((float)$cd['net_weight'] * $cb, 2)
-                    ]);
+            try {
+                $this->load->helper('material_stock');
+                $cb = material_stock_costbook($this->db, $cd, true);
+            } catch (RuntimeException $e) {
+                if ((int)($header_data['status_draft'] ?? 1) === 0) {
+                    $this->db->trans_rollback();
+                    return $this->_stock_out_failed($e->getMessage());
                 }
+                $cb = 0; // Draft tetap dapat disimpan; tidak meminjam costbook gudang lain.
             }
-
+            $this->source_costbooks[(int)$cd['id']] = $cb;
             if (!empty($cd['no_coil'])) {
                 $coil_cb_map[$cd['no_coil']]       = $cb;
                 $coil_cb_map[trim((string) $cd['no_coil'])] = $cb;
             }
+            if (!empty($cd['kode_internal'])) {
+                $coil_cb_map[$cd['kode_internal']] = $cb;
+            }
             $coil_cb_map[(string)$cd['id']] = $cb;
         }
 
-        // Tentukan fallback costbook: cari yang > 0 terlebih dahulu
-        $default_cb = 0;
-        foreach ($coil_cb_map as $val) {
-            if ($val > 0) {
-                $default_cb = $val;
-                break;
+        // Scrap global mengikuti alokasi proporsional yang sudah digunakan Kartu Pemakaian.
+        // Rata-rata tertimbang ini hanya untuk baris global, bukan fallback coil yang salah.
+        $global_qty = 0.0;
+        $global_value = 0.0;
+        foreach ($materials as $m) {
+            $qty = (float)($m['nett_weight_packing'] ?? 0);
+            $alias = (string)($m['coil_code'] ?? '');
+            $global_qty += $qty;
+            $global_value += $qty * ($coil_cb_map[$alias] ?? 0);
+        }
+        $default_cb = $global_qty > 0 ? $global_value / $global_qty : 0;
+        if ((int)($header_data['status_draft'] ?? 1) === 0) {
+            foreach ($items as $row) {
+                $alias = trim((string)($row['source_material_coil'] ?? ''));
+                if (!array_key_exists($alias, $coil_cb_map) && count($coils_db) !== 1) {
+                    $this->db->trans_rollback();
+                    return $this->_stock_out_failed('Select the source coil of the production output so the costbook is not mixed up.');
+                }
             }
+            foreach ($scraps as &$row) {
+                $alias = trim((string)($row['target_coil_code'] ?? ''));
+                $specific = in_array($row['scrap_type'] ?? '', ['sisa_coil','hold_coil'], true);
+                if ($specific && $alias === '' && count($coils_db) === 1) {
+                    $row['target_coil_code'] = $coils_db[0]['no_coil'];
+                    $alias = $row['target_coil_code'];
+                }
+                if (($specific || $alias !== '') && !array_key_exists($alias, $coil_cb_map)) {
+                    unset($row);
+                    $this->db->trans_rollback();
+                    return $this->_stock_out_failed('Select the source coil of the remainder/Hold/scrap so stock and costbook can be traced.');
+                }
+            }
+            unset($row);
         }
 
         // 3. Kalkulasi HPP Items (KW1, Stok Bebas, KW2) memakai Rp/Kg Hasil Costing varian BOM
@@ -546,7 +629,7 @@ class Production_report_model extends CI_Model
         $total_fg_all        = 0;
         $sum_inv_fg          = 0;
         $sum_loss_kw2        = 0;
-
+        $gen_rates           = $this->get_general_rates();
         if (!empty($items) && is_array($items)) {
             foreach ($items as &$it) {
                 $coil_code = !empty($it['source_material_coil']) ? $it['source_material_coil'] : '';
@@ -567,20 +650,23 @@ class Production_report_model extends CI_Model
                 $r_mp    = (float)$c_rates['man_power'];
                 $r_foh   = (float)$c_rates['foh'];
                 $r_bahan = (float)$c_rates['bahan_pendukung'];
-                $r_cons  = (float)$c_rates['consumables'];
-                $r_koor  = (float)$c_rates['koordinasi'];
-                $r_scrap = (float)$c_rates['scrap'];
-
+                // Consumable, Koordinasi, Scrap dari Rate General (modul rate_generals)
+                $r_cons      = (float)$gen_rates['consumables'];
+                $r_koor      = (float)$gen_rates['koordinasi'];
+                $r_scrap_pct = (float)$gen_rates['scrap_pct'];
                 // Biaya per pcs:
-                // Material = Berat/Pcs * Costbook
-                // 6 komponen lainnya = Berat/Pcs * Rp/Kg Hasil Costing varian BOM
+                // Material             = Berat/Pcs * Costbook
+                // Man Power, FOH, BPK  = Berat/Pcs * Rp/Kg Hasil Costing varian BOM
+                // Consumable           = Rate General Consumables (Rp/Kg) * Berat/Pcs
+                // Koordinasi           = Rate General Biaya Koordinasi (Rp/Kg) * Berat/Pcs
+                // Scrap                = Rate General %Scrap * Biaya Material/Pcs
                 $c_mat   = $berat_pcs * $cb;
                 $c_mp    = $berat_pcs * $r_mp;
                 $c_foh   = $berat_pcs * $r_foh;
                 $c_bahan = $berat_pcs * $r_bahan;
-                $c_cons  = $berat_pcs * $r_cons;
-                $c_koor  = $berat_pcs * $r_koor;
-                $c_scrap = $berat_pcs * $r_scrap; // Diperbaiki: Berat/Pcs * Rp/Kg Scrap
+                $c_cons  = $r_cons * $berat_pcs;
+                $c_koor  = $r_koor * $berat_pcs;
+                $c_scrap = $r_scrap_pct * $c_mat;
                 $c_fg_pcs = $c_mat + $c_mp + $c_foh + $c_bahan + $c_cons + $c_koor + $c_scrap;
 
                 $it['material_cost_per_pcs']        = $c_mat;
@@ -675,7 +761,15 @@ class Production_report_model extends CI_Model
 
         // 5. Selisih Berat Audit Material
         $selisih_kg = isset($header_data['summary_selisih']) ? (float)$header_data['summary_selisih'] : 0;
-        $selisih_weight_val = $selisih_kg * $default_cb;
+        $input_material_value = 0.0;
+        foreach ($materials as $material) {
+            $alias = (string)($material['coil_code'] ?? '');
+            $input_material_value += (float)($material['nett_weight_packing'] ?? 0) * ($coil_cb_map[$alias] ?? $default_cb);
+        }
+        // Nilai selisih dihitung per sumber; rata-rata gudang berbeda tidak boleh memakai satu default rate.
+        $output_material_value = $total_cogm_material;
+        foreach ($scraps as $scrap) $output_material_value += (float)($scrap['total_nilai'] ?? 0);
+        $selisih_weight_val = $output_material_value - $input_material_value;
 
         // 6. Update Header Data dengan nilai HPP & Field Jurnal Siap Pakai (GL Interface)
         $total_cogm_all = $total_cogm_material + $total_cogm_mp + $total_cogm_foh + $total_cogm_bahan + $total_cogm_cons + $total_cogm_koor + $total_cogm_scrap;
@@ -758,6 +852,8 @@ class Production_report_model extends CI_Model
             }
         }
 
+        // Field nominal template jurnal JV016 disimpan tanpa desimal (Rupiah bulat)
+        $this->_round_jurnal_fields($header_data);
         // Filter kolom agar hanya field yang benar-benar ada di tabel database yang dikirim ke query
         $table_fields = $this->db->list_fields('production_reports');
         $header_data = array_intersect_key($header_data, array_flip($table_fields ?? []));
@@ -896,13 +992,25 @@ class Production_report_model extends CI_Model
         // d. Catat Sisa Coil ke Gudang WIP & Hold Coil ke Gudang Material Hold (warehouse_stock_coil) (status IN)
         // e. Catat rincian pemakaian per coil ke Kartu Pemakaian Material (warehouse_coil_kartu_stok)
         if (isset($header_data['status_draft']) && (int)$header_data['status_draft'] === 0) {
-            $this->process_production_stock_out($report_id, $header_data, $materials, $user_id);
+            if ($this->process_production_stock_out($report_id, $header_data, $materials, $user_id) === false) {
+                $this->db->trans_rollback();
+                return false;
+            }
             $this->process_production_fg_stock_in($report_id, $header_data, $items, $user_id);
             $this->process_production_scrap_fg_stock_in($report_id, $header_data, $scraps, $materials, $user_id);
-            $this->process_production_sisa_hold_coil_in($report_id, $header_data, $scraps, $materials, $user_id);
+            try {
+                $this->process_production_sisa_hold_coil_in($report_id, $header_data, $scraps, $materials, $user_id);
+            } catch (RuntimeException $e) {
+                $this->db->trans_rollback();
+                return $this->_stock_out_failed($e->getMessage());
+            }
             $this->process_production_coil_kartu_stok($report_id, $header_data, $materials, $items, $scraps, $user_id);
         }
 
+        if (is_callable($journal_writer)) {
+            $saved = $this->db->get_where('production_reports', ['id' => $report_id])->row_array();
+            $journal_writer($saved, $old_posted_report);
+        }
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
@@ -911,6 +1019,10 @@ class Production_report_model extends CI_Model
         }
 
         return $report_id;
+        } catch (RuntimeException $e) {
+            $this->db->trans_rollback();
+            return $this->_stock_out_failed($e->getMessage());
+        }
     }
 
     /**
@@ -919,12 +1031,21 @@ class Production_report_model extends CI_Model
      * - Hanya mengurangi nilai transaksi (qty_stock dan total_nilai berkurang).
      * - JANGAN mengubah nilai costbook / harga_beli (harga satuan per kg tetap).
      * - Status transaksi OUT (qty_akhir < qty_awal).
-     * - Idempoten per kode_trans (SPK).
+     * - Gudang sumber mengikuti coil; tidak boleh fallback lintas gudang.
+     * - Idempoten per coil/material/gudang/SPK pada detail consumed, bukan summary scan.
+     * Caller wajib membungkus seluruh pencatatan dalam transaksi dan rollback bila false.
      */
     public function process_production_stock_out($report_id, $header_data, $materials, $user_id = null)
     {
+        $this->stock_out_error = null;
+        try {
+            $this->load->helper('material_stock');
+            material_stock_require_schema($this->db);
+        } catch (RuntimeException $e) {
+            return $this->_stock_out_failed($e->getMessage());
+        }
         if (empty($materials) || !is_array($materials)) {
-            return;
+            return $this->_stock_out_failed('Production usage material has not been filled in.');
         }
 
         // 1. Ambil nomor SPK sebagai kode transaksi utama
@@ -941,17 +1062,9 @@ class Production_report_model extends CI_Model
         $now          = date('Y-m-d H:i:s');
         $user_id      = $user_id ?: ($this->auth ? $this->auth->user_id() : 1);
 
-        // 2. Cek apakah kode_trans ini sudah pernah dicatat di transaction summary (idempoten)
-        $already = $this->db->get_where('warehouse_stock_transaction_summary', [
-            'kode_trans' => $kode_trans,
-        ])->row();
-
-        if ($already) {
-            return;
-        }
-
-        // 3. Kumpulkan data pemakaian per material & gudang
+        // Lock coil sebelum pemeriksaan consumed agar submit bersamaan tidak memotong dua kali.
         $material_groups = [];
+        $seen_coils = [];
 
         foreach ($materials as $m) {
             $coil_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
@@ -960,14 +1073,52 @@ class Production_report_model extends CI_Model
             // Lookup coil info dari warehouse_stock_coil
             $coil = null;
             if ($coil_id) {
-                $coil = $this->db->where('id', $coil_id)->get('warehouse_stock_coil')->row_array();
+                $coil = $this->db->query(
+                    'SELECT * FROM warehouse_stock_coil WHERE id = ? LIMIT 1 FOR UPDATE',
+                    [$coil_id]
+                )->row_array();
             }
-            if (!$coil && $coil_code) {
-                $coil = $this->db->where('no_coil', $coil_code)->order_by('id', 'DESC')->get('warehouse_stock_coil')->row_array();
+            if (!$coil_id && $coil_code) {
+                $candidates = $this->db->query(
+                    'SELECT * FROM warehouse_stock_coil WHERE no_coil = ? ORDER BY id DESC FOR UPDATE',
+                    [$coil_code]
+                )->result_array();
+                if (count($candidates) !== 1) {
+                    return $this->_stock_out_failed('Coil ' . $coil_code . ' not found or ambiguous. Select the material again based on the coil ID.');
+                }
+                $coil = $candidates[0];
             }
 
             if (!$coil) {
+                return $this->_stock_out_failed('Coil material not found: ' . ($coil_id ?: $coil_code));
+            }
+
+            if (isset($seen_coils[$coil['id']])) {
+                return $this->_stock_out_failed('Coil ' . $coil['no_coil'] . ' is listed more than once.');
+            }
+            $seen_coils[$coil['id']] = true;
+
+            $already = $this->db->query(
+                "SELECT d.id FROM warehouse_stock_transaction_detail d
+                 JOIN warehouse_stock_transaction_summary s ON s.id = d.id_summary
+                 WHERE d.id_coil = ? AND s.production_report_id = ?
+                   AND d.status_qc = 'OUT' AND d.to_status = 'consumed' LIMIT 1 FOR UPDATE",
+                [$coil['id'], $report_id]
+            )->row_array();
+            if ($already) {
                 continue;
+            }
+            if ((int)$coil['status'] !== 1 || $coil['status_proses'] === 'consumed') {
+                return $this->_stock_out_failed('Coil ' . $coil['no_coil'] . ' is no longer active for production usage.');
+            }
+            if ($coil['kd_gudang'] === 'HLD' && $coil['status_proses'] !== 'in_warehouse') {
+                return $this->_stock_out_failed('Hold Coil ' . $coil['no_coil'] . ' has not been released through a Continue Production decision from Purchasing.');
+            }
+            if ($coil['kd_gudang'] === 'PRT' && empty($coil['is_baby_coil'])) {
+                return $this->_stock_out_failed('Select an unpacked baby coil, not a coil pack that has not been unpacked.');
+            }
+            if ((float)$coil['net_weight'] <= 0) {
+                return $this->_stock_out_failed('Actual coil weight ' . $coil['no_coil'] . ' is not valid yet. Complete the source data first.');
             }
 
             $id_mat = $coil['id_material'];
@@ -976,8 +1127,21 @@ class Production_report_model extends CI_Model
                 ? (float)$m['nett_weight_packing']
                 : (float)$coil['net_weight'];
 
-            if (!isset($material_groups[$id_mat])) {
-                $material_groups[$id_mat] = [
+            if ($net_kg <= 0 || empty($coil['id_gudang']) || empty($coil['kd_gudang'])) {
+                return $this->_stock_out_failed('Weight or source warehouse of coil ' . $coil['no_coil'] . ' tidak valid.');
+            }
+            try {
+                $this->load->helper('material_stock');
+                $book_weight = material_stock_book_weight($this->db, $coil);
+                if (round($net_kg, 3) !== $book_weight) {
+                    throw new RuntimeException('Coil Packing List Weight ' . $coil['no_coil'] . ' differs from the source. Reload the material before submitting.');
+                }
+            } catch (RuntimeException $e) {
+                return $this->_stock_out_failed($e->getMessage());
+            }
+            $group_key = $id_mat . ':' . $coil['id_gudang'] . ':' . $coil['kd_gudang'];
+            if (!isset($material_groups[$group_key])) {
+                $material_groups[$group_key] = [
                     'id_material'      => $id_mat,
                     'nm_material'      => $nm_mat,
                     'total_qty'        => 0,
@@ -990,138 +1154,38 @@ class Production_report_model extends CI_Model
                 ];
             }
 
-            $material_groups[$id_mat]['total_qty'] += $net_kg;
-            $material_groups[$id_mat]['coil_count']++;
-            $material_groups[$id_mat]['coils'][] = array_merge($coil ?? [], [
+            $material_groups[$group_key]['total_qty'] += $net_kg;
+            $material_groups[$group_key]['coil_count']++;
+            $material_groups[$group_key]['coils'][] = array_merge($coil ?? [], [
                 'net_weight_used' => $net_kg,
             ]);
-            $material_groups[$id_mat]['coil_ids'][] = $coil['id'];
-            $material_groups[$id_mat]['coil_codes'][] = $coil['no_coil'];
+            $material_groups[$group_key]['coil_ids'][] = $coil['id'];
+            $material_groups[$group_key]['coil_codes'][] = $coil['no_coil'];
         }
 
         // 4. Eksekusi pemotongan stok & pencatatan history per material
-        foreach ($material_groups as $id_mat => $grp) {
+        foreach ($material_groups as $grp) {
+            $id_mat = $grp['id_material'];
             $qty_pakai = (float)$grp['total_qty'];
             if ($qty_pakai <= 0) continue;
 
-            // Cari baris warehouse_stock gudang sumber
-            // Prioritas: Gudang PRO / PUS / SLI
-            $stock = null;
-            if (!empty($grp['source_kd_gudang']) && in_array($grp['source_kd_gudang'], ['PRO', 'SLI', 'PUS'])) {
-                $stock = $this->db->query(
-                    "SELECT * FROM warehouse_stock WHERE code_lv4 = ? AND kd_gudang = ? LIMIT 1 FOR UPDATE",
-                    [$id_mat, $grp['source_kd_gudang']]
-                )->row_array();
-            }
-            if (!$stock) {
-                // Default ke gudang PRO (id_gudang = 1)
-                $stock = $this->db->query(
-                    "SELECT * FROM warehouse_stock WHERE code_lv4 = ? AND (id_gudang = 1 OR kd_gudang = 'PRO') LIMIT 1 FOR UPDATE",
-                    [$id_mat]
-                )->row_array();
-            }
-            if (!$stock) {
-                // Fallback baris pertama apapun gudangnya untuk material ini
-                $stock = $this->db->query(
-                    "SELECT * FROM warehouse_stock WHERE code_lv4 = ? LIMIT 1 FOR UPDATE",
-                    [$id_mat]
-                )->row_array();
-            }
-
-            if (!$stock) {
-                continue;
-            }
-
-            $qty_awal   = (float)$stock['qty_stock'];
-            $saldo_awal = (float)$stock['total_nilai'];
-            $costbook   = (float)$stock['harga_beli']; // Nilai costbook / harga beli lama
-
-            // Hitung nilai transaksi pengeluaran (OUT)
-            $total_harga = round($qty_pakai * $costbook, 2);
-            $qty_akhir   = $qty_awal - $qty_pakai;
-            $saldo_akhir = $saldo_awal - $total_harga;
-            $harga_lama  = $costbook;
-
-            // UPDATE WAREHOUSE_STOCK:
-            // Hanya mengurangi nilai transaksi (qty_stock & total_nilai)
-            // JANGAN MENGUBAH harga_beli / costbook!
-            $this->db->where('id', $stock['id'])->update('warehouse_stock', [
-                'qty_stock'   => $qty_akhir,
-                'total_nilai' => $saldo_akhir,
-                // harga_beli TETAP tidak diubah
-                'update_by'   => $user_id,
-                'update_date' => $now,
-            ]);
-
-            // INSERT WAREHOUSE_STOCK_TRANSACTION_SUMMARY (Buku Mutasi / History Stok)
-            // Karena qty_akhir < qty_awal, maka di UI otomatis berstatus OUT
-            $this->db->insert('warehouse_stock_transaction_summary', [
-                'kode_trans'    => $kode_trans,
-                'id_material'   => $id_mat,
-                'nm_material'   => $grp['nm_material'],
-                'id_gudang'     => $stock['id_gudang'],
-                'kd_gudang'     => $stock['kd_gudang'],
-                'tanggal'       => $tgl_produksi,
-                'jumlah_coil'   => $grp['coil_count'],
-                'qty_awal'      => $qty_awal,
-                'qty_transaksi' => $qty_pakai,
-                'qty_akhir'     => $qty_akhir,
-                'costbook'      => $costbook,       // Tetap sama
-                'total_harga'   => $total_harga,    // Nilai transaksi pengurang
-                'saldo_awal'    => $saldo_awal,
-                'saldo_akhir'   => $saldo_akhir,
-                'harga_lama'    => $harga_lama,
-                'created_by'    => $user_id,
-                'created_at'    => $now,
-            ]);
-
-            // INSERT WAREHOUSE_HISTORY
-            $this->db->insert('warehouse_history', [
-                'id_material'     => $id_mat,
-                'nm_material'     => $grp['nm_material'],
-                'id_gudang'       => $stock['id_gudang'],
-                'kd_gudang'       => $stock['kd_gudang'],
-                'id_gudang_dari'  => $stock['id_gudang'],
-                'kd_gudang_dari'  => $stock['kd_gudang'],
-                'id_gudang_ke'    => 3,
-                'kd_gudang_ke'    => 'PRT',
-                'qty_stock_awal'  => $qty_awal,
-                'qty_stock_akhir' => $qty_akhir,
-                'no_ipp'          => $kode_trans,
-                'jumlah_mat'      => $qty_pakai,
-                'ket'             => 'Pemakaian Produksi ' . $kode_trans,
-                'no_coil'         => implode(', ', $grp['coil_codes'] ?? []),
-                'harga_beli'      => $costbook,
-                'total_harga'     => $total_harga,
-                'saldo_awal'      => $saldo_awal,
-                'saldo_akhir'     => $saldo_akhir,
-                'harga_baru'      => $costbook,
-                'harga_lama'      => $harga_lama,
-                'update_by'       => $user_id,
-                'update_date'     => $now,
-            ]);
-
-            // INSERT WAREHOUSE_STOCK_TRANSACTION_DETAIL (Per Roll Coil)
-            foreach ($grp['coils'] as $c) {
-                $c_net = (float)$c['net_weight_used'];
-                $this->db->insert('warehouse_stock_transaction_detail', [
-                    'kode_trans'     => $kode_trans,
-                    'id_material'    => $id_mat,
-                    'nm_material'    => $grp['nm_material'],
-                    'id_gudang'      => $stock['id_gudang'],
-                    'kd_gudang'      => $stock['kd_gudang'],
-                    'no_coil'        => $c['no_coil'],
-                    'parent_no_coil' => !empty($c['parent_coil_id']) ? $c['parent_coil_id'] : null,
-                    'kode_internal'  => !empty($c['kode_internal']) ? $c['kode_internal'] : null,
-                    'gross_weight'   => !empty($c['gross_weight']) ? (float)$c['gross_weight'] : 0,
-                    'net_weight'     => $c_net,
-                    'length'         => !empty($c['length']) ? (float)$c['length'] : 0,
-                    'price_per_coil' => round($c_net * $costbook, 2),
-                    'cost_book'      => $costbook,
-                    'status_qc'      => 'OUT',
-                    'to_status'      => 'consumed',
-                    'created_at'     => $now,
-                ]);
+            try {
+                $this->load->helper('material_stock');
+                $warehouse = material_stock_warehouse($this->db, $grp['source_kd_gudang']);
+                if ((string)$warehouse['id'] !== (string)$grp['source_id_gudang']) {
+                    throw new RuntimeException('The coil warehouse identity does not match the master ' . $grp['source_kd_gudang'] . '.');
+                }
+                material_stock_post($this->db, $grp['coils'][0], $warehouse, $qty_pakai, 'OUT', [
+                    'kode_trans' => $kode_trans, 'tanggal' => $tgl_produksi, 'now' => $now,
+                    'user' => $user_id, 'production_report_id' => $report_id, 'details' => $grp['coils'],
+                    'source' => $warehouse, 'destination' => $warehouse, 'to_status' => 'consumed',
+                    'description' => 'Pemakaian Produksi ' . $kode_trans,
+                ], $this->stock_out_changes);
+                foreach ($grp['coils'] as $c) {
+                    material_stock_coil_snapshot($this->db, $c, 'OUT', $user_id, $now);
+                }
+            } catch (RuntimeException $e) {
+                return $this->_stock_out_failed($e->getMessage());
             }
 
             // UPDATE STATUS COIL DI WAREHOUSE_STOCK_COIL (Menjadi consumed)
@@ -1129,10 +1193,17 @@ class Production_report_model extends CI_Model
                 $this->db->where_in('id', $grp['coil_ids'])->update('warehouse_stock_coil', [
                     'status'        => 0,
                     'status_proses' => 'consumed',
-                    'no_ipp'        => $kode_trans,
                 ]);
+                foreach ($grp['coils'] as $c) {
+                    foreach (['status' => 0, 'status_proses' => 'consumed'] as $field => $value) {
+                        $this->stock_out_changes['Coil ' . $c['id'] . ' / ' . $c['no_coil'] . ' - ' . $field] = [
+                            'old' => isset($c[$field]) ? $c[$field] : null, 'new' => $value,
+                        ];
+                    }
+                }
             }
         }
+        return true;
     }
 
     /**
@@ -1167,7 +1238,7 @@ class Production_report_model extends CI_Model
 
         // 2. Cek apakah mutasi untuk nomor referensi ini sudah pernah dicatat di fg_stock_ledger (idempoten)
         $already = $this->db->get_where('fg_stock_ledger', [
-            'no_referensi' => $no_referensi,
+            'production_report_id' => $report_id,
             'jenis_mutasi' => 'IN'
         ])->row();
 
@@ -1248,7 +1319,7 @@ class Production_report_model extends CI_Model
             $costbook_in = $qty > 0 ? round($total_nilai_in / $qty, 2) : 0;
 
             // 5. Update Saldo fg_stock (Moving Average Costbook & Berat Referensi)
-            $stok = $this->db->get_where('fg_stock', ['produk_fg' => $produk_fg])->row();
+            $stok = $this->db->query('SELECT * FROM fg_stock WHERE produk_fg = ? FOR UPDATE', [$produk_fg])->row();
 
             if ($stok) {
                 $old_qty   = (float)$stok->qty_stok;
@@ -1296,6 +1367,8 @@ class Production_report_model extends CI_Model
 
             // 6. Catat Mutasi IN di fg_stock_ledger (Kartu Stok)
             $this->db->insert('fg_stock_ledger', [
+                'production_report_id' => $report_id,
+                'production_report_id' => $report_id,
                 'produk_fg'     => $produk_fg,
                 'tgl_transaksi' => $tgl_produksi,
                 'no_referensi'  => $no_referensi,
@@ -1313,7 +1386,7 @@ class Production_report_model extends CI_Model
                 'costbook'      => $costbook_in,
                 'total_nilai'   => $total_nilai_in,
                 'saldo_nilai'   => $new_nilai,
-                'keterangan'    => 'Hasil Produksi ' . $spk_no . ' (' . strtoupper(str_replace('_', ' ', $cat)) . ')',
+                'keterangan'    => 'Hasil Produksi ' . $spk_no . ' (' . strtoupper(str_replace('_', ' ', $cat ?? '')) . ')',
                 'created_by'    => $user_id,
                 'created_at'    => $now
             ]);
@@ -1411,14 +1484,14 @@ class Production_report_model extends CI_Model
                 $qty_unit      = !empty($sc['qty']) ? (float)$sc['qty'] : 1;
             } else {
                 $kategori_stok = 'SCRAP';
-                $sub_kategori  = ucwords(str_replace('_', ' ', $scrap_type));
+                $sub_kategori  = ucwords(str_replace('_', ' ', $scrap_type ?? ''));
                 $produk_fg     = 'SCRAP-' . strtoupper((string) $scrap_type) . '-' . $curr_mat_id;
                 $nm_produk     = 'Scrap ' . $sub_kategori . ' - ' . $curr_mat_name;
                 $qty_unit      = 0;
             }
 
             // Update Saldo fg_stock
-            $stok = $this->db->get_where('fg_stock', ['produk_fg' => $produk_fg])->row();
+            $stok = $this->db->query('SELECT * FROM fg_stock WHERE produk_fg = ? FOR UPDATE', [$produk_fg])->row();
 
             if ($stok) {
                 $old_qty   = (float)$stok->qty_stok;
@@ -1504,7 +1577,7 @@ class Production_report_model extends CI_Model
         if ($trimmed === '') {
             return '';
         }
-        $stripped = preg_replace('/-(?:BDP\.\d+|SISA)$/i', '', $trimmed);
+        $stripped = preg_replace('/-(?:BDP\.\d+|SISA)$/i', '', $trimmed ?? '');
         return $stripped !== '' ? $stripped : $trimmed;
     }
 
@@ -1562,7 +1635,7 @@ class Production_report_model extends CI_Model
     /**
      * Catat Sisa Coil ke Gudang WIP dan Hold Coil ke Gudang Material Hold (HLD):
      * - warehouse_stock_coil: record coil aktif baru dengan suffix -BDP.xx (WIP, 2 digit per coil induk) atau -HOLD (HLD).
-     * - warehouse_stock: update persediaan fisik & total nilai Gudang WIP (harga_beli per kg TETAP).
+     * - warehouse_stock: tambah qty/nilai WIP atau Hold dan hitung moving average gudang tujuan.
      * - warehouse_history: catat riwayat audit mutasi masuk (IN).
      *
      * @param int   $report_id
@@ -1637,31 +1710,15 @@ class Production_report_model extends CI_Model
             }
 
             $id_mat     = $parent_coil['id_material'];
-            $harga_beli = (float)$parent_coil['harga_beli']; // Harga beli / costbook per kg TETAP SAMA
-            if ($harga_beli <= 0 && !empty($sc['costbook_rate'])) {
-                $harga_beli = (float)$sc['costbook_rate'];
-            }
-            if ($harga_beli <= 0) {
-                $ws = $this->db->select('harga_beli')->where('code_lv4', $id_mat)->where('harga_beli >', 0)->limit(1)->get('warehouse_stock')->row();
-                if ($ws && (float)$ws->harga_beli > 0) {
-                    $harga_beli = (float)$ws->harga_beli;
-                }
-            }
-
+            $this->load->helper('material_stock');
+            $harga_beli = $this->source_costbooks[(int)$parent_coil['id']]
+                ?? material_stock_costbook($this->db, $parent_coil, true);
             $total_nilai = round($berat_kg * $harga_beli, 2);
-
-            if ($scrap_type === 'sisa_coil') {
-                $target_id_wh  = 3;
-                $target_kd_wh  = 'WIP';
-                $status_proses = 'wip';
-                $ket_history   = 'Sisa Coil Produksi Masuk Gudang WIP dari ' . $kode_trans;
-            } else {
-                // hold_coil
-                $target_id_wh  = 5;
-                $target_kd_wh  = 'HLD';
-                $status_proses = 'on_hold';
-                $ket_history   = 'Hold Coil Produksi Masuk Gudang Hold dari ' . $kode_trans;
-            }
+            $target_kd_wh = $scrap_type === 'sisa_coil' ? 'WIP' : 'HLD';
+            $target_wh = material_stock_warehouse($this->db, $target_kd_wh);
+            $target_id_wh = $target_wh['id'];
+            $status_proses = $scrap_type === 'sisa_coil' ? 'wip' : 'on_hold';
+            $ket_history = ($scrap_type === 'sisa_coil' ? 'Remaining' : 'Hold') . ' Coil Produksi ' . $kode_trans;
 
             // Cek idempoten per (no_ipp, kd_gudang, parent_coil_id, urutan kemunculan) agar save ulang tidak menggandakan BDP.xx
             $occ_key = $scrap_type . ':' . (int)$parent_coil['id'];
@@ -1729,74 +1786,18 @@ class Production_report_model extends CI_Model
                         ]);
                 }
 
-                // 2. UPDATE BUKU STOK AGREGAT DI warehouse_stock KHUSUS GUDANG WIP
-                $qty_awal_wip   = 0;
-                $saldo_awal_wip = 0;
-                $qty_akhir_wip  = $berat_kg;
-                $saldo_akhir_wip= $total_nilai;
-
-                if ($scrap_type === 'sisa_coil') {
-                    $stock_wip = $this->db->query(
-                        "SELECT * FROM warehouse_stock WHERE code_lv4 = ? AND (kd_gudang = 'WIP' OR id_gudang = 3) LIMIT 1 FOR UPDATE",
-                        [$id_mat]
-                    )->row_array();
-
-                    if ($stock_wip) {
-                        $qty_awal_wip   = (float)$stock_wip['qty_stock'];
-                        $saldo_awal_wip = (float)$stock_wip['total_nilai'];
-                        $qty_akhir_wip  = $qty_awal_wip + $berat_kg;
-                        $saldo_akhir_wip= $saldo_awal_wip + $total_nilai;
-
-                        $this->db->where('id', $stock_wip['id'])->update('warehouse_stock', [
-                            'qty_stock'   => $qty_akhir_wip,
-                            'total_nilai' => $saldo_akhir_wip,
-                            'incoming'    => (float)$stock_wip['incoming'] + $berat_kg,
-                            'update_by'   => $user_id,
-                            'update_date' => $now,
-                        ]);
-                    } else {
-                        // Jika baris warehouse_stock untuk WIP belum ada, buat baris baru
-                        $this->db->insert('warehouse_stock', [
-                            'code_lv4'     => $id_mat,
-                            'nm_material'  => $parent_coil['nm_material'],
-                            'trade_name'   => $parent_coil['trade_name'],
-                            'id_gudang'    => 3,
-                            'kd_gudang'    => 'WIP',
-                            'qty_stock'    => $berat_kg,
-                            'incoming'     => $berat_kg,
-                            'harga_beli'   => $harga_beli,
-                            'total_nilai'  => $total_nilai,
-                            'update_by'    => $user_id,
-                            'update_date'  => $now,
-                        ]);
-                    }
-                }
-
-                // 3. INSERT warehouse_history (Audit Mutasi Masuk IN)
-                $this->db->insert('warehouse_history', [
-                    'id_material'     => $id_mat,
-                    'nm_material'     => $parent_coil['nm_material'],
-                    'id_gudang'       => $target_id_wh,
-                    'kd_gudang'       => $target_kd_wh,
-                    'id_gudang_dari'  => 1, // Area Produksi
-                    'kd_gudang_dari'  => 'PRO',
-                    'id_gudang_ke'    => $target_id_wh,
-                    'kd_gudang_ke'    => $target_kd_wh,
-                    'qty_stock_awal'  => $qty_awal_wip,
-                    'qty_stock_akhir' => $qty_akhir_wip,
-                    'no_ipp'          => $kode_trans,
-                    'jumlah_mat'      => $berat_kg,
-                    'ket'             => $ket_history,
-                    'no_coil'         => $new_no_coil,
-                    'harga_beli'      => $harga_beli,
-                    'total_harga'     => $total_nilai,
-                    'saldo_awal'      => $saldo_awal_wip,
-                    'saldo_akhir'     => $saldo_akhir_wip,
-                    'harga_baru'      => $harga_beli,
-                    'harga_lama'      => $harga_beli,
-                    'update_by'       => $user_id,
-                    'update_date'     => $now,
-                ]);
+                $source_wh = material_stock_warehouse($this->db, $parent_coil['kd_gudang']);
+                $new_coil = $this->db->get_where('warehouse_stock_coil', ['id' => $new_inserted_coil_id])->row_array();
+                material_stock_post($this->db, $new_coil, $target_wh, $berat_kg, 'IN', [
+                    'kode_trans' => $kode_trans, 'tanggal' => $tgl_produksi, 'now' => $now,
+                    'user' => $user_id, 'production_report_id' => $report_id, 'rate' => $harga_beli,
+                    'source' => $source_wh, 'destination' => $target_wh,
+                    'to_status' => $status_proses, 'description' => $ket_history,
+                ], $this->stock_out_changes);
+                material_stock_coil_snapshot($this->db, $new_coil, 'IN', $user_id, $now);
+                $this->stock_out_changes['Coil hasil produksi ' . $new_inserted_coil_id] = [
+                    'old' => null, 'new' => $new_coil,
+                ];
             }
         }
     }
@@ -1818,6 +1819,67 @@ class Production_report_model extends CI_Model
         }
         $parent = kartu_stok_extract_parent_spk($spk_no);
         return $parent !== '' ? $parent : $spk_no;
+    }
+
+    /** Field production_reports yang dipakai template jurnal JV016 (master_oto_jurnal_detail.field) */
+    const JURNAL_JV016_FIELDS = [
+        'cogm_material', 'cogm_labor_cost_pc', 'cogm_foh_pc', 'cogm_bpp_pc', 'cogm_consumable_pc',
+        'cogm_biaya_koordinasi_pc', 'cogm_biaya_scrap_pc', 'cogm_loss_kw2_pc',
+        'persediaan_waste', 'total_inventory_sisa', 'persediaan_bahan_baku', 'wip_manufactur',
+        'biaya_scrap_60', 'biaya_kw2_20', 'selisih_weight_value',
+        'hutang_labor_cost_pc', 'hutang_foh_pc', 'hutang_bpp_pc', 'hutang_consumable_pc',
+        'hutang_biaya_koordinasi_pc', 'hutang_biaya_scrap_pc',
+        'total_inventory_fg', 'total_cogm',
+    ];
+
+    /**
+     * Bulatkan field jurnal JV016 ke Rupiah tanpa desimal.
+     * total_cogm = jumlah komponen COGM yang sudah dibulatkan, dan total_inventory_fg = total_cogm - cogm_loss_kw2_pc,
+     * agar sisi Debit (komponen COGM / Inventory FG + KW2) tetap sama dengan Kredit (Total COGM) setelah pembulatan.
+     */
+    private function _round_jurnal_fields(array &$h)
+    {
+        foreach ($this->_jurnal_template_fields() as $f) {
+            if (array_key_exists($f, $h)) {
+                $h[$f] = round((float) $h[$f], 0);
+            }
+        }
+        $total_cogm = 0.0;
+        foreach (['cogm_material', 'cogm_labor_cost_pc', 'cogm_foh_pc', 'cogm_bpp_pc', 'cogm_consumable_pc', 'cogm_biaya_koordinasi_pc', 'cogm_biaya_scrap_pc'] as $f) {
+            $total_cogm += (float) ($h[$f] ?? 0);
+        }
+        $h['total_cogm']         = $total_cogm;
+        $h['total_inventory_fg'] = $total_cogm - (float) ($h['cogm_loss_kw2_pc'] ?? 0);
+        if (array_key_exists('biaya_kw2_20', $h)) {
+            $h['biaya_kw2_20'] = (float) ($h['cogm_loss_kw2_pc'] ?? 0);
+        }
+    }
+
+    /**
+     * Field nominal template jurnal Laporan Produksi (ms_jurnal_mapping -> master_oto_jurnal_detail.field),
+     * digabung dengan daftar baku JV016 agar tetap terbulatkan bila DB accounting tidak bisa dibaca.
+     */
+    private function _jurnal_template_fields()
+    {
+        static $fields = null;
+        if ($fields !== null) {
+            return $fields;
+        }
+        $fields = self::JURNAL_JV016_FIELDS;
+        $mapping = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'production_report', 'action' => 'save_production_report'])->row();
+        if ($mapping && !empty($mapping->kode_master_jurnal)) {
+            $db_acc = $this->load->database('accounting', TRUE);
+            if ($db_acc && $db_acc->conn_id) {
+                $rows = $db_acc->select('field')->where('kode_master_jurnal', $mapping->kode_master_jurnal)->get('master_oto_jurnal_detail')->result_array();
+                foreach ($rows as $r) {
+                    if (!empty($r['field'])) {
+                        $fields[] = $r['field'];
+                    }
+                }
+            }
+        }
+        $fields = array_values(array_unique($fields));
+        return $fields;
     }
 
     /**
@@ -1993,6 +2055,7 @@ class Production_report_model extends CI_Model
         // 4. Catat ke warehouse_coil_kartu_stok per coil secara berurutan
         $destinations = ['consume', 'WIP', 'hold', 'Scrap'];
         foreach ($coils as $cid => $coil) {
+            $source_label = kartu_stok_map_gudang_label($coil['kd_gudang']);
             $b       = $buckets[$cid];
             $has_out = ($b['consume'] > 0 || $b['WIP'] > 0 || $b['hold'] > 0 || $b['Scrap'] > 0);
             if (!$has_out) {
@@ -2002,7 +2065,7 @@ class Production_report_model extends CI_Model
             // Pastikan coil memiliki baris IN pembuka jika belum pernah masuk ke PRT lewat Request List
             $last = kartu_stok_get_last_balance($cid);
             if (!$last['exists']) {
-                $opening_qty = round((float) $coil_weights[$cid], 3);
+                $opening_qty = round((float)$coil['net_weight'], 3);
                 kartu_stok_record_entry([
                     'id_coil'              => $cid,
                     'no_trs'               => $no_trs,
@@ -2011,12 +2074,12 @@ class Production_report_model extends CI_Model
                     'no_coil'              => $coil['no_coil'],
                     'kode_internal'        => $coil['kode_internal'],
                     'status'               => 'in',
-                    'dari'                 => kartu_stok_map_gudang_label($coil['kd_gudang']),
-                    'ke'                   => 'prod. 2',
+                    'dari'                 => $source_label,
+                    'ke'                   => $source_label,
                     'qty_trans'            => $opening_qty,
                     'qty_awal'             => 0,
                     'production_report_id' => $report_id,
-                    'keterangan'           => 'Stok awal coil dipakai produksi (' . $no_trs . ')',
+                    'keterangan'           => 'Stok awal aktual coil dipakai produksi (' . $no_trs . ')',
                     'created_by'           => $user_id,
                     'created_at'           => $now,
                 ]);
@@ -2035,7 +2098,7 @@ class Production_report_model extends CI_Model
                     'no_coil'              => $coil['no_coil'],
                     'kode_internal'        => $coil['kode_internal'],
                     'status'               => 'out',
-                    'dari'                 => 'prod. 2',
+                    'dari'                 => $source_label,
                     'ke'                   => $dest,
                     'qty_trans'            => $qty_out,
                     'production_report_id' => $report_id,
@@ -2070,10 +2133,12 @@ class Production_report_model extends CI_Model
             }
             if ($coil_db) {
                 $cb = (float)$coil_db['harga_beli'];
-                if ($cb <= 0 && !empty($coil_db['id_material'])) {
-                    $mst = $this->db->select('harga_beli')->where('code_lv4', $coil_db['id_material'])->where('harga_beli >', 0)->get('warehouse_stock')->row();
-                    if ($mst && (float)$mst->harga_beli > 0) {
-                        $cb = (float)$mst->harga_beli;
+                if ((int)$header['status_draft'] !== 0) {
+                    $this->load->helper('material_stock');
+                    try {
+                        $cb = material_stock_costbook($this->db, $coil_db);
+                    } catch (RuntimeException $e) {
+                        $cb = 0;
                     }
                 }
                 if ($c_code) {
@@ -2084,14 +2149,9 @@ class Production_report_model extends CI_Model
                 }
             }
         }
-        $fallback_cb = 0;
-        foreach ($coil_cb_map as $val) {
-            if ($val > 0) {
-                $fallback_cb = $val;
-                break;
-            }
-        }
-
+        $unique_rates = array_values(array_unique(array_values($coil_cb_map), SORT_REGULAR));
+        $fallback_cb = count($unique_rates) === 1 ? (float)$unique_rates[0] : 0;
+        if ((int)$header['status_draft'] !== 0) {
         foreach ($items as &$it) {
             if (empty($it['costbook_rate']) || (float)$it['costbook_rate'] <= 0) {
                 $c_code = !empty($it['source_material_coil']) ? trim((string) $it['source_material_coil']) : '';
@@ -2119,6 +2179,7 @@ class Production_report_model extends CI_Model
             }
         }
         unset($sc);
+        }
 
         $spk_detail = $this->db->where('id', $header['id_tr_spk_detail'])->get('tr_spk_material_detail')->row_array();
         $spk_header = $spk_detail ? $this->get_spk_header($spk_detail['spk_no']) : null;
@@ -2257,18 +2318,8 @@ class Production_report_model extends CI_Model
             }
         }
 
-        // Cari costbook dari tr_cost_book
-        $costbook = (float)$coil['harga_beli'];
-        if (!empty($coil['id_material'])) {
-            $this->db->where('id_material', $coil['id_material']);
-            if (!empty($coil['id_gudang'])) {
-                $this->db->where('id_gudang', $coil['id_gudang']);
-            }
-            $cb_row = $this->db->get('tr_cost_book')->row_array();
-            if ($cb_row && (float)$cb_row['costbook'] > 0) {
-                $costbook = (float)$cb_row['costbook'];
-            }
-        }
+        $this->load->helper('material_stock');
+        $costbook = material_stock_costbook($this->db, $coil);
 
         // Cari price_per_unit_po dari dt_trans_po
         $price_per_unit_po = 0;
@@ -2652,10 +2703,10 @@ class Production_report_model extends CI_Model
             }
         }
         if (preg_match('/[x×]\s*(\d+(?:[.,]\d+)?)\s*(?:mtr|meter|m)\b/i', (string) $prod_name, $m)) {
-            return (float) str_replace(',', '.', $m[1]);
+            return (float) str_replace(',', '.', $m[1] ?? '');
         }
         if (preg_match('/\b(\d+(?:[.,]\d+)?)\s*(?:mtr|meter)\b/i', (string) $prod_name, $m)) {
-            return (float) str_replace(',', '.', $m[1]);
+            return (float) str_replace(',', '.', $m[1] ?? '');
         }
         return 0.0;
     }

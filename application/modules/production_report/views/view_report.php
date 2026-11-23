@@ -33,7 +33,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
 <!-- Header Info -->
 <div class="card mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Detail Laporan Produksi: <?= $report->report_no ?></h5>
+        <h5 class="mb-0">Production Report Detail: <?= $report->report_no ?></h5>
         <span class="badge bg-<?= $badge_color ?> fs-6"><?= $report->status ?></span>
     </div>
     <div class="card-body">
@@ -41,7 +41,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
             <div class="col-md-6">
                 <table class="table table-sm table-borderless">
                     <tr>
-                        <td width="40%">No Laporan</td>
+                        <td width="40%">Report No</td>
                         <td><strong><?= $report->report_no ?></strong></td>
                     </tr>
                     <tr>
@@ -61,7 +61,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
             <div class="col-md-6">
                 <table class="table table-sm table-borderless">
                     <tr>
-                        <td width="40%">Dibuat Oleh</td>
+                        <td width="40%">Created By</td>
                         <td><?= isset($report->nama_created_by) ? $report->nama_created_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -70,7 +70,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                     </tr>
                     <?php if ($report->approved_by): ?>
                     <tr>
-                        <td>Disetujui Oleh</td>
+                        <td>Approved By</td>
                         <td><?= isset($report->nama_approved_by) ? $report->nama_approved_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -95,13 +95,13 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
 <div class="row mb-3">
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header"><h6 class="mb-0">Rincian Hasil Produksi</h6></div>
+            <div class="card-header"><h6 class="mb-0">Production Output Details</h6></div>
             <div class="card-body p-0">
                 <table class="table table-sm table-striped mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Kategori</th>
-                            <th class="text-end">Berat (kg)</th>
+                            <th>Category</th>
+                            <th class="text-end">Weight (kg)</th>
                             <th class="text-end">Qty</th>
                         </tr>
                     </thead>
@@ -159,7 +159,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                     </tbody>
                     <tfoot class="table-dark">
                         <tr>
-                            <td><strong>Total Berat Coil</strong></td>
+                            <td><strong>Total Coil Weight</strong></td>
                             <td class="text-end"><strong><?= number_format((float) $result->total_berat_coil, 3) ?></strong></td>
                             <td></td>
                         </tr>
@@ -178,12 +178,12 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
         <!-- Yield Breakdown -->
         <?php if (!empty($yield)): ?>
         <div class="card mb-3">
-            <div class="card-header"><h6 class="mb-0">Yield per Kategori</h6></div>
+            <div class="card-header"><h6 class="mb-0">Yield per Category</h6></div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Kategori</th>
+                            <th>Category</th>
                             <th class="text-end">Yield (%)</th>
                             <th>Progress</th>
                         </tr>
@@ -233,18 +233,18 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
         <!-- Validasi Berat FG -->
         <div class="card <?= ($deviasi && $deviasi['is_exception']) ? 'border-danger' : '' ?>">
             <div class="card-header <?= ($deviasi && $deviasi['is_exception']) ? 'bg-danger text-white' : '' ?>">
-                <h6 class="mb-0">Validasi Berat Satuan FG</h6>
+                <h6 class="mb-0">FG Unit Weight Validation</h6>
             </div>
             <div class="card-body">
                 <table class="table table-sm table-borderless mb-0">
                     <tr>
-                        <td width="50%">Berat Satuan Aktual</td>
+                        <td width="50%">Actual Unit Weight</td>
                         <td class="text-end fw-bold">
                             <?= $result->fg_qty > 0 ? number_format((float) $result->berat_satuan_fg, 4) . ' kg' : '—' ?>
                         </td>
                     </tr>
                     <tr>
-                        <td>Berat Standar</td>
+                        <td>Standard Weight</td>
                         <td class="text-end">
                             <?= $berat_standar > 0 ? number_format((float) $berat_standar, 4) . ' kg' : '—' ?>
                         </td>
@@ -263,12 +263,12 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                     <?php if ($report->override_fg): ?>
                         <div class="alert alert-warning mt-2 mb-0">
                             <i class="fa fa-check-circle"></i>
-                            <strong>Override disetujui.</strong> Alasan: <?= $report->override_alasan ?>
+                            <strong>Override approved.</strong> Alasan: <?= $report->override_alasan ?>
                         </div>
                     <?php else: ?>
                         <div class="alert alert-danger mt-2 mb-0">
                             <i class="fa fa-exclamation-triangle"></i>
-                            <strong>Deviasi melebihi toleransi!</strong> Diperlukan konfirmasi QC sebelum posting.
+                            <strong>Deviation exceeds tolerance!</strong> QC confirmation is required before posting.
                         </div>
                     <?php endif; ?>
                 <?php elseif ($deviasi): ?>
@@ -286,7 +286,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
 <div class="card">
     <div class="card-body d-flex flex-wrap gap-2">
         <a href="<?= base_url('production_report') ?>" class="btn btn-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
 
         <?php if ($report->status === 'Draft'): ?>
@@ -326,7 +326,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Reject Laporan</h5>
+                <h5 class="modal-title">Reject Report</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -334,7 +334,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                 <textarea id="alasan_reject" class="form-control" rows="3" placeholder="Masukkan alasan reject..."></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" onclick="doReject()">Reject</button>
             </div>
         </div>
@@ -346,20 +346,20 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-warning">
-                <h5 class="modal-title">Konfirmasi Override Deviasi Berat FG</h5>
+                <h5 class="modal-title">Confirm FG Weight Deviation Override</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
-                    Deviasi berat FG melebihi toleransi. Dengan mengisi alasan dan mengkonfirmasi,
+                    The FG weight deviation exceeds tolerance. By filling in a reason and confirming,
                     Anda menyetujui bahwa laporan ini dapat diposting meskipun ada deviasi.
                 </div>
                 <label class="form-label">Alasan Override <span class="text-danger">*</span></label>
                 <textarea id="alasan_override" class="form-control" rows="3" placeholder="Masukkan alasan override..."></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-warning" onclick="doOverride()">Konfirmasi Override</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="doOverride()">Confirm Override</button>
             </div>
         </div>
     </div>
@@ -369,41 +369,41 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
 var reportNo = '<?= $report->report_no ?>';
 
 function doSubmit() {
-    if (!confirm('Submit laporan ini untuk review?')) return;
+    if (!confirm('Submit this report for review?')) return;
     $.post(siteurl + 'production_report/process_submit/' + reportNo, {}, function (res) {
         if (res.success) {
             location.reload();
         } else {
-            alert('Gagal: ' + res.message);
+            alert('Failed: ' + res.message);
         }
     }, 'json');
 }
 
 function doApprove() {
-    if (!confirm('Approve laporan ini?')) return;
+    if (!confirm('Approve this report?')) return;
     $.post(siteurl + 'production_report/process_approve/' + reportNo, {}, function (res) {
         if (res.success) {
             location.reload();
         } else {
-            alert('Gagal: ' + res.message);
+            alert('Failed: ' + res.message);
         }
     }, 'json');
 }
 
 function doReject() {
     var alasan = $('#alasan_reject').val().trim();
-    if (!alasan) { alert('Alasan reject wajib diisi'); return; }
+    if (!alasan) { alert('Reject reason is required'); return; }
     $.post(siteurl + 'production_report/process_reject/' + reportNo, { alasan: alasan }, function (res) {
         if (res.success) {
             location.reload();
         } else {
-            alert('Gagal: ' + res.message);
+            alert('Failed: ' + res.message);
         }
     }, 'json');
 }
 
 function doPost() {
-    if (!confirm('Post laporan ini ke FG? Tindakan ini tidak dapat dibatalkan.')) return;
+    if (!confirm('Post this report to FG? This action cannot be undone.')) return;
     $.post(siteurl + 'production_report/process_post/' + reportNo, {}, function (res) {
         if (res.success) {
             alert(res.message);
@@ -412,20 +412,20 @@ function doPost() {
             alert(res.message);
             $('#modalOverride').modal('show');
         } else {
-            alert('Gagal: ' + res.message);
+            alert('Failed: ' + res.message);
         }
     }, 'json');
 }
 
 function doOverride() {
     var alasan = $('#alasan_override').val().trim();
-    if (!alasan) { alert('Alasan override wajib diisi'); return; }
+    if (!alasan) { alert('Override reason is required'); return; }
     $.post(siteurl + 'production_report/process_override_fg/' + reportNo, { alasan: alasan }, function (res) {
         if (res.success) {
             $('#modalOverride').modal('hide');
             location.reload();
         } else {
-            alert('Gagal: ' + res.message);
+            alert('Failed: ' + res.message);
         }
     }, 'json');
 }

@@ -1,13 +1,13 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor PO</label>
+            <label for="">PO Number</label>
             <input type="text" name="nomor_po" id="" class="form-control form-control-sm nomor_po" value="<?= $data_invoice['id'] ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nama Supplier</label>
+            <label for="">Supplier Name</label>
             <input type="text" name="nm_supplier" id="" class="form-control form-control-sm" value="<?= $data_invoice['nm_supplier'] ?>" readonly>
         </div>
     </div>
@@ -37,19 +37,19 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor Invoice</label>
+            <label for="">Invoice Number</label>
             <input type="text" name="nomor_invoice" id="" class="form-control form-control-sm nomor_invoice" value="<?= $data_invoice['invoice_no'] ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nilai PPn</label>
+            <label for="">VAT Value</label>
             <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right auto_num nilai_ppn" value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nilai Disc</label>
+            <label for="">Discount Value</label>
             <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right auto_num nilai_disc" value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
         </div>
     </div>
@@ -83,7 +83,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <b>Informasi Bank :</b>
+        <b>Bank Information:</b>
         <div class="form-group">
             <label for="">Bank</label>
             <input type="text" name="bank" id="" class="form-control form-control-sm" placeholder="- Bank -" value="<?= $data_invoice['bank'] ?>" readonly>
@@ -91,7 +91,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor Faktur Pajak</label>
+            <label for="">Tax Invoice Number</label>
             <input type="text" name="nomor_faktur_pajak" id="" class="form-control form-control-sm nomor_faktur_pajak" value="<?= $data_invoice['no_faktur_pajak'] ?>" readonly>
         </div>
     </div>
@@ -103,14 +103,14 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Tanggal Faktur Pajak</label>
+            <label for="">Tax Invoice Date</label>
             <input type="date" name="tanggal_faktur_pajak" id="" class="form-control form-control-sm tanggal_faktur_pajak" value="<?= $data_invoice['tanggal_faktur_pajak'] ?>" readonly>
         </div>
     </div>
     <div class="col-md-6"></div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nama</label>
+            <label for="">Name</label>
             <input type="text" name="nm_acc_bank" id="" class="form-control form-control-sm" placeholder="- Nama Acc Bank -" value="<?= $data_invoice['nm_acc_bank'] ?>" readonly>
         </div>
     </div>

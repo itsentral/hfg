@@ -12,11 +12,11 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-random me-2"></i>Daftar Request Mutasi
             </h5>
-            <small class="text-muted">Kelola pengajuan pemindahan saldo antar rekening kas / bank</small>
+            <small class="text-muted">Manage balance transfer requests between cash / bank accounts</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <?php if ($ENABLE_ADD) : ?>
-                <a class="btn btn-success btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/create') ?>" title="Tambah Request Mutasi">
+                <a class="btn btn-success btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/create') ?>" title="Add Mutation Request">
                     <i class="fa fa-plus me-1"></i> Tambah Request
                 </a>
             <?php endif; ?>
@@ -30,12 +30,12 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                     <tr>
                         <th width="4%" class="text-center">No</th>
                         <th width="9%" class="text-center">Tgl Request</th>
-                        <th width="13%">Kode Mutasi</th>
-                        <th>Keterangan</th>
+                        <th width="13%">Mutation Code</th>
+                        <th>Description</th>
                         <th width="13%">Bank Asal</th>
-                        <th width="13%">Bank Tujuan</th>
-                        <th width="8%" class="text-center">Mata Uang</th>
-                        <th width="12%" class="text-end">Nilai Transfer</th>
+                        <th width="13%">Destination Bank</th>
+                        <th width="8%" class="text-center">Currency</th>
+                        <th width="12%" class="text-end">Transfer Value</th>
                         <th width="8%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -53,7 +53,7 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                                 <td class="text-end fw-semibold">Rp <?= number_format((float) $record->nilai_request, 0, ',', '.') ?></td>
                                 <td class="text-center text-nowrap">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout/' . $record->kd_mutasi) ?>" target="_blank" title="Cetak Form Request">
+                                        <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout/' . $record->kd_mutasi) ?>" target="_blank" title="Print Request Form">
                                             <i class="fa fa-print"></i>
                                         </a>
                                     </div>

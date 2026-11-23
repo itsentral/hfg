@@ -322,7 +322,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     <input type="text" id="dpp_ls" class="form-control form-control-sm readonly-field" readonly tabindex="-1" placeholder="0">
                 </div>
                 <div class="col-md-3">
-                    <label>Total Biaya LS <small class="text-muted">(LS Cost + PPN - PPH)</small></label>
+                    <label>Total LS Cost <small class="text-muted">(LS Cost + PPN - PPH)</small></label>
                     <input type="text" id="total_biaya_ls" class="form-control form-control-sm readonly-field" readonly tabindex="-1" placeholder="0">
                 </div>
             </div>
@@ -777,7 +777,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             var id_supplier = $(this).val();
             var $selectPo = $('#select_po');
 
-            $selectPo.empty().append('<option value="">-- Pilih PO --</option>').trigger('change');
+            $selectPo.empty().append('<option value="">-- Select PO --</option>').trigger('change');
             $('#no_po').val('');
             $('#data_po_body').html('<tr id="tr_empty_po"><td colspan="16" class="text-center text-muted py-3"><i class="fas fa-info-circle me-1"></i>Select Supplier and PO Number to load material data.</td></tr>');
             materialsData = [];
@@ -837,7 +837,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             // Validasi DP sebelum load materials
             Swal.fire({
                 title: '<i class="fas fa-spinner fa-spin"></i> Memeriksa Status PO...',
-                html: 'Sedang memeriksa status pembayaran DP untuk PO ini.',
+                html: 'Checking the DP payment status for this PO.',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showConfirmButton: false,
@@ -857,10 +857,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
                         // DP belum dibayar — block dan tampilkan warning
                         Swal.fire({
                             icon: 'warning',
-                            title: 'DP Belum Dibayar',
+                            title: 'DP Not Paid',
                             html: '<p>' + res.message + '</p>' +
                                   '<a href="' + res.link + '" class="btn btn-primary btn-sm mt-2" target="_blank">' +
-                                  '<i class="fas fa-external-link-alt"></i> Buka Menu Payment DP</a>',
+                                  '<i class="fas fa-external-link-alt"></i> Open DP Payment Menu</a>',
                             confirmButtonText: 'Mengerti',
                             confirmButtonColor: '#6c757d'
                         });

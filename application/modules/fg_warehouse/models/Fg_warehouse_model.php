@@ -166,10 +166,10 @@ class Fg_warehouse_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal update stok IN untuk ' . $produk_fg];
+            return ['success' => false, 'message' => 'Failed to update IN stock for ' . $produk_fg];
         }
 
-        return ['success' => true, 'message' => 'Stok IN berhasil diupdate'];
+        return ['success' => true, 'message' => 'IN stock updated successfully'];
     }
 
     /**
@@ -195,7 +195,7 @@ class Fg_warehouse_model extends CI_Model
 
         $stok = $this->get_stok($produk_fg);
         if (!$stok) {
-            return ['success' => false, 'message' => 'Stok produk ' . $produk_fg . ' tidak ditemukan'];
+            return ['success' => false, 'message' => 'Product stock ' . $produk_fg . ' not found'];
         }
 
         $this->db->trans_start();
@@ -240,10 +240,10 @@ class Fg_warehouse_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal update stok OUT untuk ' . $produk_fg];
+            return ['success' => false, 'message' => 'Failed to update OUT stock for ' . $produk_fg];
         }
 
-        return ['success' => true, 'message' => 'Stok OUT berhasil diupdate'];
+        return ['success' => true, 'message' => 'OUT stock updated successfully'];
     }
 
     // =========================================================================
@@ -326,10 +326,10 @@ class Fg_warehouse_model extends CI_Model
     {
         $receipt = $this->get_receipt($fg_receipt_no);
         if (!$receipt) {
-            return ['success' => false, 'message' => 'FG Receipt tidak ditemukan'];
+            return ['success' => false, 'message' => 'FG Receipt not found'];
         }
         if ($receipt->status !== 'Draft') {
-            return ['success' => false, 'message' => 'FG Receipt hanya bisa diposting dari status Draft'];
+            return ['success' => false, 'message' => 'FG Receipt can only be posted from status Draft'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -358,7 +358,7 @@ class Fg_warehouse_model extends CI_Model
                     'posted_by' => null,
                     'posted_at' => null,
                 ], ['fg_receipt_no' => $fg_receipt_no]);
-                return ['success' => false, 'message' => 'Gagal update stok FG: ' . $result['message']];
+                return ['success' => false, 'message' => 'Failed to update FG stock: ' . $result['message']];
             }
         }
 
@@ -408,10 +408,10 @@ class Fg_warehouse_model extends CI_Model
     {
         $receipt = $this->get_receipt($fg_receipt_no);
         if (!$receipt) {
-            return ['success' => false, 'message' => 'FG Receipt tidak ditemukan'];
+            return ['success' => false, 'message' => 'FG Receipt not found'];
         }
         if ($receipt->status !== 'Posted') {
-            return ['success' => false, 'message' => 'Hanya FG Receipt berstatus Posted yang bisa di-cancel'];
+            return ['success' => false, 'message' => 'Only FG Receipts with status Posted can be cancelled'];
         }
 
         // Update status
@@ -454,6 +454,6 @@ class Fg_warehouse_model extends CI_Model
             );
         }
 
-        return ['success' => true, 'message' => 'FG Receipt ' . $fg_receipt_no . ' berhasil di-cancel dan stok telah di-reverse'];
+        return ['success' => true, 'message' => 'FG Receipt ' . $fg_receipt_no . ' cancelled successfully and the stock has been reversed'];
     }
 }

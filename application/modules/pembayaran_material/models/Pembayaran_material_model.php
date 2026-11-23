@@ -58,7 +58,7 @@ class Pembayaran_material_model extends BF_Model
 		// Ambil 4 digit terakhir setelah tanda '-' terakhir, tidak bergantung posisi tetap
 		$urutan = 0;
 		if (!empty($kodeBarang)) {
-			$urutan = (int) substr(strrchr($kodeBarang, '-'), 1);
+			$urutan = (int) substr(strrchr($kodeBarang ?? '', '-'), 1);
 		}
 		$urutan++;
 
@@ -148,7 +148,7 @@ class Pembayaran_material_model extends BF_Model
 			])->num_rows() > 0;
 
 			// Merapikan format tipe (contoh: "invoice_local" menjadi "Invoice Local")
-			$tipe_clean = ucwords(str_replace('_', ' ', $item->tipe));
+			$tipe_clean = ucwords(str_replace('_', ' ', $item->tipe ?? ''));
 
 			$hasil[] = [
 				'no' => $no,
@@ -179,8 +179,8 @@ class Pembayaran_material_model extends BF_Model
 		$post = $this->input->post();
 
 		$id_payment = $post['id_payment'];
-		$payment_bank = str_replace(',', '', $post['payment_bank']);
-		$bank_charge = str_replace(',', '', $post['bank_charge']);
+		$payment_bank = str_replace(',', '', $post['payment_bank'] ?? '');
+		$bank_charge = str_replace(',', '', $post['bank_charge'] ?? '');
 		$bank = $post['bank'];
 
 		$hasil_jurnal = '';

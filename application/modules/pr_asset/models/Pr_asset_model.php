@@ -66,7 +66,7 @@ class Pr_asset_model extends BF_Model
             } else {
                 $toggle_btn = "<button type='button' class='btn btn-sm btn-warning look_hide me-1' title='View Detail' data-id='" . $nomor . "'><i class='fa fa-eye me-1'></i> View</button>";
             }
-            $modal_btn = "<button type='button' class='btn btn-sm btn-outline-primary view_modal_pr me-1' title='Detail PR' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-info-circle'></i></button>";
+            $modal_btn = "<button type='button' class='btn btn-sm btn-outline-primary view_modal_pr me-1' title='PR Detail' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-info-circle'></i></button>";
             $print_btn = "<a href='" . site_url('pr_asset/print_pr_asset/' . $row['no_pr']) . "' target='_blank' class='btn btn-sm btn-info text-white' title='Print PR'><i class='fa fa-print'></i> Print</a>";
 
             $nestedData[] = "<div align='center' class='btn-group'>" . $toggle_btn . $modal_btn . $print_btn . "</div>";
@@ -88,7 +88,7 @@ class Pr_asset_model extends BF_Model
                                 </select>
                              </div>";
                 $reason_input = "<div align='right'><b>REASON REJECT</b><br>
-                                    <input type='text' id='reason_" . $nomor . "' class='form-control form-control-sm' placeholder='Alasan jika reject'>
+                                    <input type='text' id='reason_" . $nomor . "' class='form-control form-control-sm' placeholder='Reason if rejected'>
                                     <input type='hidden' id='no_pr_" . $nomor . "' value='" . $row['no_pr'] . "'>
                                  </div>";
                 $approve_btn = "<button type='button' class='btn btn-sm btn-success approve' title='Submit Approval' data-id='" . $nomor . "' data-tipe_approve='" . $tanda . "'><i class='fa fa-save me-1'></i> Submit</button>";
@@ -96,8 +96,8 @@ class Pr_asset_model extends BF_Model
                 $nestedData2   = array();
                 $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
                 $nestedData2[] = "<div align='left'></div>";
-                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
-                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>ITEM QTY</b><br>" . number_format((float) $row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>PR VALUE</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
                 $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
                 $nestedData2[] = $act_html;
                 $nestedData2[] = $reason_input;
@@ -106,8 +106,8 @@ class Pr_asset_model extends BF_Model
                 $nestedData2   = array();
                 $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
                 $nestedData2[] = "<div align='left'></div>";
-                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
-                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>ITEM QTY</b><br>" . number_format((float) $row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>PR VALUE</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
                 $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
                 $nestedData2[] = $reason_html;
                 $nestedData2[] = "<div align='center'></div>";
@@ -227,10 +227,10 @@ class Pr_asset_model extends BF_Model
             $nestedData2   = array();
             $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
             $nestedData2[] = "<div align='left'></div>";
-            $nestedData2[] = "<div align='right'><b>BUDGET</b><br>" . number_format((float) $row['budget']) . "<br><b>SISA BUDGET PR</b></br>" . number_format((float) $row['budget_pr']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>RENCANA BELI</b><br>" . date('F Y', strtotime($row['tahun'] . '-' . sprintf('%02d', $row['bulan']) . '-01')) . "<br><b>KETERANGAN</b><br>" . strtoupper((string) $row['keterangan']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>BUDGET</b><br>" . number_format((float) $row['budget']) . "<br><b>REMAINING PR BUDGET</b></br>" . number_format((float) $row['budget_pr']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>RENCANA BELI</b><br>" . date('F Y', strtotime($row['tahun'] . '-' . sprintf('%02d', $row['bulan']) . '-01')) . "<br><b>DESCRIPTION</b><br>" . strtoupper((string) $row['keterangan']) . "</div>";
             $nestedData2[] = "<div align='right'><b>REVISI QTY</b><input type='text' id='qty_rev_" . $nomor . "' class='form-control form-control-sm text-center maskM' placeholder='Qty Rev' value='" . number_format((float) $row['qty']) . "'></div>";
-            $nestedData2[] = "<div align='right'><b>NILAI PR</b><input type='text' id='nil_pr_" . $nomor . "' class='form-control form-control-sm text-end maskM' placeholder='Nilai PR' value='" . number_format((float) $row['budget']) . "'></div>";
+            $nestedData2[] = "<div align='right'><b>PR VALUE</b><input type='text' id='nil_pr_" . $nomor . "' class='form-control form-control-sm text-end maskM' placeholder='PR Value' value='" . number_format((float) $row['budget']) . "'></div>";
             $nestedData2[] = "<div align='right'><b>TGL DIBUTUHKAN</b>
                                 <input type='date' id='tgl_butuh_" . $nomor . "' class='form-control form-control-sm text-center'>
                                 <input type='hidden' id='code_plan_" . $nomor . "' value='" . $row['code_plan'] . "'>
@@ -298,8 +298,8 @@ class Pr_asset_model extends BF_Model
     {
         $data      = $this->input->post();
         $code_plan = $data['code_plan'];
-        $qty_rev   = str_replace(',', '', $data['qty_rev']);
-        $nil_pr    = str_replace(',', '', $data['nil_pr']);
+        $qty_rev   = str_replace(',', '', $data['qty_rev'] ?? '');
+        $nil_pr    = str_replace(',', '', $data['nil_pr'] ?? '');
         $tgl_butuh = $data['tgl_butuh'];
 
         $Ym          = date('y');
@@ -405,12 +405,12 @@ class Pr_asset_model extends BF_Model
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
-            $Arr_Data = array('pesan' => 'Proses approval gagal...', 'status' => 0);
+            $Arr_Data = array('pesan' => 'Approval process failed.', 'status' => 0);
             write_log('Approval PR Asset', 'Approval PR Asset', 'Proses ' . $status_lbl . ' PR asset failed: ' . $no_pr, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
-            $Arr_Data   = array('pesan' => 'Berhasil ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
+            $Arr_Data   = array('pesan' => 'Success ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
             $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdate ?? [])) : $data;
             write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }

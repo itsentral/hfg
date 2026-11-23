@@ -61,7 +61,7 @@
                 
             foreach ($qrTab as $line) {
                 $arrAdd = array();
-                foreach(str_split($line) as $char)
+                foreach(str_split($line ?? '') as $char)
                     $arrAdd[] = ($char=='1')?1:0;
                 $barcode_array['bcode'][] = $arrAdd;
             }

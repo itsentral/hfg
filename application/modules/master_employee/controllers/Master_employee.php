@@ -113,13 +113,13 @@ class Master_employee extends Admin_Controller
 			$v = is_string($v) ? trim($v) : '';
 			// Pemisah yang lazim diketik user dibuang dari isian nomor
 			if (in_array($f, ['no_ktp', 'npwp', 'bpjs', 'rek_number'], true)) {
-				$v = preg_replace('/[\s.\-]/', '', $v);
+				$v = preg_replace('/[\s.\-]/', '', $v ?? '');
 			} elseif ($f === 'no_ponsel') {
-				$v = preg_replace('/[\s.\-()]/', '', $v);
+				$v = preg_replace('/[\s.\-()]/', '', $v ?? '');
 			} elseif ($f === 'email') {
 				$v = strtolower($v);
 			} elseif ($f === 'nm_karyawan') {
-				$v = preg_replace('/\s+/', ' ', $v);
+				$v = preg_replace('/\s+/', ' ', $v ?? '');
 			}
 			$in[$f] = ($v === '' || $v === '0') ? null : $v;
 		}
@@ -135,13 +135,13 @@ class Master_employee extends Admin_Controller
 		if ($id > 0) {
 			$old = $this->db->get_where('employee', ['id' => $id])->row_array();
 			if (!$old || !empty($old['deleted_date'])) {
-				return $this->_json_error('Data karyawan tidak ditemukan atau sudah dihapus.');
+				return $this->_json_error('Employee data was not found or has been deleted.');
 			}
 		}
 		$errors = $this->_validate_employee($in, $id);
 		$upload = $this->_validate_ttd($errors);
 		if ($errors) {
-			return $this->_json_error('Periksa kembali isian yang ditandai merah.', $errors);
+			return $this->_json_error('Please check the fields marked in red.', $errors);
 		}
 
 		// 3. Simpan file tanda tangan (hanya setelah semua validasi lolos)
@@ -153,7 +153,7 @@ class Master_employee extends Admin_Controller
 			}
 			$ttd_path = $dir . 'ttd-' . uniqid() . '-' . date('Ymdhis') . '.' . $upload['ext'];
 			if (!move_uploaded_file($upload['tmp'], FCPATH . $ttd_path)) {
-				return $this->_json_error('Gagal menyimpan file tanda tangan. Silakan coba lagi.', ['tanda_tangan' => 'Gagal menyimpan file.']);
+				return $this->_json_error('Failed to save the signature file. Please try again.', ['tanda_tangan' => 'Failed to save the file.']);
 			}
 		}
 
@@ -189,10 +189,10 @@ class Master_employee extends Admin_Controller
 				@unlink(FCPATH . $ttd_path);
 			}
 			write_log('Master Employee', $action, 'Gagal ' . strtolower($action) . ' employee: ' . $nik . ' (' . $in['nm_karyawan'] . ')', $logPayload, null, 0);
-			return $this->_json_error('Data gagal disimpan. Silakan coba lagi atau hubungi administrator.');
+			return $this->_json_error('Failed to save the data. Please try again or contact the administrator.');
 		}
 		write_log('Master Employee', $action, $action . ' employee: ' . $nik . ' (' . $in['nm_karyawan'] . ')', $logPayload, null, 1);
-		echo json_encode(['status' => 1, 'pesan' => 'Data karyawan berhasil disimpan (' . $nik . ').']);
+		echo json_encode(['status' => 1, 'pesan' => 'Employee data saved successfully (' . $nik . ').']);
 	}
 
 	/**
@@ -202,23 +202,23 @@ class Master_employee extends Admin_Controller
 	{
 		$e = [];
 		if ($in['nm_karyawan'] === null) {
-			$e['nm_karyawan'] = 'Nama karyawan wajib diisi.';
+			$e['nm_karyawan'] = 'Employee name is required.';
 		}
 
 		foreach ($this->max_length as $f => $max) {
-			if ($in[$f] !== null && mb_strlen($in[$f]) > $max) {
-				$e[$f] = 'Maksimal ' . $max . ' karakter.';
+			if ($in[$f] !== null && mb_strlen($in[$f] ?? '') > $max) {
+				$e[$f] = 'Maximum ' . $max . ' characters.';
 			}
 		}
 		foreach ($this->enum_values as $f => $allowed) {
 			if ($in[$f] !== null && !in_array($in[$f], $allowed ?? [], true)) {
-				$e[$f] = 'Pilihan tidak valid.';
+				$e[$f] = 'Invalid option.';
 			}
 		}
 
 		if ($in['no_ktp'] !== null && !isset($e['no_ktp'])) {
-			if (!preg_match('/^\d{16}$/', $in['no_ktp'])) {
-				$e['no_ktp'] = 'No. KTP harus 16 digit angka.';
+			if (!preg_match('/^\d{16}$/', $in['no_ktp'] ?? '')) {
+				$e['no_ktp'] = 'ID Number must be 16 digits.';
 			} else {
 				$dup = $this->db->select('nik, nm_karyawan')
 					->where('no_ktp', $in['no_ktp'])
@@ -226,42 +226,42 @@ class Master_employee extends Admin_Controller
 					->where('id !=', (int) $id)
 					->get('employee')->row();
 				if ($dup) {
-					$e['no_ktp'] = 'No. KTP sudah dipakai karyawan ' . $dup->nm_karyawan . ' (' . $dup->nik . ').';
+					$e['no_ktp'] = 'ID Number is already used by employee ' . $dup->nm_karyawan . ' (' . $dup->nik . ').';
 				}
 			}
 		}
-		if ($in['npwp'] !== null && !isset($e['npwp']) && !preg_match('/^\d{15,16}$/', $in['npwp'])) {
-			$e['npwp'] = 'NPWP harus 15 atau 16 digit angka.';
+		if ($in['npwp'] !== null && !isset($e['npwp']) && !preg_match('/^\d{15,16}$/', $in['npwp'] ?? '')) {
+			$e['npwp'] = 'NPWP must be 15 or 16 digits.';
 		}
-		if ($in['bpjs'] !== null && !isset($e['bpjs']) && !preg_match('/^\d{8,20}$/', $in['bpjs'])) {
-			$e['bpjs'] = 'No. BPJS harus 8-20 digit angka.';
+		if ($in['bpjs'] !== null && !isset($e['bpjs']) && !preg_match('/^\d{8,20}$/', $in['bpjs'] ?? '')) {
+			$e['bpjs'] = 'BPJS Number must be 8-20 digits.';
 		}
-		if ($in['rek_number'] !== null && !isset($e['rek_number']) && !preg_match('/^\d{5,30}$/', $in['rek_number'])) {
-			$e['rek_number'] = 'No. rekening harus 5-30 digit angka.';
+		if ($in['rek_number'] !== null && !isset($e['rek_number']) && !preg_match('/^\d{5,30}$/', $in['rek_number'] ?? '')) {
+			$e['rek_number'] = 'Account Number must be 5-30 digits.';
 		}
 		foreach (['ktp_kode_pos', 'domisili_kode_pos'] as $f) {
-			if ($in[$f] !== null && !preg_match('/^\d{5}$/', $in[$f])) {
-				$e[$f] = 'Kode pos harus 5 digit angka.';
+			if ($in[$f] !== null && !preg_match('/^\d{5}$/', $in[$f] ?? '')) {
+				$e[$f] = 'Postcode must be 5 digits.';
 			}
 		}
-		if ($in['no_ponsel'] !== null && !isset($e['no_ponsel']) && !preg_match('/^\+?\d{8,15}$/', $in['no_ponsel'])) {
-			$e['no_ponsel'] = 'No. HP harus 8-15 digit angka (boleh diawali +).';
+		if ($in['no_ponsel'] !== null && !isset($e['no_ponsel']) && !preg_match('/^\+?\d{8,15}$/', $in['no_ponsel'] ?? '')) {
+			$e['no_ponsel'] = 'Contact Number must be 8-15 digits (may start with +).';
 		}
 		if ($in['email'] !== null && !isset($e['email']) && !filter_var($in['email'], FILTER_VALIDATE_EMAIL)) {
-			$e['email'] = 'Format email tidak valid.';
+			$e['email'] = 'Invalid email format.';
 		}
 
 		if ($in['department'] !== null) {
 			$ok = $this->db->where('id', $in['department'])->where('deleted_date IS NULL', null, false)->count_all_results('ms_department');
 			if (!$ok) {
-				$e['department'] = 'Department tidak valid.';
+				$e['department'] = 'Invalid department.';
 			}
 		}
 		if ($in['sub_department'] !== null && !in_array($in['sub_department'], self::SUB_DEPARTMENTS, true)) {
-			$e['sub_department'] = 'Role tidak valid.';
+			$e['sub_department'] = 'Invalid role.';
 		}
 		if ($in['bank_account'] !== null && !$this->db->where('code', $in['bank_account'])->count_all_results('bank')) {
-			$e['bank_account'] = 'Bank tidak valid.';
+			$e['bank_account'] = 'Invalid bank.';
 		}
 
 		foreach (['tgl_lahir', 'tgl_join', 'tgl_end'] as $f) {
@@ -270,17 +270,17 @@ class Master_employee extends Admin_Controller
 			}
 			$d = DateTime::createFromFormat('!Y-m-d', $in[$f]);
 			if (!$d || $d->format('Y-m-d') !== $in[$f] || $in[$f] < '1900-01-01') {
-				$e[$f] = 'Tanggal tidak valid (format YYYY-MM-DD).';
+				$e[$f] = 'Invalid date (format YYYY-MM-DD).';
 			}
 		}
 		if ($in['tgl_lahir'] !== null && !isset($e['tgl_lahir']) && $in['tgl_lahir'] > date('Y-m-d')) {
-			$e['tgl_lahir'] = 'Tanggal lahir tidak boleh melebihi hari ini.';
+			$e['tgl_lahir'] = 'Date of Birth cannot be later than today.';
 		}
 		if ($in['tgl_join'] !== null && $in['tgl_lahir'] !== null && !isset($e['tgl_join']) && !isset($e['tgl_lahir']) && $in['tgl_join'] <= $in['tgl_lahir']) {
-			$e['tgl_join'] = 'Tanggal join harus setelah tanggal lahir.';
+			$e['tgl_join'] = 'Join Date must be after Date of Birth.';
 		}
 		if ($in['tgl_end'] !== null && $in['tgl_join'] !== null && !isset($e['tgl_end']) && !isset($e['tgl_join']) && $in['tgl_end'] < $in['tgl_join']) {
-			$e['tgl_end'] = 'Tanggal berakhir tidak boleh sebelum tanggal join.';
+			$e['tgl_end'] = 'End Date cannot be before Join Date.';
 		}
 
 		return $e;
@@ -299,18 +299,18 @@ class Master_employee extends Admin_Controller
 		$file = $_FILES['tanda_tangan'];
 		if ((int) $file['error'] !== UPLOAD_ERR_OK) {
 			$errors['tanda_tangan'] = in_array((int) $file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
-				? 'Ukuran file terlalu besar (maksimal 2 MB).'
-				: 'File gagal diunggah. Silakan pilih ulang.';
+				? 'File size is too large (maximum 2 MB).'
+				: 'File upload failed. Please choose the file again.';
 			return null;
 		}
 		if ($file['size'] > self::TTD_MAX_BYTES) {
-			$errors['tanda_tangan'] = 'Ukuran file terlalu besar (maksimal 2 MB).';
+			$errors['tanda_tangan'] = 'File size is too large (maximum 2 MB).';
 			return null;
 		}
 		$mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
 		$map  = ['image/jpeg' => 'jpg', 'image/png' => 'png'];
 		if (!isset($map[$mime]) || @getimagesize($file['tmp_name']) === false) {
-			$errors['tanda_tangan'] = 'File harus berupa gambar JPG/JPEG/PNG.';
+			$errors['tanda_tangan'] = 'File must be a JPG/JPEG/PNG image.';
 			return null;
 		}
 		return ['tmp' => $file['tmp_name'], 'ext' => $map[$mime]];

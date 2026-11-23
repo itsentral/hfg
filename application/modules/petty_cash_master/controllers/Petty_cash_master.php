@@ -67,7 +67,7 @@ class Petty_cash_master extends Admin_Controller
         if (!$header) {
             $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan']));
+                ->set_output(json_encode(['status' => 0, 'msg' => 'Data not found']));
             return;
         }
 
@@ -93,7 +93,7 @@ class Petty_cash_master extends Admin_Controller
         if (!$header) {
             $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan']));
+                ->set_output(json_encode(['status' => 0, 'msg' => 'Data not found']));
             return;
         }
 
@@ -122,7 +122,7 @@ class Petty_cash_master extends Admin_Controller
             $btn_delete = '';
 
             if (has_permission($this->viewPermission)) {
-                $btn_view = '<button type="button" class="btn btn-outline-info btn-sm" title="Lihat Detail" onclick="data_view(' . $row['id'] . ')"><i class="fa fa-eye"></i></button>';
+                $btn_view = '<button type="button" class="btn btn-outline-info btn-sm" title="View Detail" onclick="data_view(' . $row['id'] . ')"><i class="fa fa-eye"></i></button>';
             }
 
             if (has_permission($this->managePermission)) {
@@ -130,7 +130,7 @@ class Petty_cash_master extends Admin_Controller
             }
 
             if (has_permission($this->deletePermission)) {
-                $btn_delete = '<button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" onclick="data_delete(' . $row['id'] . ')"><i class="fa fa-trash"></i></button>';
+                $btn_delete = '<button type="button" class="btn btn-outline-danger btn-sm" title="Delete Data" onclick="data_delete(' . $row['id'] . ')"><i class="fa fa-trash"></i></button>';
             }
 
             $row['action'] = '<div class="btn-group btn-group-sm" role="group" aria-label="Aksi">' . $btn_view . $btn_edit . $btn_delete . '</div>';
@@ -155,17 +155,17 @@ class Petty_cash_master extends Admin_Controller
 
         // Validate required fields
         if (empty($nama)) {
-            echo json_encode(['status' => 0, 'msg' => 'Field nama harus diisi']);
+            echo json_encode(['status' => 0, 'msg' => 'The name field is required']);
             return;
         }
         if (empty($keterangan)) {
-            echo json_encode(['status' => 0, 'msg' => 'Field keterangan harus diisi']);
+            echo json_encode(['status' => 0, 'msg' => 'The description field is required']);
             return;
         }
 
         // Validate detail rows exist
         if (empty($detail) || !is_array($detail) || count($detail ?? []) < 1) {
-            echo json_encode(['status' => 0, 'msg' => 'Detail COA harus diisi minimal 1 baris']);
+            echo json_encode(['status' => 0, 'msg' => 'COA detail requires at least 1 row']);
             return;
         }
 
@@ -177,12 +177,12 @@ class Petty_cash_master extends Admin_Controller
             $nominal_raw       = isset($row['nominal']) ? $row['nominal'] : '';
 
             // Strip dot formatting (e.g., "1.000.000" → "1000000")
-            $nominal_clean = str_replace('.', '', $nominal_raw);
-            $nominal_clean = str_replace(',', '', $nominal_clean);
+            $nominal_clean = str_replace('.', '', $nominal_raw ?? '');
+            $nominal_clean = str_replace(',', '', $nominal_clean ?? '');
 
             // Validate nominal is numeric and greater than 0
             if (!is_numeric($nominal_clean) || intval($nominal_clean) <= 0) {
-                echo json_encode(['status' => 0, 'msg' => 'Nominal harus berupa angka lebih besar dari 0']);
+                echo json_encode(['status' => 0, 'msg' => 'The amount must be a number greater than 0']);
                 return;
             }
 
@@ -218,7 +218,7 @@ class Petty_cash_master extends Admin_Controller
         // Check if record exists
         $record = $this->Petty_cash_master_model->get_header($id);
         if (!$record) {
-            echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan']);
+            echo json_encode(['status' => 0, 'msg' => 'Data not found']);
             return;
         }
 

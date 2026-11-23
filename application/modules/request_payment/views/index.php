@@ -61,13 +61,13 @@ $ENABLE_VIEW    = has_permission('Request_Payment.View');
 					<thead class="sticky-header text-center">
 						<tr>
 							<th style="width: 5%">No.</th>
-							<th>No. Dokumen</th>
+							<th>Document No.</th>
 							<th>Request By</th>
-							<th>Tanggal</th>
+							<th>Date</th>
 							<th>Keperluan</th>
-							<th>Kategori</th>
-							<th>Nilai Pengajuan</th>
-							<th style="width: 15%">Tanggal Pembayaran</th>
+							<th>Category</th>
+							<th>Request Value</th>
+							<th style="width: 15%">Payment Date</th>
 							<th style="width: 10%">Action</th>
 						</tr>
 					</thead>
@@ -182,7 +182,7 @@ $ENABLE_VIEW    = has_permission('Request_Payment.View');
 			Swal.fire({
 				icon: 'warning',
 				title: 'Warning !',
-				text: 'Reject Reason masih kosong !',
+				text: 'Reject Reason is still empty!',
 				timer: 3000,
 				showConfirmButton: false
 			});
@@ -247,7 +247,7 @@ $ENABLE_VIEW    = has_permission('Request_Payment.View');
 			Swal.fire({
 				icon: 'warning',
 				title: 'Warning !',
-				text: 'Pilih minimal 1 data untuk diproses!'
+				text: 'Select at least 1 record to process!'
 			});
 			return false;
 		}
@@ -266,7 +266,7 @@ $ENABLE_VIEW    = has_permission('Request_Payment.View');
 			Swal.fire({
 				icon: 'warning',
 				title: 'Warning !',
-				text: 'Pastikan semua data yang dipilih sudah diisi tanggal pembayaran!'
+				text: 'Make sure all selected data has a payment date!'
 			});
 			return false;
 		}
@@ -423,8 +423,8 @@ $(document).on('submit', '#frm-data', function (e) {
         var kurs     = parseFloat(($('#frm-data input[name="kurs"]').val() || '0').replace(/,/g, ''));
         if (currency && currency.toUpperCase() !== 'IDR' && kurs <= 0) {
             Swal.fire({
-                title : 'Peringatan!',
-                text  : 'Kurs wajib diisi jika currency bukan IDR!',
+                title : 'Warning!',
+                text  : 'Exchange rate is required if the currency is not IDR!',
                 icon  : 'warning'
             });
             return;
@@ -432,12 +432,12 @@ $(document).on('submit', '#frm-data', function (e) {
     }
 
     Swal.fire({
-        title            : 'Konfirmasi',
-        text             : 'Data akan disimpan, lanjutkan?',
+        title            : 'Confirmation',
+        text             : 'The data will be saved, continue?',
         icon             : 'warning',
         showCancelButton : true,
-        confirmButtonText: 'Ya, Simpan!',
-        cancelButtonText : 'Batal'
+        confirmButtonText: 'Yes, Save!',
+        cancelButtonText : 'Cancel'
     }).then(function (result) {
         if (!result.isConfirmed) return;
 
@@ -454,7 +454,7 @@ $(document).on('submit', '#frm-data', function (e) {
             success     : function (res) {
                 if (res.status == 1) {
                     Swal.fire({
-                        title             : 'Berhasil!',
+                        title             : 'Success!',
                         text              : res.message,
                         icon              : 'success',
                         timer             : 1500,
@@ -462,7 +462,7 @@ $(document).on('submit', '#frm-data', function (e) {
                     }).then(function () { location.reload(); });
                 } else {
                     Swal.fire({
-                        title : 'Gagal!',
+                        title : 'Failed!',
                         text  : res.message,
                         icon  : 'error'
                     });

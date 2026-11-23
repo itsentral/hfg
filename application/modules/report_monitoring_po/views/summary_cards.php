@@ -37,9 +37,9 @@
                     <i class="ti ti-truck-delivery fs-3"></i>
                 </div>
                 <div>
-                    <span class="text-muted small fw-medium">Total Diterima (Kg)</span>
+                    <span class="text-muted small fw-medium">Total Received (Kg)</span>
                     <h4 class="mb-0 fw-bold text-success"><?= number_format($summary['total_diterima'] ?? 0, 2); ?></h4>
-                    <span class="text-xs text-muted">Sudah Tiba di Gudang</span>
+                    <span class="text-xs text-muted">Received at the Warehouse</span>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                     <i class="ti ti-clock-pause fs-3"></i>
                 </div>
                 <div>
-                    <span class="text-muted small fw-medium">Sisa Belum Dikirim (Kg)</span>
+                    <span class="text-muted small fw-medium">Remaining Undelivered Quantity (Kg)</span>
                     <h4 class="mb-0 fw-bold text-danger"><?= number_format($summary['total_sisa'] ?? 0, 2); ?></h4>
                     <span class="text-xs text-muted">Outstanding PO</span>
                 </div>

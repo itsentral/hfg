@@ -18,8 +18,8 @@ $this->load->view('include/side_menu');
 				<select id='category' name='category' class='form-control input-sm' style='min-width:200px;'>
 					<option value='0'>ALL CATEGORY</option>
 					<option value='asset'>ASSET</option>
-					<option value='rutin'>STOK</option>
-					<option value='non rutin'>DEPARTEMEN</option>
+					<option value='rutin'>STOCK</option>
+					<option value='non rutin'>DEPARTMENT</option>
 				</select>
 			</div>
 		</div>
@@ -31,9 +31,9 @@ $this->load->view('include/side_menu');
 						<th class="text-center" width='5%'>#</th>
 						<th class="text-center" width='9%'>No PR</th>
 						<th class="text-center" width='9%'>Tgl PR</th>
-						<th class="text-center" width='13%'>Departemen</th>
+						<th class="text-center" width='13%'>Department</th>
 						<th class="text-center" width='10%'>Category</th>
-						<th class="text-center">Nama Barang</th>
+						<th class="text-center">Item Name</th>
 						<th class="text-center" width='13%'>Status</th>
 						<th class="text-center" width='6%'>#</th>
 					</tr>

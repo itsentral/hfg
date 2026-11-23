@@ -8,7 +8,7 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h3 class="box-title"><i class="fa fa-clock-o text-primary"></i> History Price List</h3>
-                <p class="text-muted mb-0" style="font-size:12px;">Catatan riwayat persetujuan dokumen Price List oleh Management (Hanya Baca / Audit Trail).</p>
+                <p class="text-muted mb-0" style="font-size:12px;">Approval history of Price List documents by Management (Read Only / Audit Trail).</p>
             </div>
             <div class="col-md-6 text-right">
                 <?php if ($ENABLE_MANAGE): ?>
@@ -24,7 +24,7 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
     <div class="box-body" style="background:#f8f9fc; border-bottom:1px solid #e3e6f0; padding:12px 15px;">
         <form method="GET" action="<?= base_url('history_pricelist') ?>" class="form-inline">
             <div class="form-group" style="margin-right:15px;">
-                <label style="margin-right:6px; font-weight:600;"><i class="fa fa-filter text-muted"></i> Kategori:</label>
+                <label style="margin-right:6px; font-weight:600;"><i class="fa fa-filter text-muted"></i> Category:</label>
                 <select name="category" class="form-control input-sm select2" style="min-width:180px;">
                     <option value="">-- Semua Kategori --</option>
                     <?php if (!empty($categories)): foreach ($categories as $cat): ?>
@@ -48,7 +48,7 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
             </div>
 
             <div class="form-group" style="margin-right:15px;">
-                <label style="margin-right:6px; font-weight:600;">Tanggal:</label>
+                <label style="margin-right:6px; font-weight:600;">Date:</label>
                 <input type="date" name="start_date" class="form-control input-sm" value="<?= html_escape($filters['start_date']) ?>">
                 <span style="margin:0 4px;">s/d</span>
                 <input type="date" name="end_date" class="form-control input-sm" value="<?= html_escape($filters['end_date']) ?>">
@@ -74,12 +74,12 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
                         <th style="width:4%; text-align:center;">No</th>
                         <th style="width:12%; text-align:center;">Waktu Approval</th>
                         <!-- FR-73: Nama produk di depan -->
-                        <th style="width:20%;">Nama Produk</th>
+                        <th style="width:20%;">Product Name</th>
                         <th style="width:10%; text-align:center;">Varian (Uniq ID)</th>
-                        <th style="width:10%;">Kategori</th>
-                        <th style="width:10%; text-align:right;">Price List Lama (/m)</th>
-                        <th style="width:10%; text-align:right; background:#27ae60;">Price List Baru (/m)</th>
-                        <th style="width:8%; text-align:right;">Perubahan</th>
+                        <th style="width:10%;">Category</th>
+                        <th style="width:10%; text-align:right;">Old Price List (/m)</th>
+                        <th style="width:10%; text-align:right; background:#27ae60;">New Price List (/m)</th>
+                        <th style="width:8%; text-align:right;">Change</th>
                         <th style="width:10%; text-align:right;">Bottom Price (/m)</th>
                         <th style="width:6%; text-align:center;">Extra Margin</th>
                         <th style="width:10%; text-align:center;">No Pricelist</th>
@@ -99,7 +99,7 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
                             </td>
                             <td>
                                 <strong><?= html_escape($r->nm_product ? $r->nm_product : $r->code_lv4) ?></strong>
-                                <div class="text-muted" style="font-size:10px;">Kode: <?= html_escape($r->code_lv4) ?></div>
+                                <div class="text-muted" style="font-size:10px;">Code: <?= html_escape($r->code_lv4) ?></div>
                             </td>
                             <td class="text-center">
                                 <span class="label label-primary" style="font-size:11px;"><?= html_escape($r->no_uniq_id) ?></span>
@@ -145,10 +145,10 @@ $(document).ready(function() {
             { orderable: false, targets: [0, 9, 10] }
         ],
         language: {
-            search: "Cari Produk / Varian / No PL:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            zeroRecords: "Tidak ada riwayat persetujuan pricelist",
-            info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ riwayat",
+            search: "Search Product / Variant / PL No:",
+            lengthMenu: "Show _MENU_ entries",
+            zeroRecords: "No pricelist approval history",
+            info: "Showing _START_ to _END_ of _TOTAL_ history entries",
             infoEmpty: "Menampilkan 0 data",
             infoFiltered: "(disaring dari _MAX_ total data)"
         }

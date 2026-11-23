@@ -71,7 +71,7 @@ if (!function_exists('get_company_name')) {
             $name = 'Harapan Fajar Gemilang';
         }
 
-        if ($with_pt && !preg_match('/^pt\.?\s+/i', $name)) {
+        if ($with_pt && !preg_match('/^pt\.?\s+/i', $name ?? '')) {
             $name = 'PT ' . $name;
         }
 
@@ -106,7 +106,7 @@ if (!function_exists('_resolve_identitas_asset_url')) {
     {
         $val = trim((string) $value);
         if ($val !== '') {
-            if (preg_match('#^https?://#i', $val)) {
+            if (preg_match('#^https?://#i', $val ?? '')) {
                 return $val;
             }
 

@@ -23,11 +23,11 @@ $ENABLE_DELETE  = has_permission('ROS.Delete');
             <thead>
                 <tr>
                     <th class="text-center">No</th>
-                    <th class="text-center">Nomor ROS</th>
-                    <th class="text-center">Nomor PO</th>
+                    <th class="text-center">ROS Number</th>
+                    <th class="text-center">PO Number</th>
                     <th class="text-center">Supplier</th>
-                    <th class="text-center">Nomor Pengajuan PIB</th>
-                    <th class="text-center">Nilai PIB</th>
+                    <th class="text-center">PIB Request Number</th>
+                    <th class="text-center">PIB Amount</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -119,7 +119,7 @@ $ENABLE_DELETE  = has_permission('ROS.Delete');
             var ids = selected.join('-');
             window.open(siteurl + active_controller + '/print_qr_multi/' + ids, '_blank');
         } else {
-            swal('Warning', 'Pilih minimal satu coil untuk dicetak!', 'warning');
+            swal('Warning', 'Select at least one coil to print!', 'warning');
         }
     });
 

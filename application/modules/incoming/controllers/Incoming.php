@@ -97,7 +97,7 @@ class Incoming extends Admin_Controller
             if (empty($status) || $status === 'open') {
                 if ($ENABLE_ADD) {
                     $aksi = '<a href="' . base_url('incoming/add/' . $row['id']) . '" 
-                            class="btn btn-sm btn-success" title="Proses Incoming">
+                            class="btn btn-sm btn-success" title="Process Incoming">
                             <i class="fa fa-sign-in-alt"></i> Incoming
                          </a>';
                 }
@@ -233,7 +233,7 @@ class Incoming extends Admin_Controller
             $sts_badge    = '<span class="badge rounded-pill bg-warning text-dark">Open</span>';
             $btn_incoming = '';
             if ($ENABLE_ADD) {
-                $btn_incoming = '<a href="' . base_url('incoming/add/' . $row['id']) . '" class="btn btn-sm btn-success" title="Proses Incoming">
+                $btn_incoming = '<a href="' . base_url('incoming/add/' . $row['id']) . '" class="btn btn-sm btn-success" title="Process Incoming">
                     <i class="fa fa-sign-in-alt"></i> Incoming
                 </a>';
             }
@@ -378,7 +378,7 @@ class Incoming extends Admin_Controller
         $no_ros = $this->input->post('no_ros');
 
         if (empty($no_ros)) {
-            echo json_encode(['status' => 0, 'pesan' => 'No ROS tidak boleh kosong!']);
+            echo json_encode(['status' => 0, 'pesan' => 'ROS No cannot be empty!']);
             return;
         }
 
@@ -714,7 +714,7 @@ class Incoming extends Admin_Controller
         ];
 
         $this->template->set($data);
-        $this->template->title('Detail Incoming');
+        $this->template->title('Incoming Detail');
         $this->template->render('form');
     }
 
@@ -725,7 +725,7 @@ class Incoming extends Admin_Controller
         $no_ros = $post['no_ros'] ?? '';
 
         if (empty($no_ros)) {
-            echo json_encode(['status' => 0, 'pesan' => 'No ROS tidak boleh kosong!']);
+            echo json_encode(['status' => 0, 'pesan' => 'ROS No cannot be empty!']);
             return;
         }
 
@@ -741,7 +741,7 @@ class Incoming extends Admin_Controller
         // ── Validasi gudang ──
         foreach ($details as $val) {
             if (empty($val['id_gudang_ke'])) {
-                echo json_encode(['status' => 0, 'pesan' => 'Semua coil harus dipilih gudang tujuannya!']);
+                echo json_encode(['status' => 0, 'pesan' => 'A destination warehouse must be selected for every coil!']);
                 return;
             }
         }
@@ -1114,7 +1114,7 @@ class Incoming extends Admin_Controller
         $qc_json = $this->input->post('qc_data') ?: '[]';
 
         if (empty($no_ros)) {
-            echo json_encode(['status' => 0, 'pesan' => 'No ROS tidak boleh kosong!']);
+            echo json_encode(['status' => 0, 'pesan' => 'ROS No cannot be empty!']);
             return;
         }
 
@@ -1170,7 +1170,7 @@ class Incoming extends Admin_Controller
         ", [$no_ros])->result_array();
 
         if (empty($coils)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Tidak ada data coil!']);
+            echo json_encode(['status' => 0, 'pesan' => 'No coil data!']);
             return;
         }
 
@@ -1197,7 +1197,7 @@ class Incoming extends Admin_Controller
         $coa_map = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
-            echo json_encode(['status' => 3, 'pesan' => 'COA belum terdaftar: ' . implode(', ', $coa_check['not_found'] ?? [])]);
+            echo json_encode(['status' => 3, 'pesan' => 'COA not registered: ' . implode(', ', $coa_check['not_found'] ?? [])]);
             return;
         }
 
@@ -2178,7 +2178,7 @@ class Incoming extends Admin_Controller
         if (!empty($post['detail'])) {
             foreach ($post['detail'] as $val) {
                 if (empty($val['id_gudang_ke'])) {
-                    echo json_encode(['status' => 0, 'pesan' => 'Semua coil harus dipilih gudang tujuannya!']);
+                    echo json_encode(['status' => 0, 'pesan' => 'A destination warehouse must be selected for every coil!']);
                     return;
                 }
             }
@@ -2340,8 +2340,8 @@ class Incoming extends Admin_Controller
                 'total'         => $total_harga_check,
                 'id_supplier'   => $post['id_supplier'],
                 'materials'     => $materials_incoming,
-                'uang_muka_idr' => (float) str_replace(',', '', $post['uang_muka_idr']),
-                'uang_muka_usd' => (float) str_replace(',', '', $post['uang_muka']),
+                'uang_muka_idr' => (float) str_replace(',', '', $post['uang_muka_idr'] ?? ''),
+                'uang_muka_usd' => (float) str_replace(',', '', $post['uang_muka'] ?? ''),
                 'no_ros'        => $post['no_ros'],
                 'id_gudang_ke'  => $id_gudang_ke,
             ];
@@ -2675,13 +2675,13 @@ class Incoming extends Admin_Controller
         $nomor_jv = $this->input->post('nomor_jv');
         if (empty($nomor_jv)) {
             return $this->output->set_content_type('application/json')
-                ->set_output(json_encode(['status' => 0, 'pesan' => 'nomor_jv tidak boleh kosong']));
+                ->set_output(json_encode(['status' => 0, 'pesan' => 'nomor_jv cannot be empty']));
         }
 
         $already = $this->db->get_where(DBACC . '.javh', ['nomor' => $nomor_jv])->num_rows();
         if ($already > 0) {
             return $this->output->set_content_type('application/json')
-                ->set_output(json_encode(['status' => 0, 'pesan' => 'Nomor JV ' . $nomor_jv . ' sudah diposting']));
+                ->set_output(json_encode(['status' => 0, 'pesan' => 'JV Number ' . $nomor_jv . ' has already been posted']));
         }
 
         $gl = $this->db->get_where('gl_interface', ['nomor' => $nomor_jv, 'status' => 'pending'])->row();
@@ -2832,7 +2832,7 @@ class Incoming extends Admin_Controller
             $btn_view = '';
             if (!empty($row['kode_incoming'])) {
                 $btn_view = '<a href="' . base_url('incoming/view/' . $row['kode_incoming']) . '"
-                        class="btn btn-sm btn-primary" title="Lihat Detail">
+                        class="btn btn-sm btn-primary" title="View Detail">
                         <i class="fa fa-eye"></i> Detail
                      </a>';
             }
@@ -2961,7 +2961,7 @@ class Incoming extends Admin_Controller
         $no_ros = $this->input->post('no_ros');
 
         if (empty($no_ros)) {
-            echo json_encode(['status' => 0, 'pesan' => 'No ROS tidak boleh kosong!']);
+            echo json_encode(['status' => 0, 'pesan' => 'ROS No cannot be empty!']);
             return;
         }
 

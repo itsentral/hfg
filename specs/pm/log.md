@@ -42,6 +42,11 @@ One `-` bullet per event, newest first:
 | `[TODO]` | Something was deliberately deferred, and what would settle it |
 
 ---
+- **2026-11-20** `[DECISION][FEAT-08]` **HPP: Consumables, Biaya Koordinasi, Scrap dari General Rate; field jurnal JV016 tanpa desimal.** Keputusan user, disetujui (`input/2026-11-20-hpp-rate-general-pembulatan-jurnal/notes.md`): Consumables/Pcs = General Rate Consumables (Rp/Kg) × Berat/Pcs,
+  Koordinasi/Pcs = General Rate Biaya Koordinasi (Rp/Kg) × Berat/Pcs, Scrap/Pcs = General Rate %Scrap × Biaya Material/Pcs; Man Power, FOH, Bahan Pendukung Khusus tetap
+  Rp/Kg Hasil Costing varian BOM. Ditolak: tetap Rp/Kg Hasil Costing untuk keenam komponen (FR-48 2026-10-26). Kolom `production_reports` yang dirujuk template JV016
+  disimpan tanpa desimal; Total COGM = jumlah komponen COGM bulat, Inventory FG = Total COGM − Loss KW 2. FR-19, FR-24, FR-48, FR-49, NFR-09 disesuaikan; mockup
+  `hpp.html`/`hpp.js` mengikuti. Kode sudah diterapkan lebih dulu di `production_report/models/Production_report_model.php` (`get_general_rates`, `_round_jurnal_fields`).
 
 
 - **2026-10-28** `[STATUS][FEAT-11]` **Handover ke Dev: rencana implementasi CI3 disusun** (`.artifacts/claim_material/plan_claim_material_28-10-2026.md` + `task_...`). `[DISCOVERY]` dari

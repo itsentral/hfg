@@ -14,13 +14,13 @@ $ENABLE_DELETE  = has_permission('Approval Expense Management.Delete');
                 <i class="fa fa-user-check fs-5"></i>
             </div>
             <div>
-                <h5 class="card-title mb-0 fw-bold text-dark">Persetujuan Management Pengajuan Expense</h5>
-                <small class="text-muted">Daftar pengajuan expense yang menunggu persetujuan level Management</small>
+                <h5 class="card-title mb-0 fw-bold text-dark">Expense Request Management Approval</h5>
+                <small class="text-muted">List of expense requests awaiting Management approval</small>
             </div>
         </div>
         <div>
             <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">
-                <i class="fa fa-clock me-1"></i>Menunggu Approval Management
+                <i class="fa fa-clock me-1"></i>Awaiting Management Approval
             </span>
         </div>
     </div>
@@ -31,10 +31,10 @@ $ENABLE_DELETE  = has_permission('Approval Expense Management.Delete');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th class="text-center">No Dokumen</th>
-                        <th class="text-center">Tanggal</th>
-                        <th>Nama Pemohon</th>
-                        <th>Keterangan</th>
+                        <th class="text-center">Document No.</th>
+                        <th class="text-center">Date</th>
+                        <th>Requester Name</th>
+                        <th>Description</th>
                         <th class="text-end">Total Nominal</th>
                         <th class="text-center" width="18%">Status</th>
                         <th class="text-center no-sort" width="120">Aksi</th>
@@ -96,13 +96,13 @@ $ENABLE_DELETE  = has_permission('Approval Expense Management.Delete');
             order: [[1, 'desc']],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no dokumen, pemohon, keterangan...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search document no, requester, description...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Tidak ada data pengajuan expense yang menunggu persetujuan management",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+                emptyTable: "No expense requests awaiting management approval",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             },
             ajax: {
                 type: 'POST',
@@ -141,13 +141,13 @@ $ENABLE_DELETE  = has_permission('Approval Expense Management.Delete');
     function data_view(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian dokumen expense...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading expense document details...</div></div>');
             $('#form-data').load(url_view + id, function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load details data: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }
@@ -158,13 +158,13 @@ $ENABLE_DELETE  = has_permission('Approval Expense Management.Delete');
     function data_approve(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat form persetujuan management...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading management approval form...</div></div>');
             $('#form-data').load(url_approval + id, function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat form approval: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load approval form: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }

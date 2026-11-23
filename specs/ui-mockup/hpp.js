@@ -47,9 +47,15 @@
     return ZERO_RATE;
   }
 
-  /* ---------- Komponen biaya/pcs (Excel baris 116/123/129) ----------
-     Material = Berat/Pcs × Costbook; komponen lain = Berat/Pcs × Rp/Kg Hasil Costing varian BOM
-     (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap). */
+  /* ---------- Komponen biaya/pcs (Excel baris 116/123/129; FR-48 direvisi 2026-11-20) ----------
+     Material = Berat/Pcs × Costbook; Man Power, FOH, Bahan Pendukung Khusus = Berat/Pcs × Rp/Kg Hasil Costing varian BOM;
+     Consumables = General Rate Consumables (Rp/Kg) × Berat/Pcs; Biaya Koordinasi = General Rate Biaya Koordinasi (Rp/Kg) × Berat/Pcs;
+     Scrap = General Rate %Scrap × Biaya Material/Pcs. Laporan yang menyimpan rate beku (data.generalRate) memakai nilai itu (FR-49). */
+  const GEN = data.generalRate || {
+    cons: window.PC && window.PC.gen ? window.PC.gen("cons") : 0,
+    koord: window.PC && window.PC.gen ? window.PC.gen("koord") : 0,
+    scrap: window.PC && window.PC.gen ? window.PC.gen("scrap") : 0,
+  };
   function costPerPcs(row) {
     const cb = cbRate(row.material, row.gudang);
     const R = rateFor(row);
@@ -57,9 +63,9 @@
     const manPower = row.beratPcs * R.manPower;
     const foh = row.beratPcs * R.foh;
     const bahan = row.beratPcs * R.bpk;
-    const cons = row.beratPcs * R.cons;
-    const koor = row.beratPcs * R.koord;
-    const scrap = row.beratPcs * R.scrap;               // Rp/Kg Scrap Hasil Costing
+    const cons = GEN.cons * row.beratPcs;               // General Rate Consumables (Rp/Kg)
+    const koor = GEN.koord * row.beratPcs;              // General Rate Biaya Koordinasi (Rp/Kg)
+    const scrap = GEN.scrap * material;                 // General Rate %Scrap (pecahan) × Biaya Material/Pcs
     const fgPerPcs = material + manPower + foh + bahan + cons + koor + scrap;
     return { cb, material, manPower, foh, bahan, cons, koor, scrap, fgPerPcs };
   }
@@ -84,7 +90,7 @@
     el.innerHTML = parts.join(" ");
     if (none.length) {
       const w = none.map((x) => x.produk || "produk").filter((v, i, a) => a.indexOf(v) === i).join(", ");
-      el.innerHTML += (parts.length ? "<br>" : "") + "⚠ Tanpa varian BOM / tanpa rate Hasil Costing: " + w + " — komponen Man Power, FOH, Bahan Pendukung, Consumables, Koordinasi, Scrap = 0.";
+      el.innerHTML += (parts.length ? "<br>" : "") + "⚠ Tanpa varian BOM / tanpa rate Hasil Costing: " + w + " — komponen Man Power, FOH, Bahan Pendukung = 0 (Consumables, Koordinasi, Scrap tetap dari General Rate).";
       el.className = "note note--warn";
     }
     el.hidden = !el.innerHTML;

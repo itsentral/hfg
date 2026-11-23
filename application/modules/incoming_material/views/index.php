@@ -156,7 +156,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
     $(document).on('click', '.detailAjust', function(e) {
         e.preventDefault();
 
-        $("#head_title2").html("<b>PERMINTAAN PENGECEKAN MATERIAL</b>");
+        $("#head_title2").html("<b>MATERIAL CHECK REQUEST</b>");
         $.ajax({
             type: 'POST',
             url: base_url + active_controller + 'modal_detail_adjustment/' + $(this).data('kode_trans'),

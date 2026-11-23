@@ -4,13 +4,13 @@
 <div class="card border-0 bg-light p-3 mb-4 rounded-3">
     <div class="row g-3">
         <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase">Nama Master Petty Cash</div>
+            <div class="text-muted small fw-semibold text-uppercase">Petty Cash Master Name</div>
             <div class="fs-6 fw-bold text-dark mt-1">
                 <i class="fa fa-money text-primary me-2"></i><?= isset($data->nama) ? htmlspecialchars((string) $data->nama) : '-' ?>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase">Keterangan</div>
+            <div class="text-muted small fw-semibold text-uppercase">Description</div>
             <div class="fs-6 text-secondary mt-1">
                 <i class="fa fa-info-circle text-info me-2"></i><?= isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : '-' ?>
             </div>
@@ -23,7 +23,7 @@
     <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center">
             <i class="fa fa-list text-primary me-2"></i>
-            <h6 class="mb-0 fw-bold text-dark">Rincian Alokasi COA & Budget</h6>
+            <h6 class="mb-0 fw-bold text-dark">COA & Budget Allocation Details</h6>
         </div>
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill">
             <?= (isset($details) && is_array($details)) ? count($details ?? []) : 0 ?> Alokasi Akun
@@ -35,7 +35,7 @@
                 <tr>
                     <th width="40" class="text-center">No</th>
                     <th width="320">Akun COA</th>
-                    <th>Jenis Pengeluaran</th>
+                    <th>Expense Type</th>
                     <th width="200" class="text-end">Nominal Budget</th>
                 </tr>
             </thead>
@@ -92,6 +92,6 @@
 <!-- Footer Button -->
 <div class="d-flex justify-content-end pt-2 border-top">
     <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" data-dismiss="modal">
-        <i class="fa fa-times me-1"></i> Tutup
+        <i class="fa fa-times me-1"></i> Close
     </button>
 </div>

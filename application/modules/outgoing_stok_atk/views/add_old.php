@@ -28,12 +28,12 @@
 					<tr>
 						<td>From Warehouse</td>
 						<td>:</td>
-						<td><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
+						<td><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
 					</tr>
 					<tr>
 						<td>For Costcenter</td>
 						<td>:</td>
-						<td><?=strtoupper(get_name('ms_costcenter','nama_costcenter','id_costcenter',$getData[0]['id_costcenter']));?></td>
+						<td><?=strtoupper((string) get_name('ms_costcenter','nama_costcenter','id_costcenter',$getData[0]['id_costcenter']));?></td>
 					</tr>
 				</table>
 				<input type="hidden" id='id_uniq' name='id_uniq' value='<?=$getData[0]['id_uniq']?>'>
@@ -44,10 +44,10 @@
         	<div class="col-md-12">
 				<table class="table table-bordered table-striped" width='100%'>
 					<tr>
-						<th class='text-center'>Nama Material</th>
-						<th class='text-right' width='15%'>Stok (kg)</th>
+						<th class='text-center'>Material Name</th>
+						<th class='text-right' width='15%'>Stock (kg)</th>
 						<th class='text-right' width='15%'>Kebutuhan (kg)</th>
-						<th class='text-center' width='15%'>Pengeluaran (kg)</th>
+						<th class='text-center' width='15%'>Outgoing (kg)</th>
 					</tr>
 					<?php
 					foreach ($getMaterialMixing as $key => $value) {

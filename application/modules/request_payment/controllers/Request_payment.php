@@ -599,7 +599,7 @@ class Request_payment extends Admin_Controller
 			// Cegah insert kosong jika request_payment tidak ditemukan
 			echo json_encode([
 				'status' => 0,
-				'pesan' => 'Data Request Payment tidak ditemukan untuk no_doc: ' . $Data['no_doc'] . ' tipe: ' . $Data['tipe']
+				'pesan' => 'Request Payment data not found for no_doc: ' . $Data['no_doc'] . ' tipe: ' . $Data['tipe']
 			]);
 			exit;
 		}
@@ -844,7 +844,7 @@ class Request_payment extends Admin_Controller
 				$dtl = $this->db->get_where('tr_receive_invoice', ['id' => $detail['id']])->row();
 				$nilai = (float)($dtl->nilai_invoice ?? 0) + (float)($dtl->nilai_ppn ?? 0);
 
-				$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $Data['tipe']);
+				$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $Data['tipe'] ?? '');
 
 				$ArrDetail[] = [
 					'id' 			=> $id_detail,
@@ -873,7 +873,7 @@ class Request_payment extends Admin_Controller
 				$dtl   = $this->db->get_where('tr_ros_payment', ['id' => $detail['id']])->row();
 				$nilai = (float)($dtl->nominal ?? 0);
 
-				$tipe_label = str_replace(['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'], ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'], $Data['tipe']);
+				$tipe_label = str_replace(['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'], ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'], $Data['tipe'] ?? '');
 
 				$ArrDetail[] = [
 					'id' 			=> $id_detail,
@@ -1513,7 +1513,7 @@ class Request_payment extends Admin_Controller
 		left join users c on a.nama=c.nm_lengkap WHERE a.status=1 and a.jumlah <> 0 AND a.exp_pib IS NULL AND a.exp_inv_po IS NULL AND (a.tipe_penggantian = '2' OR a.tipe_penggantian IS NULL) AND (a.tipe_pengembalian = '2' OR a.tipe_pengembalian IS NULL)")->result();
 		// $menu_akses			= $this->master_model->getMenu();
 		$data = array(
-			'title'			=> 'Pengembalian Expense',
+			'title'			=> 'Expense Return',
 			// 'action'		=> 'index',
 			'row'			=> $get_Data
 			// 'data_menu'		=> $menu_akses
@@ -1523,7 +1523,7 @@ class Request_payment extends Admin_Controller
 		// $this->load->view('Request_payment/list_return', $data);
 
 		$this->template->set($data);
-		$this->template->title('Pengembalian Expense');
+		$this->template->title('Expense Return');
 		$this->template->render('list_return');
 	}
 
@@ -1532,7 +1532,7 @@ class Request_payment extends Admin_Controller
 		$data_pengembalian_expense = $this->db->query('SELECT * FROM tr_pengembalian_expense WHERE status IS null OR status = 2')->result();
 
 		$this->template->set('data_pengembalian', $data_pengembalian_expense);
-		$this->template->title('Approval Pengembalian Expense');
+		$this->template->title('Expense Return Approval');
 		$this->template->render('list_return_approval');
 	}
 
@@ -1738,7 +1738,7 @@ class Request_payment extends Admin_Controller
 				->row();
 			if ($nm_supplier == '' && !empty($get_invoice)) {
 				$nm_supplier = [];
-				$no_po = str_replace(', ', ',', $get_invoice->no_po);
+				$no_po = str_replace(', ', ',', $get_invoice->no_po ?? '');
 
 				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
@@ -1749,7 +1749,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 						
 						UNION ALL
@@ -1761,7 +1761,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -1775,7 +1775,7 @@ class Request_payment extends Admin_Controller
 							tr_purchase_order a
 							LEFT JOIN new_supplier b ON b.kode_supplier = a.id_suplier
 						WHERE
-							a.no_surat IN ('" . str_replace(",", "','", $no_po) . "')
+							a.no_surat IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY b.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -1871,7 +1871,7 @@ class Request_payment extends Admin_Controller
 				$hasil .= '
 				<table class="w-100" border="0" style="border: 0 !important;">
 					<tr>
-						<td>Nilai Pengajuan</td>
+						<td>Request Value</td>
 						<td class="text-center">:</td>
 						<td>
 							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . number_format((float) $record->jumlah) . '" readonly>
@@ -1905,7 +1905,7 @@ class Request_payment extends Admin_Controller
 					</tr>
 				
 					<tr>
-						<td>Bank Pengirim</td>
+						<td>Sender Bank</td>
 						<td>:</td>
 						<td>
 							<select name="bank_' . $numb . '" id="" class="form-control form-control-sm select2">
@@ -1921,14 +1921,14 @@ class Request_payment extends Admin_Controller
 						</td>
 					</tr>
 					<tr>
-						<td>Tanggal Rencana Pembayaran</td>
+						<td>Planned Payment Date</td>
 						<td>:</td>
 						<td>
-							<input type="text" class="form-control tanggal" id="tanggal_' . $numb . '" name="tanggal_' . $numb . '" value="" placeholder="Tanggal">
+							<input type="text" class="form-control tanggal" id="tanggal_' . $numb . '" name="tanggal_' . $numb . '" value="" placeholder="Date">
 						</td>
 					</tr>
 					<tr>
-						<td>Upload Dokumen</td>
+						<td>Upload Document</td>
 						<td>:</td>
 						<td>
 							<input type="file" name="upload_doc_' . $numb . '" id="" class="form-control form-control-sm">
@@ -2016,7 +2016,7 @@ class Request_payment extends Admin_Controller
 				->row();
 			if ($nm_supplier == '' && !empty($get_invoice)) {
 				$nm_supplier = [];
-				$no_po = str_replace(', ', ',', $get_invoice->no_po);
+				$no_po = str_replace(', ', ',', $get_invoice->no_po ?? '');
 
 				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
@@ -2027,7 +2027,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 						
 						UNION ALL
@@ -2039,7 +2039,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -2053,7 +2053,7 @@ class Request_payment extends Admin_Controller
 							tr_purchase_order a
 							LEFT JOIN new_supplier b ON b.kode_supplier = a.id_suplier
 						WHERE
-							a.no_surat IN ('" . str_replace(",", "','", $no_po) . "')
+							a.no_surat IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY b.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -2152,7 +2152,7 @@ class Request_payment extends Admin_Controller
 				$hasil .= '
 				<table class="w-100" border="0" style="border: 0px !important;">
 					<tr>
-						<td>Nilai Pengajuan</td>
+						<td>Request Value</td>
 						<td class="text-center">:</td>
 						<td>
 							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . (($record->tipe == 'expense' and $record->kurang_bayar > 0) ? number_format((float) $record->kurang_bayar) : number_format((float) $record->jumlah)) . '" readonly>
@@ -2186,7 +2186,7 @@ class Request_payment extends Admin_Controller
 					</tr>
 				
 					<tr>
-						<td>Bank Pengirim</td>
+						<td>Sender Bank</td>
 						<td>:</td>
 						<td>
 							<select name="bank_' . $numb . '" id="" class="form-control form-control-sm select2">
@@ -2202,14 +2202,14 @@ class Request_payment extends Admin_Controller
 						</td>
 					</tr>
 					<tr>
-						<td>Tanggal Rencana Pembayaran</td>
+						<td>Planned Payment Date</td>
 						<td>:</td>
 						<td>
-							<input type="text" class="form-control tanggal" id="tanggal_' . $numb . '" name="tanggal_' . $numb . '" value="" placeholder="Tanggal">
+							<input type="text" class="form-control tanggal" id="tanggal_' . $numb . '" name="tanggal_' . $numb . '" value="" placeholder="Date">
 						</td>
 					</tr>
 					<tr>
-						<td>Upload Dokumen</td>
+						<td>Upload Document</td>
 						<td>:</td>
 						<td>
 							<input type="file" name="upload_doc_' . $numb . '" id="" class="form-control form-control-sm">
@@ -2259,7 +2259,7 @@ class Request_payment extends Admin_Controller
 				$this->template->render('view_ret');
 			}
 		} else {
-			$id_po = str_replace(', ', ',', $get_invoice['no_po']);
+			$id_po = str_replace(', ', ',', $get_invoice['no_po'] ?? '');
 			$no_incoming = explode(',', (string) $id_po);
 
 			$this->template->set('data_invoice', $get_invoice);
@@ -2677,7 +2677,7 @@ class Request_payment extends Admin_Controller
 
 				// Invoice PO (DP/Import/Local) — data sudah ada di request_payment, cukup update tanggal & status
 				if (in_array($item->tipe, ['Invoice DP', 'Invoice Import', 'Invoice Local'])) {
-					$tipe_rp = strtolower(str_replace(' ', '_', $item->tipe));
+					$tipe_rp = strtolower(str_replace(' ', '_', $item->tipe ?? ''));
 
 					// $item->no_doc berisi no_surat (dari VIEW), jadi match by no_surat
 					$this->db->update('request_payment', [
@@ -2969,7 +2969,7 @@ class Request_payment extends Admin_Controller
 			}
 		} else {
 			$valid = 0;
-			$msg = 'Belum ada data request payment yang dipilih !';
+			$msg = 'No request payment data selected yet!';
 
 			$response = [
 				'status' => $valid,
@@ -2991,12 +2991,12 @@ class Request_payment extends Admin_Controller
 		$sheet->setTitle('Request Payment');
 
 		$sheet->setCellValue('A1', '#');
-		$sheet->setCellValue('B1', 'No. Dokumen');
+		$sheet->setCellValue('B1', 'Document No.');
 		$sheet->setCellValue('C1', 'Request By');
-		$sheet->setCellValue('D1', 'Tanggal');
+		$sheet->setCellValue('D1', 'Date');
 		$sheet->setCellValue('E1', 'Keperluan');
-		$sheet->setCellValue('F1', 'Kategori');
-		$sheet->setCellValue('G1', 'Nilai Pengajuan');
+		$sheet->setCellValue('F1', 'Category');
+		$sheet->setCellValue('G1', 'Request Value');
 
 		$list_all_request_payment = $this->Request_payment_model->list_all_request_payment();
 
@@ -3105,7 +3105,7 @@ class Request_payment extends Admin_Controller
 		$tipe       = $this->input->post('tipe'); // 'dp', 'import', 'local'
 
 		if (empty($id_receive) || empty($tipe)) {
-			echo "<div class='alert alert-warning'>Data tidak valid.</div>";
+			echo "<div class='alert alert-warning'>Invalid data.</div>";
 			return;
 		}
 
@@ -3121,7 +3121,7 @@ class Request_payment extends Admin_Controller
 		}
 
 		if (empty($data_receive)) {
-			echo "<div class='alert alert-warning'>Data receive tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning'>Receive data not found.</div>";
 			return;
 		}
 
@@ -3132,7 +3132,7 @@ class Request_payment extends Admin_Controller
 		])->row_array();
 
 		if (!empty($cek_rp)) {
-			echo "<div class='alert alert-warning'>Request payment untuk invoice ini sudah pernah dibuat.</div>";
+			echo "<div class='alert alert-warning'>A payment request for this invoice has already been created.</div>";
 			return;
 		}
 
@@ -3171,7 +3171,7 @@ class Request_payment extends Admin_Controller
 		$tipe       = $this->input->post('tipe');       // 'dp', 'import', 'local'
 
 		if (empty($id_receive) || empty($tipe_rp)) {
-			echo json_encode(['status' => 0, 'message' => 'Data tidak valid.']);
+			echo json_encode(['status' => 0, 'message' => 'Invalid data.']);
 			return;
 		}
 
@@ -3181,7 +3181,7 @@ class Request_payment extends Admin_Controller
 			'tipe'   => $tipe_rp
 		])->row();
 		if ($cek) {
-			echo json_encode(['status' => 0, 'message' => 'Request payment sudah pernah dibuat.']);
+			echo json_encode(['status' => 0, 'message' => 'The request payment has already been created.']);
 			return;
 		}
 
@@ -3190,7 +3190,7 @@ class Request_payment extends Admin_Controller
 		$data_receive  = $this->db->get_where($tabel_receive, ['id' => $id_receive])->row_array();
 
 		if (empty($data_receive)) {
-			echo json_encode(['status' => 0, 'message' => 'Data receive tidak ditemukan.']);
+			echo json_encode(['status' => 0, 'message' => 'Receive data not found.']);
 			return;
 		}
 
@@ -3253,10 +3253,10 @@ class Request_payment extends Admin_Controller
 
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
-			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan request payment.']);
+			echo json_encode(['status' => 0, 'message' => 'Failed to save the request payment.']);
 		} else {
 			$this->db->trans_commit();
-			echo json_encode(['status' => 1, 'message' => 'Request payment berhasil dibuat.']);
+			echo json_encode(['status' => 1, 'message' => 'Request payment created successfully.']);
 		}
 	}
 }

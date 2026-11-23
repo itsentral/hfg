@@ -66,8 +66,8 @@ class Budget extends Admin_Controller
             $nama_asset    = strtolower((string) $data['nama_asset']);
             $tahun         = $data['tahun'];
             $bulan         = $data['bulan'];
-            $budget        = str_replace(',', '', $data['budget']);
-            $qty           = str_replace(',', '', $data['qty']);
+            $budget        = str_replace(',', '', $data['budget'] ?? '');
+            $qty           = str_replace(',', '', $data['qty'] ?? '');
             $keterangan    = strtolower((string) $data['keterangan']);
 
             $ym = date('ym');
@@ -177,13 +177,13 @@ class Budget extends Admin_Controller
         ")->result();
 
         $data = array(
-            'title'  => 'Detail Budget Asset',
+            'title'  => 'Asset Budget Detail',
             'action' => 'view',
             'header' => $header,
             'id'     => $id
         );
 
-        $this->template->title('Detail Budget Asset');
+        $this->template->title('Asset Budget Detail');
         $this->template->render('view', $data);
     }
 
@@ -200,10 +200,10 @@ class Budget extends Admin_Controller
             $nama_asset = strtolower((string) $data['nama_asset']);
             $tahun      = $data['tahun'];
             $bulan      = $data['bulan'];
-            $budget     = str_replace(',', '', $data['budget']);
-            $budget_pr  = (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr']) : $budget;
-            $budget_po  = (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po']) : $budget;
-            $qty        = str_replace(',', '', $data['qty']);
+            $budget     = str_replace(',', '', $data['budget'] ?? '');
+            $budget_pr  = (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr'] ?? '') : $budget;
+            $budget_po  = (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po'] ?? '') : $budget;
+            $qty        = str_replace(',', '', $data['qty'] ?? '');
             $keterangan = strtolower((string) $data['keterangan']);
             $reason     = (!empty($data['reason'])) ? strtolower((string) $data['reason']) : '';
             $status     = (!empty($data['status'])) ? $data['status'] : 'Y';

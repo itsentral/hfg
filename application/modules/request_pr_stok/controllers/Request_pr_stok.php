@@ -76,7 +76,7 @@ class Request_pr_stok extends Admin_Controller
 
     history("View index request pr stok");
     $this->template->set('result', $get_data);
-    $this->template->title('Purchasing Request / PR Stok');
+    $this->template->title('Purchasing Request / PR Stock');
     $this->template->render('index');
   }
 
@@ -90,7 +90,7 @@ class Request_pr_stok extends Admin_Controller
     $data = [
       'category' => $this->db->get_where('accessories_category', array('deleted_date' => NULL))->result_array()
     ];
-    $this->template->title('Re-Order Point Stok');
+    $this->template->title('Stock Re-Order Point');
     $this->template->render('add', $data);
   }
 
@@ -99,7 +99,7 @@ class Request_pr_stok extends Admin_Controller
     $data = [
       'category' => $this->db->get_where('accessories_category', array('deleted_date' => NULL))->result_array()
     ];
-    $this->template->title('Re-Order Point Stok');
+    $this->template->title('Stock Re-Order Point');
     $this->template->render('add_new', $data);
   }
 
@@ -155,7 +155,7 @@ class Request_pr_stok extends Admin_Controller
     $data = $this->input->post();
 
     $id_material  = $data['id_material'];
-    $purchase     = str_replace(',', '', $data['purchase']);
+    $purchase     = str_replace(',', '', $data['purchase'] ?? '');
     // $purchase_pack     = str_replace(',', '', $data['purchase_pack']);
     $tanggal      = $data['tanggal'];
     $info         = $data['info'];
@@ -251,8 +251,8 @@ class Request_pr_stok extends Admin_Controller
       'booking_by'      => $this->id_user,
       'booking_date'    => $this->datetime,
       'tingkat_pr' => $data['tingkat_pr'] ?? null,
-      'nilai_budget' => isset($data['nilai_budget']) ? (float)str_replace(',', '', $data['nilai_budget']) : 0,
-      'nilai_pengajuan' => isset($data['nilai_pengajuan']) ? (float)str_replace(',', '', $data['nilai_pengajuan']) : 0
+      'nilai_budget' => isset($data['nilai_budget']) ? (float)str_replace(',', '', $data['nilai_budget'] ?? '') : 0,
+      'nilai_pengajuan' => isset($data['nilai_pengajuan']) ? (float)str_replace(',', '', $data['nilai_pengajuan'] ?? '') : 0
     );
 
     // print_r($ArrSaveHeader);
@@ -361,7 +361,7 @@ class Request_pr_stok extends Admin_Controller
       'GET_STOK_PUSAT' => getStokMaterial(1)
     ];
 
-    $this->template->title('Detail PR - ' . $so_number);
+    $this->template->title('PR Detail - ' . $so_number);
     $this->template->render('detail_planning', $data);
   }
 
@@ -416,7 +416,7 @@ class Request_pr_stok extends Admin_Controller
     $ArrUpdate = [];
     foreach ($detail as $key => $value) {
       $ArrUpdate[$key]['id'] = $value['id'];
-      $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty']);
+      $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty'] ?? '');
     }
 
     $get_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row();

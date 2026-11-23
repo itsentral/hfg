@@ -15,7 +15,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 							</div>
 							<div class="col-md-8">
 								<select id="loi" name="loi" class="form-control select2" required>
-									<option value="">--Pilih--</option>
+									<option value="">--Select--</option>
 									<option value="Import" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Import') ? 'selected' : null ?>>Import</option>
 									<option value="Lokal" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Lokal') ? 'selected' : null ?>>Lokal</option>
 								</select>
@@ -62,7 +62,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="customer">Tanggal PO</label>
+								<label for="customer">PO Date</label>
 							</div>
 							<div class="col-md-8">
 								<input type="text" class="form-control" id="tanggal" value="<?= $results['get_po']->tanggal ?>" onkeyup required name="tanggal">
@@ -96,7 +96,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 							</div>
 							<div class="col-md-8">
 								<select id="term" name="term" class="form-control select2" required>
-									<option value="">-- Pilih --</option>
+									<option value="">-- Select --</option>
 									<?php foreach ($results['term'] as $term): ?>
 										<option value="<?= htmlspecialchars((string) $term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
 											<?= htmlspecialchars((string) $term->name) ?>
@@ -129,7 +129,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="id_customer">Keterangan</label>
+								<label for="id_customer">Description</label>
 							</div>
 							<div class="col-md-8">
 								<textarea name="keterangan" id="" class="form-control"><?= $results['get_po']->note ?></textarea>
@@ -141,26 +141,26 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 				<div class="table-responsive mb-3">
 					<div class="form-check form-switch mb-3">
 						<input class="form-check-input text-end form-control" type="checkbox" id="show_tax" name="show_tax" value="Y" <?= ($results['get_po']->show_tax == 'Y') ? 'checked' : ''; ?>>
-						<label class="form-check-label" for="show_tax"><b>Gunakan Pajak (PPn)</b></label>
+						<label class="form-check-label" for="show_tax"><b>Use Tax (VAT)</b></label>
 					</div>
 
 					<table class='table table-bordered table-striped'>
 						<thead>
 							<tr class='bg-blue'>
 								<th style="min-width: 200px;">Item</th>
-								<th style="min-width: 200px;">Nama Lain</th>
+								<th style="min-width: 200px;">Other Name</th>
 								<th style="min-width: 150px;">HS Code</th>
 								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;">Qty PR</th>
 								<th style="min-width: 100px;">PO Qty</th>
 								<th style="min-width: 100px;">Unit Measurement</th>
 								<th style="min-width: 75px;">Unit Packing</th>
-								<th style="min-width: 150px;">Harga Satuan</th>
-								<th style="min-width: 150px;">Total Harga</th>
-								<th style="min-width: 150px;">Nilai Discount</th>
+								<th style="min-width: 150px;">Unit Price</th>
+								<th style="min-width: 150px;">Total Price</th>
+								<th style="min-width: 150px;">Discount Value</th>
 								<th style="min-width: 150px;">Sub Total</th>
 								<th style="min-width: 150px;">Deskripsi Item</th>
-								<th style="min-width: 150px;">Sisa Kuota</th>
+								<th style="min-width: 150px;">Remaining Quota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -223,7 +223,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="11"><b>Biaya Kirim</b></td>
+								<td class="text-end" colspan="11"><b>Shipping Cost</b></td>
 								<td colspan="3">
 									<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['get_po']->taxtotal ?>" readonly>
 								</td>
@@ -248,8 +248,8 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 									<th class="text-center">Group TOP</th>
 									<th class="text-center">Progress (%)</th>
 									<th class="text-center">Value</th>
-									<th class="text-center">Keterangan</th>
-									<th class="text-center">Tipe Pembayaran</th>
+									<th class="text-center">Description</th>
+									<th class="text-center">Payment Type</th>
 									<th class="text-center">Jatuh Tempo</th>
 								</tr>
 							</thead>
@@ -278,7 +278,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 									echo '<td>';
 									echo '<div class="form-check"><input class="form-check-input check_bayar" type="radio" value="lc" ' . $checked_lc . ' disabled><label class="form-check-label">LC</label></div>';
 									echo '<div class="form-check"><input class="form-check-input check_bayar" type="radio" value="tt" ' . $checked_tt . ' disabled><label class="form-check-label">TT</label></div>';
-									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> Detail LC</button>';
+									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> LC Detail</button>';
 
 									// Input Hidden data LC agar tetap bisa dilihat via JS Modal
 									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
@@ -306,7 +306,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 				</div>
 
 				<div class="text-center">
-					<a href="<?= base_url('closed_po') ?>" class="btn btn-danger"><i class="fa fa-arrow-left"></i> Kembali</a>
+					<a href="<?= base_url('closed_po') ?>" class="btn btn-danger"><i class="fa fa-arrow-left"></i> Back</a>
 				</div>
 			</div>
 		</form>
@@ -319,7 +319,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-info">
-				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<h5 class="modal-title text-white">Letter of Credit (LC) Detail</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">

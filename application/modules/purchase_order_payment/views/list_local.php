@@ -12,7 +12,7 @@ $url_search = 'search_local';
     <div class="row mb-3">
         <div class="col-md-4 mt-3">
             <select name="supplier" id="<?= $id_select ?>" class="form-control">
-                <option value="">- Pilih Supplier -</option>
+                <option value="">- Select Supplier -</option>
                 <?php foreach ($list_supplier as $s): ?>
                     <option value="<?= $s->kode_supplier ?>"><?= $s->nama ?></option>
                 <?php endforeach; ?>
@@ -45,8 +45,8 @@ $url_search = 'search_local';
                     <th class="text-center">No. Incoming</th>
                     <th class="text-center">No. Invoice</th>
                     <th class="text-center">No. Payment</th>
-                    <th class="text-center">Nama Supplier</th>
-                    <th class="text-center">Tanggal Incoming</th>
+                    <th class="text-center">Supplier Name</th>
+                    <th class="text-center">Incoming Date</th>
                     <th class="text-center">DP Sebelumnya (IDR)</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Action</th>
@@ -57,7 +57,7 @@ $url_search = 'search_local';
                 foreach ($list_po as $item): ?>
                     <?php
                     if (empty($item['id_receive_il'])) {
-                        $badge = '<span class="badge bg-secondary">Belum Receive</span>';
+                        $badge = '<span class="badge bg-secondary">Not Received</span>';
                     } else {
                         $status_enum = strtolower($item['status_receive_il'] ?? '');
                         $status_uc   = ucwords((string) $status_enum);
@@ -73,7 +73,7 @@ $url_search = 'search_local';
 
                     $dp_info = ((float)($item['total_dp_rupiah'] ?? 0) > 0)
                         ? '<span class="badge bg-info text-dark">Rp ' . number_format((float) $item['total_dp_rupiah'], 0) . '</span>'
-                        : '<span class="badge bg-light text-dark border">Tidak Ada DP</span>';
+                        : '<span class="badge bg-light text-dark border">No DP</span>';
 
                     $buttons = '';
 
@@ -95,7 +95,7 @@ $url_search = 'search_local';
                     class="btn btn-sm btn-info btn-view-il text-white"
                     data-id="'   . $item['id_receive_il'] . '"
                     data-tipe="' . $tipe_btn              . '"
-                    title="Lihat Invoice">
+                    title="View Invoice">
                     <i class="fa fa-eye"></i>
                 </button>';
                         // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
@@ -159,11 +159,11 @@ $url_search = 'search_local';
 
             Swal.fire({
                 title: 'Request Payment',
-                text: 'Ajukan request payment untuk invoice ini?',
+                text: 'Submit a payment request for this invoice?',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Ajukan',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Submit',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -178,7 +178,7 @@ $url_search = 'search_local';
                             var response = typeof res === 'string' ? JSON.parse(res) : res;
                             if (response.status == 1) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: response.message,
                                     icon: 'success',
                                     timer: 1500,
@@ -192,7 +192,7 @@ $url_search = 'search_local';
                                     }
                                 });
                             } else {
-                                Swal.fire('Gagal', response.message, 'error');
+                                Swal.fire('Failed', response.message, 'error');
                             }
                         },
                         error: function() {

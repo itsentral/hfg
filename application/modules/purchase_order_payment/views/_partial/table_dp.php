@@ -5,9 +5,9 @@
             <th class="text-center">No. PO</th>
             <th class="text-center">No. Invoice</th>
             <th class="text-center">No. Payment</th>
-            <th class="text-center">Nama Supplier</th>
-            <th class="text-center">Tanggal PO</th>
-            <th class="text-center">Keterangan</th>
+            <th class="text-center">Supplier Name</th>
+            <th class="text-center">PO Date</th>
+            <th class="text-center">Description</th>
             <th class="text-center">Status</th>
             <th class="text-center">Action</th>
         </tr>
@@ -22,7 +22,7 @@
 
             if (!$sudah_receive) {
                 // Belum receive invoice
-                $badge = '<span class="badge bg-secondary">Belum Receive</span>';
+                $badge = '<span class="badge bg-secondary">Not Received</span>';
                 $action_btn = '
                 <button type="button" class="btn btn-sm btn-primary btn-req-dp"
                     data-id_top="' . $item['id_top'] . '"
@@ -46,7 +46,7 @@
                 $action_btn = '
                 <button type="button" class="btn btn-sm btn-info btn-view-dp"
                     data-id="' . $item['id_receive_dp'] . '"
-                    title="Lihat Invoice">
+                    title="View Invoice">
                     <i class="fa fa-eye"></i>
                 </button>';
             }

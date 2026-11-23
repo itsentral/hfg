@@ -17,10 +17,10 @@ if (!isset($coalist)) {
         <div class="card-body p-2">
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-3 fw-semibold">
-                    <label>Keterangan</label>
+                    <label>Description</label>
                 </div>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" value='<?= $keterangan; ?>'>
+                    <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Description" value='<?= $keterangan; ?>'>
                     <input type="hidden" class="form-control" id="id" name="id" value='<?= $id; ?>'>
                 </div>
             </div>

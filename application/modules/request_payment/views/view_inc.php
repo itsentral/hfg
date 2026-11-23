@@ -8,7 +8,7 @@
 
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nama Supplier</label>
+            <label for="">Supplier Name</label>
             <input type="text" name="nama_supplier" id="" class="form-control form-control-sm nama_supplier" value="<?= $data_invoice['nm_supplier'] ?>" readonly>
         </div>
     </div>
@@ -26,7 +26,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor Incoming</label>
+            <label for="">Incoming Number</label>
             <input type="text" name="nomor_po" id="" class="form-control form-control-sm nomor_po" value="<?= $data_invoice['no_po'] ?>" readonly>
         </div>
     </div>
@@ -38,7 +38,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor Invoice</label>
+            <label for="">Invoice Number</label>
             <input type="text" name="nomor_invoice" id="" class="form-control form-control-sm nomor_invoice" value="<?= $data_invoice['invoice_no'] ?>" readonly>
         </div>
     </div>
@@ -50,7 +50,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nomor Faktur Pajak</label>
+            <label for="">Tax Invoice Number</label>
             <input type="text" name="nomor_faktur_pajak" id="" class="form-control form-control-sm nomor_faktur_pajak" value="<?= $data_invoice['no_faktur_pajak'] ?>" readonly>
         </div>
     </div>
@@ -62,13 +62,13 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nilai Disc</label>
+            <label for="">Discount Value</label>
             <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right nilai_disc auto_num" value="<?= number_format((float) $data_invoice['nilai_disc'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nilai PPN</label>
+            <label for="">VAT Value</label>
             <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right nilai_ppn auto_num" value="<?= number_format((float) $data_invoice['nilai_ppn'], 2) ?>" readonly>
         </div>
     </div>
@@ -103,7 +103,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <b>Informasi Bank :</b>
+        <b>Bank Information:</b>
         <div class="form-group">
             <label for="">Bank</label>
             <input type="text" name="bank" id="" class="form-control form-control-sm" placeholder="- Bank -" value="<?= $data_invoice['bank'] ?>" readonly>
@@ -123,13 +123,13 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Tanggal Faktur Pajak</label>
+            <label for="">Tax Invoice Date</label>
             <input type="date" name="tanggal_faktur_pajak" id="" class="form-control form-control-sm tanggal_faktur_pajak" value="<?= $data_invoice['tanggal_faktur_pajak'] ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Nama</label>
+            <label for="">Name</label>
             <input type="text" name="nm_acc_bank" id="" class="form-control form-control-sm" placeholder="- Nama Acc Bank -" value="<?= $data_invoice['nm_acc_bank'] ?>" readonly>
         </div>
     </div>
@@ -138,17 +138,17 @@
     foreach ($no_incoming as $id_incoming) {
     ?>
         <div class="col-md-12">
-            <h4>Detail Incoming : <?= $id_incoming ?></h4>
+            <h4>Incoming Detail : <?= $id_incoming ?></h4>
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th class="text-center">No</th>
-                        <th class="text-center">Nomor PO</th>
+                        <th class="text-center">PO Number</th>
                         <th class="text-center">Produk</th>
                         <th class="text-center">Qty PO</th>
                         <th class="text-center">Qty Incoming</th>
-                        <th class="text-center">Harga Satuan</th>
-                        <th class="text-center">Total Harga</th>
+                        <th class="text-center">Unit Price</th>
+                        <th class="text-center">Total Price</th>
                     </tr>
                 </thead>
                 <tbody>

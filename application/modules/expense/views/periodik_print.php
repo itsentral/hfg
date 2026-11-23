@@ -29,9 +29,9 @@
 			<th colspan=6>PERIODIK<br /><br /><br /></th>
 		</tr>
 		<tr>
-			<td nowrap colspan=2>No Dokumen : <?= $data->no_doc ?></td>
-			<td nowrap colspan=2>Jumlah Nilai : <?= number_format((float) $data->jumlah_kasbon) ?></td>
-			<td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
+			<td nowrap colspan=2>Document No : <?= $data->no_doc ?></td>
+			<td nowrap colspan=2>Total Value : <?= number_format((float) $data->jumlah_kasbon) ?></td>
+			<td nowrap colspan=2>Date : <?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 		</tr>
 		<tr>
 			<th colspan=6><br /></th>

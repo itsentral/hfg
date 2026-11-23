@@ -60,7 +60,7 @@ if ($type == 'expense') {
 		}
 	}
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
-	$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
+	$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type ?? '');
 	$keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
 	$no_doc = $header->no_po;
 	$no_surat = $header->no_surat;
@@ -111,10 +111,10 @@ if ($type == 'expense') {
 	<div class="col-12 col-md-6">
 		<div class="card h-100 border-0 shadow-sm">
 			<div class="card-body">
-				<h6 class="fw-bold text-secondary mb-3 border-bottom pb-2"><i class="fa fa-file-text me-2"></i>Detail Dokumen</h6>
+				<h6 class="fw-bold text-secondary mb-3 border-bottom pb-2"><i class="fa fa-file-text me-2"></i>Document Detail</h6>
 
 				<div class="mb-3">
-					<label class="form-label fw-semibold small text-muted">Nomor Dokumen</label>
+					<label class="form-label fw-semibold small text-muted">Document Number</label>
 					<?php if (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local', 'ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) : ?>
 						<input type="text" class="form-control bg-light" readonly value="<?= $no_surat ?: $no_doc; ?>">
 					<?php else : ?>
@@ -123,24 +123,24 @@ if ($type == 'expense') {
 				</div>
 
 				<div class="mb-3">
-					<label class="form-label fw-semibold small text-muted">Keterangan / Keperluan</label>
+					<label class="form-label fw-semibold small text-muted">Description / Purpose</label>
 					<input type="text" name="informasi" class="form-control bg-light" readonly value="<?= ($keterangan) ?: ''; ?>">
 				</div>
 
 				<!-- <div class="row g-2">
 					<div class="col-6">
-						<label class="form-label fw-semibold small text-muted">Biaya Admin Bank</label>
+						<label class="form-label fw-semibold small text-muted">Bank Admin Fee</label>
 						<input type="text" name="admin_bank" class="form-control bg-light text-end" readonly value="<?= number_format(($data_req_payment['admin_bank']), 2) ?>">
 					</div>
 					<div class="col-6">
-						<label class="form-label fw-semibold small text-muted">Link Dokumen</label>
+						<label class="form-label fw-semibold small text-muted">Document Link</label>
 						<div class="d-block">
 							<?php if (!empty($data_req_payment['link_doc']) && file_exists('./assets/expense/' . $data_req_payment['link_doc'])) : ?>
 								<a href="<?= base_url('assets/expense/' . $data_req_payment['link_doc']) ?>" class="btn btn-primary btn-sm w-100 h-100 d-flex align-items-center justify-content-center" target="_blank">
 									<i class="fa fa-download me-2"></i> Download Lampiran
 								</a>
 							<?php else : ?>
-								<span class="text-muted small d-block pt-2">Tidak ada berkas</span>
+								<span class="text-muted small d-block pt-2">No files</span>
 							<?php endif; ?>
 						</div>
 					</div>
@@ -153,15 +153,15 @@ if ($type == 'expense') {
 		<div class="card h-100 border-0 shadow-sm">
 			<div class="card-body d-flex flex-column justify-content-between">
 				<div>
-					<h6 class="fw-bold text-secondary mb-3 border-bottom pb-2"><i class="fa fa-info-circle me-2"></i>Informasi Tambahan</h6>
+					<h6 class="fw-bold text-secondary mb-3 border-bottom pb-2"><i class="fa fa-info-circle me-2"></i>Additional Information</h6>
 
 					<div class="row g-2 mb-3">
 						<div class="col-6">
-							<label class="form-label fw-semibold small text-muted">Nama Bank Asal</label>
+							<label class="form-label fw-semibold small text-muted">Source Bank Name</label>
 							<input type="text" class="form-control bg-light" readonly value="<?= $data_req_payment['bank_name']; ?>">
 						</div>
 						<div class="col-6">
-							<label class="form-label fw-semibold small text-muted">Tanggal Dokumen</label>
+							<label class="form-label fw-semibold small text-muted">Document Date</label>
 							<input type="text" class="form-control bg-light" readonly value="<?= $tgl_doc; ?>">
 						</div>
 					</div>
@@ -178,16 +178,16 @@ if ($type == 'expense') {
 				<thead class="text-center">
 					<tr>
 						<th style="width: 4%;">#</th>
-						<th>Barang / Jasa</th>
-						<th style="width: 12%;">Tgl. Transaksi</th>
+						<th>Goods / Services</th>
+						<th style="width: 12%;">Transaction Date</th>
 						<th style="width: 6%;">Qty</th>
 						<th style="width: 8%;">Currency</th>
-						<th style="width: 35%;">Rincian Nominal Pembayaran</th>
-						<th style="width: 8%;">Berkas</th>
+						<th style="width: 35%;">Payment Amount Details</th>
+						<th style="width: 8%;">File</th>
 						<th style="width: 8%;">
 							<div class="form-check d-flex justify-content-center m-0">
 								<input class="form-check-input master_check" type="checkbox" id="checkAll" checked>
-								<label class="form-check-label small ms-1 fw-bold" for="checkAll">Pilih</label>
+								<label class="form-check-label small ms-1 fw-bold" for="checkAll">Select</label>
 							</div>
 						</th>
 					</tr>
@@ -211,18 +211,18 @@ if ($type == 'expense') {
 								<tr>
 									<td class="text-center"><?= $n; ?></td>
 
-									<td><?= $dtl->deskripsi; ?> <?= (isset($dtl->id_kasbon) && $dtl->id_kasbon !== '') ? "<span class='badge bg-warning text-dark'>Kasbon</span>" : null ?></td>
+									<td><?= $dtl->deskripsi; ?> <?= (isset($dtl->id_kasbon) && $dtl->id_kasbon !== '') ? "<span class='badge bg-warning text-dark'>Cash Advance</span>" : null ?></td>
 									<td class="text-center"><?= $dtl->tanggal; ?></td>
 									<td class="text-center"><?= $dtl->qty; ?></td>
 									<td class="text-center small"><?= $data_req_payment['currency']; ?></td>
 									<td>
 										<table class="w-100 inner-sub-table small">
 											<tr>
-												<td>Pengajuan</td>
+												<td>Request</td>
 												<td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
 											</tr>
 											<tr>
-												<td>Nilai PPh</td>
+												<td>PPh Value</td>
 												<td class="text-end text-danger">- <?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
 											</tr>
 											<tr>
@@ -285,7 +285,7 @@ if ($type == 'expense') {
 											<td>
 												<table class="w-100 inner-sub-table small">
 													<tr>
-														<td>Harga</td>
+														<td>Price</td>
 														<td class="text-end"><?= number_format((float) $detail_kasbon_pr->total_harga) ?></td>
 													</tr>
 													<tr>
@@ -311,11 +311,11 @@ if ($type == 'expense') {
 										<td>
 											<table class="w-100 inner-sub-table small">
 												<tr>
-													<td>Pengajuan</td>
+													<td>Request</td>
 													<td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
 												</tr>
 												<tr>
-													<td>Nilai PPh</td>
+													<td>PPh Value</td>
 													<td class="text-end text-danger">- <?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
 												</tr>
 												<tr>
@@ -351,11 +351,11 @@ if ($type == 'expense') {
 									<td>
 										<table class="w-100 inner-sub-table small">
 											<tr>
-												<td>Nilai Pengajuan</td>
+												<td>Request Value</td>
 												<td class="text-end fw-semibold"><?= number_format((float) $dtl->jumlah_kasbon, 2) ?></td>
 											</tr>
 											<tr>
-												<td>Nilai PPh</td>
+												<td>PPh Value</td>
 												<td class="text-end text-danger">- <?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
 											</tr>
 											<tr>
@@ -395,11 +395,11 @@ if ($type == 'expense') {
 									<td>
 										<table class="w-100 inner-sub-table small">
 											<tr>
-												<td>Nilai Pengajuan</td>
+												<td>Request Value</td>
 												<td class="text-end fw-semibold"><?= number_format((float) $dtl->total_request, 2) ?></td>
 											</tr>
 											<tr>
-												<td>Nilai PPh</td>
+												<td>PPh Value</td>
 												<td class="text-end text-danger">- <?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
 											</tr>
 											<tr>
@@ -435,11 +435,11 @@ if ($type == 'expense') {
 									<td>
 										<table class="w-100 inner-sub-table small">
 											<tr>
-												<td>Nilai Pengajuan</td>
+												<td>Request Value</td>
 												<td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
 											</tr>
 											<tr>
-												<td>Nilai PPh</td>
+												<td>PPh Value</td>
 												<td class="text-end text-danger">- <?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
 											</tr>
 											<tr>
@@ -481,11 +481,11 @@ if ($type == 'expense') {
 									<td>
 										<table class="w-100 inner-sub-table small">
 											<tr>
-												<td>Pengajuan</td>
+												<td>Request</td>
 												<td class="text-end fw-semibold"><?= number_format((float) $total_val, 2) ?></td>
 											</tr>
 											<tr>
-												<td>Nilai PPh</td>
+												<td>PPh Value</td>
 												<td class="text-end text-danger">- <?= number_format($data_req_payment['total_pph'] ?? 0, 2) ?></td>
 											</tr>
 											<tr>
@@ -540,7 +540,7 @@ if ($type == 'expense') {
 												</tr>
 											<?php else : ?>
 												<tr>
-													<td>Sisa Nilai</td>
+													<td>Remaining Value</td>
 													<td class="text-center" style="width:10px">:</td>
 													<td class="text-end fw-semibold"><?= number_format($dtl->value_ros_by_po ?? 0, 2) ?></td>
 												</tr>
@@ -591,7 +591,7 @@ if ($type == 'expense') {
 								$label_ros = str_replace(
 									['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'],
 									['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],
-									$type
+									$type ?? ''
 								);
 							?>
 								<tr>
@@ -637,15 +637,15 @@ if ($type == 'expense') {
 				<span class="d-block fw-bold text-dark mb-2 small"><i class="fa fa-university me-1"></i> Informasi Rekening Penerima Transfer :</span>
 				<table class="table table-sm table-bordered m-0 small align-middle">
 					<tr>
-						<td class="bg-light text-muted fw-semibold ps-2" style="width: 35%;">Nama Bank</td>
+						<td class="bg-light text-muted fw-semibold ps-2" style="width: 35%;">Bank Name</td>
 						<td class="ps-2 fw-bold"><?= $bank_id ?></td>
 					</tr>
 					<tr>
-						<td class="bg-light text-muted fw-semibold ps-2">Nomor Rekening</td>
+						<td class="bg-light text-muted fw-semibold ps-2">Account Number</td>
 						<td class="ps-2 fw-mono text-primary"><?= $accnumber ?></td>
 					</tr>
 					<tr>
-						<td class="bg-light text-muted fw-semibold ps-2">Nama Pemilik Akun</td>
+						<td class="bg-light text-muted fw-semibold ps-2">Account Owner Name</td>
 						<td class="ps-2"><?= $accname ?></td>
 					</tr>
 				</table>
@@ -654,9 +654,9 @@ if ($type == 'expense') {
 	</div>
 
 	<div class="col-12 col-md-7 d-flex align-items-end justify-content-end gap-2 mb-4">
-		<a href="<?= base_url($this->uri->segment(1) . '/list_approve_management'); ?>" class="btn btn-secondary px-3"><i class="fa fa-reply me-1"></i> Kembali</a>
-		<!-- <button type="button" class="btn btn-danger px-3" id="reject"><i class="fa fa-close me-1"></i> Tolak (Reject)</button> -->
-		<button type="button" class="btn btn-success px-4" id="process"><i class="fa fa-save me-1"></i> Setujui (Approve)</button>
+		<a href="<?= base_url($this->uri->segment(1) . '/list_approve_management'); ?>" class="btn btn-secondary px-3"><i class="fa fa-reply me-1"></i> Back</a>
+		<!-- <button type="button" class="btn btn-danger px-3" id="reject"><i class="fa fa-close me-1"></i> Reject</button> -->
+		<button type="button" class="btn btn-success px-4" id="process"><i class="fa fa-save me-1"></i> Approve</button>
 	</div>
 </div>
 
@@ -696,8 +696,8 @@ if ($type == 'expense') {
 		if ($("#bank_coa").val() == "0") {
 			Swal.fire({
 				icon: 'warning',
-				title: 'Perhatian!',
-				text: 'Bank tidak boleh kosong'
+				title: 'Attention!',
+				text: 'Bank cannot be empty'
 			});
 			return false;
 		}
@@ -705,20 +705,20 @@ if ($type == 'expense') {
 		if (!$('.check_item').is(':checked')) {
 			Swal.fire({
 				icon: 'warning',
-				title: 'Pilih Item!',
-				text: 'Silakan pilih minimal satu item yang akan disetujui!'
+				title: 'Select Items!',
+				text: 'Please select at least one item to approve!'
 			});
 			return false;
 		}
 
 		Swal.fire({
-			title: 'Anda Yakin?',
-			text: 'Seluruh item terpilih akan disetujui dalam sistem!',
+			title: 'Are you sure?',
+			text: 'All selected items will be approved in the system!',
 			icon: 'info',
 			showCancelButton: true,
 			confirmButtonColor: '#198754',
-			confirmButtonText: 'Ya, Setujui!',
-			cancelButtonText: 'Batal'
+			confirmButtonText: 'Yes, Approve!',
+			cancelButtonText: 'Cancel'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				var formdata = new FormData($('#frm_data')[0]);
@@ -733,8 +733,8 @@ if ($type == 'expense') {
 						if (msg['save'] == '1') {
 							Swal.fire({
 								icon: 'success',
-								title: 'Sukses!',
-								text: 'Data pengajuan berhasil disetujui',
+								title: 'Success!',
+								text: 'Request data approved successfully',
 								timer: 1500,
 								showConfirmButton: false
 							});
@@ -742,8 +742,8 @@ if ($type == 'expense') {
 						} else {
 							Swal.fire({
 								icon: 'error',
-								title: 'Gagal!',
-								text: 'Sistem gagal menyetujui pengajuan.'
+								title: 'Failed!',
+								text: 'The system failed to approve the request.'
 							});
 						}
 					},
@@ -751,7 +751,7 @@ if ($type == 'expense') {
 						Swal.fire({
 							icon: 'error',
 							title: 'Error AJAX!',
-							text: 'Gagal menghubungi server, silakan hubungi tim IT.'
+							text: 'Failed to contact the server, please contact the IT team.'
 						});
 					}
 				});
@@ -764,8 +764,8 @@ if ($type == 'expense') {
 		if (!$('.check_item').is(':checked')) {
 			Swal.fire({
 				icon: 'warning',
-				title: 'Pilih Item!',
-				text: 'Silakan pilih minimal satu item yang akan ditolak!'
+				title: 'Select Items!',
+				text: 'Please select at least one item to reject!'
 			});
 			return false;
 		}
@@ -774,21 +774,21 @@ if ($type == 'expense') {
 		if (reject_reason === '') {
 			Swal.fire({
 				icon: 'warning',
-				title: 'Alasan Kosong!',
-				text: 'Kolom Alasan Penolakan wajib diisi untuk melakukan penolakan data!'
+				title: 'Reason Is Empty!',
+				text: 'The Rejection Reason field is required to reject data!'
 			});
 			$('.reject_reason').focus();
 			return false;
 		}
 
 		Swal.fire({
-			title: 'Anda Yakin Menolak?',
-			text: 'Item terpilih akan dikembalikan dengan status ditolak!',
+			title: 'Are You Sure You Want to Reject?',
+			text: 'The selected items will be returned with status rejected!',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#dc3545',
-			confirmButtonText: 'Ya, Tolak!',
-			cancelButtonText: 'Batal'
+			confirmButtonText: 'Yes, Reject!',
+			cancelButtonText: 'Cancel'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				var formdata = new FormData($('#frm_data')[0]);
@@ -803,8 +803,8 @@ if ($type == 'expense') {
 						if (msg['save'] == '1') {
 							Swal.fire({
 								icon: 'success',
-								title: 'Berhasil!',
-								text: 'Data pengajuan telah ditolak.',
+								title: 'Success!',
+								text: 'The request data has been rejected.',
 								timer: 1500,
 								showConfirmButton: false
 							});
@@ -812,8 +812,8 @@ if ($type == 'expense') {
 						} else {
 							Swal.fire({
 								icon: 'error',
-								title: 'Gagal!',
-								text: 'Gagal memproses penolakan.'
+								title: 'Failed!',
+								text: 'Failed to process the rejection.'
 							});
 						}
 					},
@@ -821,7 +821,7 @@ if ($type == 'expense') {
 						Swal.fire({
 							icon: 'error',
 							title: 'Error AJAX!',
-							text: 'Gagal memproses pengajuan melalui server.'
+							text: 'Failed to process the request on the server.'
 						});
 					}
 				});

@@ -12,7 +12,7 @@ class Fg_stock extends Admin_Controller
     {
         parent::__construct();
         $this->load->model('fg_stock/Fg_stock_model', 'stock_model');
-        $this->template->title('Stok Finish Good');
+        $this->template->title('Finish Good Stock');
         $this->template->page_icon('fa fa-cubes');
     }
 
@@ -112,9 +112,9 @@ class Fg_stock extends Admin_Controller
         // Metadata
         $objPHPExcel->getProperties()
             ->setCreator('PT. ' . get_company_code() . ' System')
-            ->setTitle("Laporan Stok Finish Good")
-            ->setSubject("Stok FG & Waste")
-            ->setDescription("Rekapitulasi Stok Produk Finish Good, KW 2, Tong Coil, dan Scrap");
+            ->setTitle("Finish Good Stock Report")
+            ->setSubject("FG Stock & Waste")
+            ->setDescription("Finish Good, KW 2, Tong Coil, and Scrap Product Stock Recap");
 
         // Styling definitions
         $styleTitle = [
@@ -186,10 +186,10 @@ class Fg_stock extends Admin_Controller
             $stok_list = $this->stock_model->get_stok_by_kategori($cat_info['kategori']);
 
             // Title Block
-            $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI STOK: ' . strtoupper((string) $cat_info['sheet_title']));
+            $sheet->setCellValue('A1', 'STOCK RECAP REPORT: ' . strtoupper((string) $cat_info['sheet_title']));
             $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
-            $sheet->setCellValue('A2', 'Waktu Cetak: ' . date('d-m-Y H:i:s'));
+            $sheet->setCellValue('A2', 'Print Time: ' . date('d-m-Y H:i:s'));
             $sheet->getStyle('A2')->applyFromArray($styleSubTitle);
 
             // Header Table (Row 4)
@@ -199,13 +199,13 @@ class Fg_stock extends Admin_Controller
 
             $headers = [
                 'A' => 'No',
-                'B' => 'Kode Stok',
+                'B' => 'Stock Code',
                 'C' => 'Nama Produk / Material',
                 'D' => 'Kategori / Jenis',
                 'E' => 'Qty (Pcs/Roll)',
-                'F' => 'Total Berat (kg)',
+                'F' => 'Total Weight (kg)',
                 'G' => 'Costbook (Rp)',
-                'H' => 'Total Nilai (Rp)',
+                'H' => 'Total Value (Rp)',
                 'I' => 'Terakhir Update',
             ];
 
@@ -340,19 +340,19 @@ class Fg_stock extends Admin_Controller
         $ledger           = $this->stock_model->get_history_ledger($kategori, $tgl_dari, $tgl_sampai, $produk_fg);
 
         $cat_names = [
-            'ALL'       => 'Semua Kategori (KW 1, KW 2, Tong Coil, Scrap)',
+            'ALL'       => 'All Categories (KW 1, KW 2, Tong Coil, Scrap)',
             'KW1'       => '1. Finish Good KW 1',
             'KW2'       => '2. Finish Good KW 2',
             'TONG_COIL' => '3. Tong Coil',
             'SCRAP'     => '4. Scrap / Waste'
         ];
-        $cat_label = isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'Semua Kategori';
+        $cat_label = isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'All Categories';
 
         $this->load->library('PHPExcel');
         $objPHPExcel = new PHPExcel();
 
         $sheet = $objPHPExcel->getActiveSheet();
-        $sheet->setTitle('Kartu Stok FG');
+        $sheet->setTitle('FG Stock Card');
 
         // Page setup
         $sheet->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
@@ -404,34 +404,34 @@ class Fg_stock extends Admin_Controller
         ];
 
         // Header info
-        $sheet->setCellValue('A1', 'KARTU STOK & RIWAYAT MUTASI FINISH GOOD (FG)');
+        $sheet->setCellValue('A1', 'FINISH GOOD (FG) STOCK CARD & MUTATION HISTORY');
         $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
-        $sheet->setCellValue('A2', 'Kategori Stok: ' . $cat_label . ($produk_fg ? ' | Filter Produk: ' . $produk_fg : ''));
-        $sheet->setCellValue('A3', 'Periode Mutasi: ' . ($tgl_dari ? date('d-m-Y', strtotime((string) $tgl_dari)) : 'Semua') . ' s/d ' . ($tgl_sampai ? date('d-m-Y', strtotime((string) $tgl_sampai)) : 'Semua') . ' | Dicetak: ' . date('d-m-Y H:i:s'));
+        $sheet->setCellValue('A2', 'Stock Category: ' . $cat_label . ($produk_fg ? ' | Filter Produk: ' . $produk_fg : ''));
+        $sheet->setCellValue('A3', 'Mutation Period: ' . ($tgl_dari ? date('d-m-Y', strtotime((string) $tgl_dari)) : 'All') . ' to ' . ($tgl_sampai ? date('d-m-Y', strtotime((string) $tgl_sampai)) : 'Semua') . ' | Dicetak: ' . date('d-m-Y H:i:s'));
 
         // Table Header (Row 5)
         $row = 5;
         $headers = [
             'A' => 'No',
-            'B' => 'Tgl Transaksi',
-            'C' => 'Kode Produk',
-            'D' => 'Nama Produk',
+            'B' => 'Transaction Date',
+            'C' => 'Product Code',
+            'D' => 'Product Name',
             'E' => 'No Referensi',
             'F' => 'No SPK',
-            'G' => 'Kategori',
+            'G' => 'Category',
             'H' => 'Sub Kategori',
-            'I' => 'Jenis',
+            'I' => 'Type',
             'J' => 'Qty IN',
             'K' => 'Qty OUT',
-            'L' => 'Saldo Qty',
-            'M' => 'Berat IN (kg)',
-            'N' => 'Berat OUT (kg)',
-            'O' => 'Saldo Berat (kg)',
+            'L' => 'Qty Balance',
+            'M' => 'IN Weight (kg)',
+            'N' => 'OUT Weight (kg)',
+            'O' => 'Weight Balance (kg)',
             'P' => 'Costbook (Rp)',
             'Q' => 'Nilai Transaksi (Rp)',
-            'R' => 'Saldo Nilai (Rp)',
-            'S' => 'Keterangan',
+            'R' => 'Value Balance (Rp)',
+            'S' => 'Description',
         ];
 
         foreach ($headers as $col => $text) {
@@ -525,7 +525,7 @@ class Fg_stock extends Admin_Controller
         }
 
         // Clean & Output
-        $clean_code = preg_replace('/[^A-Za-z0-9_\-]/', '_', $kategori);
+        $clean_code = preg_replace('/[^A-Za-z0-9_\-]/', '_', $kategori ?? '');
         $filename   = 'Kartu_Stok_FG_' . $clean_code . '_' . date('Ymd_His') . '.xls';
         $objWriter  = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 

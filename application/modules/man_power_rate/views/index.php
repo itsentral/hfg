@@ -113,7 +113,7 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="text-muted small fw-semibold">Total Direct Labor / Bln</span>
                             <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2">
-                                <i class="fa fa-calendar-alt me-1"></i>Bulan
+                                <i class="fa fa-calendar-alt me-1"></i>Month
                             </span>
                         </div>
                         <h4 class="fw-bold text-dark mb-1">Rp <?= number_format((float) $rate->total_direct_labor_per_bulan, 0, ',', '.') ?></h4>
@@ -138,18 +138,18 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                 </div>
             </div>
 
-            <!-- Metric 3: Rate 1/3 Operator (Aktif) -->
+            <!-- Metric 3: 1/3 Operator Rate (Active) -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card border-0 shadow-xs h-100 bg-white border-start border-primary border-4" style="border-radius: 10px;">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-primary small fw-bold">Rate 1/3 Operator (Aktif)</span>
+                            <span class="text-primary small fw-bold">1/3 Operator Rate (Active)</span>
                             <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">
                                 <i class="fa fa-check me-1"></i>CEIL
                             </span>
                         </div>
                         <h4 class="fw-bold text-primary mb-1">Rp <?= number_format((float) $rate->rate_1_3_operator, 0, ',', '.') ?> <span class="fs-6 fw-normal text-muted">/ Jam</span></h4>
-                        <div class="small text-muted">Dibulatkan ke Rupiah penuh</div>
+                        <div class="small text-muted">Rounded to the full Rupiah</div>
                     </div>
                 </div>
             </div>
@@ -220,7 +220,7 @@ $groups = [
                     <i class="fa fa-plus me-1"></i> Add Komponen
                 </button>
             <?php endif; ?>
-            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-<?= $g['id'] ?>" aria-expanded="true" title="Buka / Tutup Card">
+            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-<?= $g['id'] ?>" aria-expanded="true" title="Open / Close Card">
                 <i class="fa fa-chevron-up"></i>
             </button>
         </div>
@@ -233,8 +233,8 @@ $groups = [
                         <tr>
                             <th class="text-center no-sort" width="50">#</th>
                             <th>Item Komponen</th>
-                            <th class="text-end" width="220">Nilai (Rp)</th>
-                            <th>Keterangan</th>
+                            <th class="text-end" width="220">Value (Rp)</th>
+                            <th>Description</th>
                             <?php if ($ENABLE_MANAGE): ?>
                                 <th class="text-center no-sort" width="120">Action</th>
                             <?php endif; ?>
@@ -262,7 +262,7 @@ $groups = [
                                             <button type="button" class="btn btn-sm btn-danger btn-del-comp ms-1"
                                                 data-id="<?= $item->id ?>"
                                                 data-nama="<?= htmlspecialchars((string) $item->nama_komponen) ?>"
-                                                title="Hapus">
+                                                title="Delete">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </td>
@@ -289,20 +289,20 @@ $groups = [
             </span>
             <div>
                 <h5 class="mb-0 fw-bold text-dark">4. Parameter &amp; Rate 1/3 Operator</h5>
-                <small class="text-muted">Konstanta jam kerja, porsi operator, dan pembulatan ke atas ke Rupiah penuh (CEIL).</small>
+                <small class="text-muted">Working hour and operator portion constants, rounded up to the full Rupiah (CEIL).</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <div class="input-group input-group-sm" style="width: 220px;">
                 <span class="input-group-text bg-white border-end-0"><i class="fa fa-search text-muted"></i></span>
-                <input type="text" id="search-param" class="form-control border-start-0" placeholder="Cari parameter...">
+                <input type="text" id="search-param" class="form-control border-start-0" placeholder="Search parameters...">
             </div>
             <?php if ($ENABLE_MANAGE): ?>
                 <button type="button" class="btn btn-primary btn-sm shadow-xs" data-bs-toggle="modal" data-bs-target="#modal-param">
                     <i class="fa fa-edit me-1"></i> Edit Parameter
                 </button>
             <?php endif; ?>
-            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-param" aria-expanded="true" title="Buka / Tutup Card">
+            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-param" aria-expanded="true" title="Open / Close Card">
                 <i class="fa fa-chevron-up"></i>
             </button>
         </div>
@@ -314,20 +314,20 @@ $groups = [
                     <thead class="table-light">
                         <tr>
                             <th width="35%">Komponen / Parameter</th>
-                            <th width="25%" class="text-end">Nilai</th>
-                            <th>Keterangan / Aturan Kalkulasi</th>
+                            <th width="25%" class="text-end">Value</th>
+                            <th>Description / Calculation Rule</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Jam kerja per bulan <span class="badge bg-light text-dark border ms-1">parameter</span></td>
+                            <td>Working hours per month <span class="badge bg-light text-dark border ms-1">parameter</span></td>
                             <td class="text-end fw-bold fs-6"><?= number_format((float) $rate->jam_kerja_per_bulan, 0) ?> jam</td>
-                            <td class="text-muted">Pembagi Total Biaya Direct Labor Operator per bulan</td>
+                            <td class="text-muted">Divisor of the monthly Total Operator Direct Labor Cost</td>
                         </tr>
                         <tr>
                             <td>Porsi Operator <span class="badge bg-light text-dark border ms-1">parameter</span></td>
                             <td class="text-end fw-bold fs-6">1 / <?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?></td>
-                            <td class="text-muted">Operator dianggap hanya 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?> bekerja langsung pada produk</td>
+                            <td class="text-muted">The operator is assumed to work only 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?> bekerja langsung pada produk</td>
                         </tr>
                         <tr>
                             <td><strong>Faktor Indirect Labor</strong> <span class="badge bg-info text-dark ms-1">master global</span></td>
@@ -335,19 +335,19 @@ $groups = [
                             <td class="text-muted">Master: menu <a href="<?= base_url('faktor_indirect_labor') ?>" class="fw-bold text-decoration-none">Faktor Indirect Labor</a></td>
                         </tr>
                         <tr class="table-light">
-                            <td><strong>Total Biaya Direct Labor Operator / Bulan</strong></td>
+                            <td><strong>Total Operator Direct Labor Cost / Month</strong></td>
                             <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format((float) $rate->total_direct_labor_per_bulan, 0, ',', '.') ?></td>
-                            <td class="text-muted">Salary + BPJS + Biaya Lain-Lain</td>
+                            <td class="text-muted">Salary + BPJS + Other Costs</td>
                         </tr>
                         <tr>
                             <td>Rate Direct Labor Operator (Rp/jam)</td>
                             <td class="text-end fw-bold text-secondary">Rp <?= number_format((float) $rate->rate_direct_labor, 2, ',', '.') ?></td>
-                            <td class="text-muted">Total &divide; jam kerja per bulan (belum dibulatkan)</td>
+                            <td class="text-muted">Total &divide; working hours per month (not rounded)</td>
                         </tr>
                         <tr>
                             <td><strong>Rate 1/3 Operator (Rp/jam)</strong></td>
                             <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format((float) $rate->rate_1_3_operator, 0, ',', '.') ?></td>
-                            <td class="text-muted"><strong>CEIL(Rate Direct Labor &times; 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>)</strong> &mdash; dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3. Satu-satunya angka yang dibulatkan.</td>
+                            <td class="text-muted"><strong>CEIL(Rate Direct Labor &times; 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>)</strong> &mdash; rounded up to the full Rupiah after multiplying by 1/3. This is the only rounded number.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -373,7 +373,7 @@ $groups = [
             </div>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-sim" aria-expanded="true" title="Buka / Tutup Card">
+            <button type="button" class="btn btn-sm btn-outline-secondary card-collapse-btn" data-bs-toggle="collapse" data-bs-target="#collapse-sim" aria-expanded="true" title="Open / Close Card">
                 <i class="fa fa-chevron-up"></i>
             </button>
         </div>
@@ -389,7 +389,7 @@ $groups = [
                             <th class="text-end" width="170">Total Man Hour (jam/m)</th>
                             <th class="text-end" width="180">Bagian Operator (Rp/m)</th>
                             <th class="text-end" width="180">Borongan Helper (Rp/m)</th>
-                            <th class="text-end" width="200">Jumlah sebelum Faktor (Rp/m)</th>
+                            <th class="text-end" width="200">Amount before Factor (Rp/m)</th>
                             <th class="text-end" width="140">&times; Faktor Indirect</th>
                             <th class="text-end" width="200">Man Power Cost (Rp/m)</th>
                         </tr>
@@ -401,13 +401,13 @@ $groups = [
                                     <td class="text-center"><?= $idx + 1 ?></td>
                                     <td class="fw-bold"><?= htmlspecialchars(strtoupper((string) $sim->nama)) ?></td>
                                     <td class="text-end">
-                                        <?= $sim->has_flow ? number_format((float) $sim->tmh, 6, '.', '') : '<span class="badge bg-warning text-dark">Flow belum ada</span>' ?>
+                                        <?= $sim->has_flow ? number_format((float) $sim->tmh, 6, '.', '') : '<span class="badge bg-warning text-dark">No flow yet</span>' ?>
                                     </td>
                                     <td class="text-end">
                                         <?= $sim->has_flow ? 'Rp ' . number_format((float) $sim->op_cost, 2, ',', '.') : '—' ?>
                                     </td>
                                     <td class="text-end">
-                                        <?= $sim->has_bor ? 'Rp ' . number_format((float) $sim->bor, 2, ',', '.') : '<span class="badge bg-warning text-dark">Rate belum ada</span>' ?>
+                                        <?= $sim->has_bor ? 'Rp ' . number_format((float) $sim->bor, 2, ',', '.') : '<span class="badge bg-warning text-dark">No rate yet</span>' ?>
                                     </td>
                                     <td class="text-end fw-semibold">
                                         <?= $sim->subtotal !== null ? 'Rp ' . number_format((float) $sim->subtotal, 2, ',', '.') : '—' ?>
@@ -439,7 +439,7 @@ $groups = [
                 <input type="hidden" name="kelompok" id="comp_kelompok" value="salary">
 
                 <div class="modal-header bg-primary text-white" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                    <h5 class="modal-title text-white" id="modalCompLabel"><i class="fa fa-cubes me-2"></i>Komponen Biaya</h5>
+                    <h5 class="modal-title text-white" id="modalCompLabel"><i class="fa fa-cubes me-2"></i>Cost Component</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -448,17 +448,17 @@ $groups = [
                         <input type="text" name="nama_komponen" id="comp_nama" class="form-control" required placeholder="Contoh: Gaji Pokok, Tunjangan Kehadiran, dll.">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nilai Rupiah (Rp) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Rupiah Value (Rp) <span class="text-danger">*</span></label>
                         <input type="number" step="1" min="0" name="nilai" id="comp_nilai" class="form-control" required placeholder="0">
-                        <div class="form-text text-muted">Nilai biaya per bulan dalam Rupiah penuh.</div>
+                        <div class="form-text text-muted">Monthly cost value in full Rupiah.</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Keterangan</label>
+                        <label class="form-label fw-bold">Description</label>
                         <input type="text" name="keterangan" id="comp_ket" class="form-control" placeholder="Contoh: Iuran bulanan, tunjangan makan, dll.">
                     </div>
                 </div>
                 <div class="modal-footer bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Simpan Komponen</button>
                 </div>
             </form>
@@ -479,7 +479,7 @@ $groups = [
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Jam Kerja per Bulan <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Working Hours per Month <span class="text-danger">*</span></label>
                         <input type="number" step="0.5" min="1" name="jam_kerja_per_bulan" class="form-control" required
                             value="<?= number_format((float) $rate->jam_kerja_per_bulan, 2, '.', '') ?>">
                         <div class="form-text text-muted">Standar parameter jam kerja operasional (default 173 jam).</div>
@@ -488,11 +488,11 @@ $groups = [
                         <label class="form-label fw-bold">Porsi Operator: 1 / n (n =) <span class="text-danger">*</span></label>
                         <input type="number" step="0.1" min="0.1" name="porsi_operator_den" class="form-control" required
                             value="<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>">
-                        <div class="form-text text-muted">Operator dianggap hanya 1/n bekerja langsung pada produk (contoh n = 3 untuk porsi 1/3).</div>
+                        <div class="form-text text-muted">The operator is assumed to work only 1/n directly on the product (example: n = 3 for a 1/3 portion).</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Simpan Parameter</button>
                 </div>
             </form>
@@ -516,8 +516,8 @@ $(document).ready(function() {
             searching: true,
             language: {
                 search: "",
-                searchPlaceholder: "Cari item komponen...",
-                emptyTable: "Belum ada rincian komponen pada kelompok ini",
+                searchPlaceholder: "Search component items...",
+                emptyTable: "No component details in this group yet",
                 info: "Menampilkan <strong>_TOTAL_</strong> komponen",
                 infoEmpty: "0 komponen",
                 infoFiltered: "(difilter dari _MAX_ total)"
@@ -537,10 +537,10 @@ $(document).ready(function() {
         lengthMenu: [10, 25, 50, 100],
         language: {
             search: "",
-            searchPlaceholder: "Cari kategori produk...",
-            emptyTable: "Belum ada data kategori produk",
-            lengthMenu: "Tampilkan _MENU_ data",
-            info: "Menampilkan _START_ s/d _END_ dari <strong>_TOTAL_</strong> kategori",
+            searchPlaceholder: "Search product categories...",
+            emptyTable: "No product category data yet",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of <strong>_TOTAL_</strong> categories",
             infoEmpty: "Menampilkan 0 data",
             infoFiltered: "(difilter dari _MAX_ total kategori)",
             paginate: {
@@ -637,14 +637,14 @@ $(document).ready(function() {
         var nama = $(this).data('nama');
 
         Swal.fire({
-            title: 'Hapus Komponen?',
-            text: 'Komponen "' + nama + '" akan dihapus dan Rate 1/3 Operator akan dihitung ulang otomatis.',
+            title: 'Delete Component?',
+            text: 'Komponen "' + nama + '" will be deleted and the 1/3 Operator Rate will be recalculated automatically.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fa fa-trash me-1"></i> Ya, Hapus',
-            cancelButtonText: 'Batal'
+            confirmButtonText: '<i class="fa fa-trash me-1"></i> Yes, Delete',
+            cancelButtonText: 'Cancel'
         }).then(function(res) {
             if (!res.isConfirmed) return;
             $.ajax({
@@ -654,10 +654,10 @@ $(document).ready(function() {
                 data: { id: id },
                 success: function(resp) {
                     if (resp.status == 1) {
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function() { window.location.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({ title: 'Failed!', text: resp.pesan, icon: 'error' });
                     }
                 },
                 error: function(xhr) {

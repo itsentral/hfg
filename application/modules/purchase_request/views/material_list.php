@@ -6,12 +6,12 @@
 		<thead>
 		<tr>
 			<th width="5">#</th>
-			<th>Nama</th>
+			<th>Name</th>
 			<th>Spesifikasi</th>
 			<th>Brand</th>
-			<th>Max Stok</th>
-			<th>Qty Stok</th>
-			<th>Satuan</th>
+			<th>Max Stock</th>
+			<th>Stock Qty</th>
+			<th>Unit</th>
 			<th>Suggest Qty pembelian</th>
 			<th>Request</th>
 		</tr>
@@ -39,7 +39,7 @@
 		}  ?>
 		</tbody>
 		</table>
-		<button type="submit" class="tn btn-primary">Pilih</button>
+		<button type="submit" class="tn btn-primary">Select</button>
 		</div>
 	</div>
 </div>

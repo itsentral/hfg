@@ -59,9 +59,9 @@ $keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Post Penyusutan <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Depreciation Post <span class="text-danger">*</span></label>
                     <select name="coa_akum" id="coa_akum" class="form-select select2">
-                        <option value="0">Select Post Penyusutan</option>
+                        <option value="0">Select Depreciation Post</option>
                         <?php foreach ($penyusutan as $valx): ?>
                             <?php $selected = (isset($valx['coa']) && $valx['coa'] == $coa_akum) ? 'selected' : ''; ?>
                             <option value="<?= isset($valx['coa']) ? $valx['coa'] : $valx['id'] ?>" <?= $selected ?>><?= strtoupper(isset($valx['coa']) ? $valx['coa'] . ' - ' . $valx['keterangan'] : $valx['nama']) ?></option>
@@ -70,12 +70,12 @@ $keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Nama Asset <span class="text-danger">*</span></label>
-                    <input type="text" id="nama_asset" name="nama_asset" class="form-control" placeholder="Nama Assets" value="<?= $nama_asset ?>">
+                    <label class="form-label fw-bold">Asset Name <span class="text-danger">*</span></label>
+                    <input type="text" id="nama_asset" name="nama_asset" class="form-control" placeholder="Asset Name" value="<?= $nama_asset ?>">
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Bulan <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Month <span class="text-danger">*</span></label>
                     <select name="bulan" id="bulan" class="form-select">
                         <?php
                         $months = array(1=>"January", 2=>"February", 3=>"March", 4=>"April", 5=>"May", 6=>"June", 7=>"July", 8=>"August", 9=>"September", 10=>"October", 11=>"November", 12=>"December");
@@ -88,7 +88,7 @@ $keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Tahun <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Year <span class="text-danger">*</span></label>
                     <select name="tahun" id="tahun" class="form-select">
                         <?php
                         $current_year = date("Y") + 1;
@@ -111,8 +111,8 @@ $keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" class="form-control" rows="2" placeholder="Keterangan"><?= $keterangan ?></textarea>
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea id="keterangan" name="keterangan" class="form-control" rows="2" placeholder="Description"><?= $keterangan ?></textarea>
                 </div>
 
                 <div class="col-12 text-end mt-4">

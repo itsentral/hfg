@@ -30,7 +30,7 @@ $h = isset($header[0]) ? $header[0] : (object)array();
                 <p class="fw-bold mb-2"><?= isset($h->coa) ? strtoupper($h->coa . ' - ' . $h->nama_coa) : '-' ?></p>
             </div>
             <div class="col-md-6">
-                <label class="form-label text-muted mb-0">Nama Asset</label>
+                <label class="form-label text-muted mb-0">Asset Name</label>
                 <p class="fw-bold mb-2"><?= isset($h->nama_asset) ? strtoupper((string) $h->nama_asset) : '-' ?></p>
             </div>
             <div class="col-md-3">
@@ -46,15 +46,15 @@ $h = isset($header[0]) ? $header[0] : (object)array();
                 <p class="fw-bold mb-2 text-primary fs-5"><?= isset($h->budget) ? 'Rp ' . number_format((float) $h->budget) : '0' ?></p>
             </div>
             <div class="col-md-4">
-                <label class="form-label text-muted mb-0">Sisa Budget PR</label>
+                <label class="form-label text-muted mb-0">Remaining PR Budget</label>
                 <p class="fw-bold mb-2"><?= isset($h->budget_pr) ? 'Rp ' . number_format((float) $h->budget_pr) : '0' ?></p>
             </div>
             <div class="col-md-4">
-                <label class="form-label text-muted mb-0">Sisa Budget PO</label>
+                <label class="form-label text-muted mb-0">Remaining PO Budget</label>
                 <p class="fw-bold mb-2"><?= isset($h->budget_po) ? 'Rp ' . number_format((float) $h->budget_po) : '0' ?></p>
             </div>
             <div class="col-md-12">
-                <label class="form-label text-muted mb-0">Keterangan</label>
+                <label class="form-label text-muted mb-0">Description</label>
                 <p class="fw-bold mb-2"><?= isset($h->keterangan) ? strtoupper((string) $h->keterangan) : '-' ?></p>
             </div>
 

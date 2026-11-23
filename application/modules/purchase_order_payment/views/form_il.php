@@ -89,15 +89,15 @@ if ($is_view) {
 <div class="row g-3">
     <!-- Bagian Otomatis (Readonly) -->
     <div class="col-12">
-        <h5 class="mb-2 text-primary border-bottom pb-2">Informasi PO</h5>
+        <h5 class="mb-2 text-primary border-bottom pb-2">PO Information</h5>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor PO</label>
+        <label class="form-label fw-semibold">PO Number</label>
         <input type="text" class="form-control form-control-sm bg-light" value="<?= $no_surat ?>" readonly tabindex="-1">
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nama Supplier</label>
+        <label class="form-label fw-semibold">Supplier Name</label>
         <input type="text" class="form-control form-control-sm bg-light" value="<?= $nm_supplier ?>" readonly tabindex="-1">
     </div>
 
@@ -111,7 +111,7 @@ if ($is_view) {
             value="<?= $is_view ? $currency : $currency_val ?>" readonly tabindex="-1">
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Sisa Tagihan (<?= $is_view ? $currency : $currency_val ?>)</label>
+        <label class="form-label fw-semibold">Remaining Bill (<?= $is_view ? $currency : $currency_val ?>)</label>
         <input type="text" name="sisa_nilai" id="sisa_tagihan_display"
             class="form-control form-control-sm text-end bg-light"
             value="<?= number_format((float) $sisa_tagihan_val, 4) ?>" readonly tabindex="-1">
@@ -144,7 +144,7 @@ if ($is_view) {
             </div>
         <?php endif; ?>
         <div class="col-md-6">
-            <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
+            <label class="form-label fw-semibold">Invoice Amount (IDR)</label>
             <input type="text" id="jumlah_invoice_idr"
                 class="form-control form-control-sm text-end bg-light"
                 value="<?= number_format((float) $jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
@@ -162,7 +162,7 @@ if ($is_view) {
         </div>
 
         <div class="col-md-6">
-            <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
+            <label class="form-label fw-semibold">Invoice Amount (IDR)</label>
             <input type="text" id="jumlah_invoice_idr"
                 class="form-control form-control-sm text-end bg-light"
                 value="<?= number_format((float) $jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
@@ -181,7 +181,7 @@ if ($is_view) {
         <input type="text" name="invoice_date"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($invoice_date) ? date('d M Y', strtotime((string) $invoice_date)) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-6">
@@ -189,7 +189,7 @@ if ($is_view) {
         <input type="text" name="invoice_date_real"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($invoice_date_real) ? date('d M Y', strtotime((string) $invoice_date_real)) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?>>
     </div>
 
@@ -199,23 +199,23 @@ if ($is_view) {
         </label>
         <input type="text" name="nomor_invoice" class="form-control form-control-sm"
             value="<?= $nomor_invoice ?>"
-            placeholder="<?= !$is_view ? 'Nomor Invoice' : '' ?>"
+            placeholder="<?= !$is_view ? 'Invoice Number' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Number</label>
         <input type="text" name="nomor_faktur_pajak" class="form-control form-control-sm"
             value="<?= $nomor_faktur_pajak ?>"
             placeholder="<?= !$is_view ? 'Masukkan nomor faktur pajak' : '' ?>"
             <?= $ro ?>>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Date</label>
         <input type="text" name="tanggal_faktur_pajak"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
             value="<?= !empty($tgl_faktur_pajak) ? date('d M Y', strtotime((string) $tgl_faktur_pajak)) : '' ?>"
-            placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
+            placeholder="<?= !$is_view ? 'Select date...' : '' ?>"
             <?= $ro ?>>
     </div>
 
@@ -251,7 +251,7 @@ if ($is_view) {
             } elseif ($status === 'draft') {
                 echo '<span class="badge bg-warning text-dark">Draft</span>';
             } else {
-                echo '<span class="badge bg-warning text-dark">Menunggu Proses</span>';
+                echo '<span class="badge bg-warning text-dark">Waiting for Process</span>';
             }
             ?>
         </div>
@@ -265,7 +265,7 @@ if ($is_view) {
 
     <div class="col-12">
         <hr class="my-1">
-        <p class="fw-bold mb-2">Informasi Bank</p>
+        <p class="fw-bold mb-2">Bank Information</p>
     </div>
 
     <div class="col-md-4">
@@ -274,7 +274,7 @@ if ($is_view) {
         </label>
         <input type="text" name="bank" class="form-control form-control-sm"
             value="<?= $bank ?>"
-            placeholder="<?= !$is_view ? 'Nama Bank' : '' ?>"
+            placeholder="<?= !$is_view ? 'Bank Name' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-4">
@@ -283,7 +283,7 @@ if ($is_view) {
         </label>
         <input type="text" name="no_bank" class="form-control form-control-sm"
             value="<?= $no_bank ?>"
-            placeholder="<?= !$is_view ? 'Nomor Rekening' : '' ?>"
+            placeholder="<?= !$is_view ? 'Account Number' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
     <div class="col-md-4">
@@ -292,7 +292,7 @@ if ($is_view) {
         </label>
         <input type="text" name="nm_acc_bank" class="form-control form-control-sm"
             value="<?= $nm_acc_bank ?>"
-            placeholder="<?= !$is_view ? 'Nama Pemilik Rekening' : '' ?>"
+            placeholder="<?= !$is_view ? 'Account Holder Name' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
 

@@ -18,21 +18,21 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     <h5 class="card-title fw-bold text-dark mb-0">
                         <?php
                         if ($is_view) {
-                            echo 'Detail Budget Stock Rutin';
+                            echo 'Routine Stock Budget Detail';
                         } elseif ($type_val == 'edit') {
                             echo 'Edit Budget Stock Rutin';
                         } else {
-                            echo 'Tambah Budget Stock Rutin Baru';
+                            echo 'Add New Routine Stock Budget';
                         }
                         ?>
                     </h5>
                     <small class="text-muted">
-                        <?= ($is_view ? 'Lihat rincian perencanaan budget stock' : 'Tentukan alokasi kebutuhan bulanan dan referensi harga barang per warehouse') ?>
+                        <?= ($is_view ? 'View stock budget planning details' : 'Set monthly requirement allocation and item price references per warehouse') ?>
                     </small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Tutup Formulir">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Close Form">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -48,7 +48,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
         <!-- Warehouse & Top Actions -->
         <div class="row g-3 mb-4 align-items-center bg-light p-3 rounded-3 border">
             <div class="col-md-5 col-sm-12">
-                <label class="form-label fw-bold small text-muted mb-1">Warehouse / Gudang <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold small text-muted mb-1">Warehouse <span class="text-danger">*</span></label>
                 <?php
                 $datdepartemen[0] = '- Pilih Warehouse -';
                 echo form_dropdown('department', $datdepartemen, set_value('department', isset($data->department) ? $data->department : '0'), array('id' => 'department', 'class' => 'form-select select2', 'required' => 'required', ($is_view ? 'disabled' : '')));
@@ -81,7 +81,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                         <div class="card-header bg-light py-2 border-bottom d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-primary text-white"><?= strtoupper((string) $key->nm_category) ?></span>
-                                <small class="text-muted">Daftar item barang kategori <?= $key->nm_category ?></small>
+                                <small class="text-muted">Item list for category <?= $key->nm_category ?></small>
                             </div>
                             <?php if (!$is_view) : ?>
                                 <button type="button" data-id_barang="<?= $key->id ?>" class="btn btn-sm btn-success addPart shadow-sm">
@@ -95,10 +95,10 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                                     <thead class="table-light text-nowrap small text-uppercase fw-semibold">
                                         <tr>
                                             <th class="text-center" width="40">#</th>
-                                            <th width="260">Nama Barang</th>
+                                            <th width="260">Item Name</th>
                                             <th width="200">Spesifikasi</th>
                                             <th width="140" class="text-center">Kebutuhan / Bln</th>
-                                            <th width="120" class="text-center">Satuan</th>
+                                            <th width="120" class="text-center">Unit</th>
                                             <th width="160" class="text-end">Price Reference</th>
                                             <th width="160" class="text-end bg-primary-subtle text-primary">Total Price</th>
                                             <?php if (!$is_view) : ?>
@@ -130,7 +130,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                         <div class="card-header bg-light py-2 border-bottom d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-primary text-white"><?= strtoupper((string) $item_jenis->nm_jenis) ?></span>
-                                <small class="text-muted">Daftar item barang kategori <?= $item_jenis->nm_jenis ?></small>
+                                <small class="text-muted">Item list for category <?= $item_jenis->nm_jenis ?></small>
                             </div>
                             <?php if (!$is_view) : ?>
                                 <button type="button" data-id_barang="<?= $item_jenis->id_jenis ?>" class="btn btn-sm btn-success addPart shadow-sm">
@@ -144,10 +144,10 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                                     <thead class="table-light text-nowrap small text-uppercase fw-semibold">
                                         <tr>
                                             <th class="text-center" width="40">#</th>
-                                            <th width="260">Nama Barang</th>
+                                            <th width="260">Item Name</th>
                                             <th width="200">Spesifikasi</th>
                                             <th width="140" class="text-center">Kebutuhan / Bln</th>
-                                            <th width="120" class="text-center">Satuan</th>
+                                            <th width="120" class="text-center">Unit</th>
                                             <th width="160" class="text-end">Price Reference</th>
                                             <th width="160" class="text-end bg-primary-subtle text-primary">Total Price</th>
                                             <?php if (!$is_view) : ?>
@@ -189,7 +189,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                                                     </td>
                                                     <?php if (!$is_view) : ?>
                                                         <td class="text-center">
-                                                            <button type="button" class="btn btn-outline-danger btn-sm delPart" title="Hapus Baris">
+                                                            <button type="button" class="btn btn-outline-danger btn-sm delPart" title="Delete Row">
                                                                 <i class="fa fa-times"></i>
                                                             </button>
                                                         </td>
@@ -228,7 +228,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     <i class="fa fa-calculator fs-4"></i>
                     <div>
                         <div class="fw-bold fs-6">Grand Total Estimasi Budget Stock</div>
-                        <small class="text-muted">Akumulasi seluruh kategori barang di atas</small>
+                        <small class="text-muted">Accumulation of all item categories above</small>
                     </div>
                 </div>
                 <div class="fs-4 fw-bold text-success font-monospace" id="grand_total_display">
@@ -244,7 +244,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
             </button>
             <?php if (!$is_view) : ?>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="submit">
-                    <i class="fa fa-save me-1"></i> Simpan Data Budget
+                    <i class="fa fa-save me-1"></i> Save Budget Data
                 </button>
             <?php endif; ?>
         </div>
@@ -297,7 +297,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
             type: "POST",
             dataType: "json",
             success: function(data) {
-                var options = '<option value="">- Pilih Barang -</option>';
+                var options = '<option value="">- Select Item -</option>';
                 for (var i = 0; i < data.length; i++) {
                     row++;
                     options += '<option value="' + data[i].id + '" data-id_spec="' + (data[i].spec ? data[i].spec : '') + '">' + data[i].stock_name + '</option>';
@@ -311,7 +311,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     '<td class="text-center"><select id="satuan' + row + '" name="satuan[]" class="form-select form-select-sm text-center" required></select></td>' +
                     '<td><input type="text" class="form-control form-control-sm text-end autoNumeric0 hitung_total_budget_stock font-monospace" data-id_type="' + jenis_barang + '" name="price_reference[]" id="price_reference_' + row + '" onchange="hitungPrice(' + row + ')"></td>' +
                     '<td><input type="text" class="form-control form-control-sm autoNumeric0 text-end total_price_all total_price_' + jenis_barang + ' font-monospace fw-bold text-primary bg-light" name="total_price[]" id="total_price_' + row + '" readonly></td>' +
-                    '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm delPart" title="Hapus Baris"><i class="fa fa-times"></i></button></td>' +
+                    '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm delPart" title="Delete Row"><i class="fa fa-times"></i></button></td>' +
                     '</tr>';
 
                 $('.tbody_' + jenis_barang).append(rowHtml);
@@ -327,7 +327,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Waktu Koneksi Habis',
-                    text: 'Gagal mengambil data barang. Silakan coba lagi.'
+                    text: 'Failed to fetch item data. Please try again.'
                 });
             }
         });
@@ -380,7 +380,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Gagal mengambil referensi harga.'
+                        text: 'Failed to fetch the price reference.'
                     });
                 }
             });
@@ -475,22 +475,22 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
         if (!dept || dept == '0') {
             Swal.fire({
                 icon: "warning",
-                title: "Perhatian",
-                text: "Silakan pilih Warehouse / Gudang terlebih dahulu!",
+                title: "Attention",
+                text: "Please select a Warehouse first!",
                 confirmButtonText: "OK"
             });
             return false;
         }
 
         Swal.fire({
-            title: "Simpan Budget Stock?",
-            text: "Pastikan seluruh data barang dan kebutuhan bulanan sudah sesuai.",
+            title: "Save Stock Budget?",
+            text: "Make sure all item data and monthly requirements are correct.",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#0d6efd",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 var $btn = $("#submit");
@@ -498,7 +498,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
 
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyimpan data budget stock...',
+                    text: 'Saving stock budget data...',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
@@ -512,12 +512,12 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     type: 'POST',
                     data: formdata,
                     success: function(msg) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Data');
                         if (msg['save'] == true || msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data budget stock berhasil disimpan.",
+                                title: "Success!",
+                                text: "Stock budget data saved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -526,19 +526,19 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data budget stock gagal disimpan.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Stock budget data failed to save.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
                     error: function(xhr, status, error) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Data');
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });
@@ -549,18 +549,18 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
     $(document).on('click', '#update_price_ref', function() {
         Swal.fire({
             title: 'Update Price Reference?',
-            text: "Harga referensi seluruh barang akan diperbarui sesuai master harga terbaru.",
+            text: "The reference price of all items will be updated to the latest price master.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#0d6efd',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fa fa-refresh me-1"></i> Ya, Perbarui!',
-            cancelButtonText: 'Batal'
+            confirmButtonText: '<i class="fa fa-refresh me-1"></i> Yes, Update!',
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang memperbarui referensi harga...',
+                    text: 'Updating price references...',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
@@ -574,8 +574,8 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     success: function(response) {
                         if (response.status == 'success') {
                             Swal.fire({
-                                title: 'Berhasil!',
-                                text: 'Price Reference berhasil diperbarui.',
+                                title: 'Success!',
+                                text: 'Price Reference updated successfully.',
                                 icon: 'success',
                                 timer: 1500,
                                 showConfirmButton: false
@@ -583,11 +583,11 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire('Gagal!', 'Gagal memperbarui Price Reference.', 'error');
+                            Swal.fire('Failed!', 'Failed to update Price Reference.', 'error');
                         }
                     },
                     error: function() {
-                        Swal.fire('Error!', 'Terjadi kesalahan sistem saat memperbarui Price Reference.', 'error');
+                        Swal.fire('Error!', 'A system error occurred saat memperbarui Price Reference.', 'error');
                     }
                 });
             }

@@ -9,7 +9,7 @@
                 <div class="small mt-1"><i class="fa fa-clipboard-list"></i> Plan Aktif</div>
             </div>
             <div class="card-footer text-center p-1">
-                <a href="<?= base_url('production_planning') ?>" class="text-white small">Lihat Detail &raquo;</a>
+                <a href="<?= base_url('production_planning') ?>" class="text-white small">View Detail &raquo;</a>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
                 <div class="small mt-1"><i class="fa fa-cogs"></i> SPK In Process</div>
             </div>
             <div class="card-footer text-center p-1">
-                <a href="<?= base_url('production_issue') ?>" class="text-white small">Lihat Detail &raquo;</a>
+                <a href="<?= base_url('production_issue') ?>" class="text-white small">View Detail &raquo;</a>
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@
                 <div class="small mt-1"><i class="fa fa-boxes"></i> Total Stok FG</div>
             </div>
             <div class="card-footer text-center p-1">
-                <a href="<?= base_url('fg_warehouse/stok_fg') ?>" class="text-white small">Lihat Detail &raquo;</a>
+                <a href="<?= base_url('fg_warehouse/stok_fg') ?>" class="text-white small">View Detail &raquo;</a>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
                 <div class="small mt-1"><i class="fa fa-truck"></i> DO Pending Approval</div>
             </div>
             <div class="card-footer text-center p-1">
-                <a href="<?= base_url('delivery_fg') ?>" class="text-white small">Lihat Detail &raquo;</a>
+                <a href="<?= base_url('delivery_fg') ?>" class="text-white small">View Detail &raquo;</a>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                 <div class="small mt-1"><i class="fa fa-file-alt"></i> Laporan Menunggu Review</div>
             </div>
             <div class="card-footer text-center p-1">
-                <a href="<?= base_url('production_report') ?>" class="text-white small">Lihat Detail &raquo;</a>
+                <a href="<?= base_url('production_report') ?>" class="text-white small">View Detail &raquo;</a>
             </div>
         </div>
     </div>
@@ -66,7 +66,7 @@
         <div class="card h-100">
             <div class="card-body text-center py-4">
                 <i class="fa fa-balance-scale fa-3x text-primary mb-3"></i>
-                <h6>Laporan Timbang Awal</h6>
+                <h6>Initial Weighing Report</h6>
                 <p class="text-muted small">Perbandingan net weight timbang awal vs packing list per coil</p>
                 <a href="<?= base_url('production_dashboard/laporan_timbang_awal') ?>" class="btn btn-primary btn-sm">
                     Buka Laporan
@@ -78,8 +78,8 @@
         <div class="card h-100">
             <div class="card-body text-center py-4">
                 <i class="fa fa-chart-pie fa-3x text-success mb-3"></i>
-                <h6>Laporan Hasil Produksi</h6>
-                <p class="text-muted small">Breakdown output per kategori dan yield per SPK</p>
+                <h6>Production Output Report</h6>
+                <p class="text-muted small">Output breakdown per category and yield per SPK</p>
                 <a href="<?= base_url('production_dashboard/laporan_hasil_produksi') ?>" class="btn btn-success btn-sm">
                     Buka Laporan
                 </a>
@@ -90,8 +90,8 @@
         <div class="card h-100">
             <div class="card-body text-center py-4">
                 <i class="fa fa-truck fa-3x text-warning mb-3"></i>
-                <h6>Laporan Selisih Delivery</h6>
-                <p class="text-muted small">Selisih estimasi vs aktual berat per Delivery Order</p>
+                <h6>Delivery Difference Report</h6>
+                <p class="text-muted small">Estimated vs actual weight difference per Delivery Order</p>
                 <a href="<?= base_url('production_dashboard/laporan_delivery_discrepancy') ?>" class="btn btn-warning btn-sm">
                     Buka Laporan
                 </a>
@@ -102,8 +102,8 @@
         <div class="card h-100">
             <div class="card-body text-center py-4">
                 <i class="fa fa-weight fa-3x text-info mb-3"></i>
-                <h6>Laporan Berat FG</h6>
-                <p class="text-muted small">Riwayat berat referensi FG per produk per periode</p>
+                <h6>FG Weight Report</h6>
+                <p class="text-muted small">FG reference weight history per product per period</p>
                 <a href="<?= base_url('production_dashboard/laporan_berat_fg') ?>" class="btn btn-info btn-sm">
                     Buka Laporan
                 </a>

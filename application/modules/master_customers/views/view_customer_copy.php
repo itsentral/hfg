@@ -14,7 +14,7 @@ foreach ($results['cus'] as $cus) {
                     <div class="row">
 
                         <center><label for="customer">
-                                <h3>Detail Identitas Customer</h3>
+                                <h3>Customer Identity Detail</h3>
                             </label></center>
                         <div class="col-sm-6">
                             <div class="form-group row">
@@ -31,7 +31,7 @@ foreach ($results['cus'] as $cus) {
                                 </div>
                                 <div class="col-md-6">
                                     <select id="id_category_customer" name="id_category_customer" class="form-control select" required>
-                                        <option value="">--Pilih--</option>
+                                        <option value="">--Select--</option>
                                         <?php foreach ($results['category'] as $category) {
                                             $select = $cus->id_category_customer == $category->id_category_customer ? 'selected' : '';
                                         ?>
@@ -42,10 +42,10 @@ foreach ($results['cus'] as $cus) {
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Nama Customer</label>
+                                    <label for="customer">Customer Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="name_customer" value='<?= $cus->name_customer ?>' required name="name_customer" placeholder="Nama Customer">
+                                    <input type="text" class="form-control" id="name_customer" value='<?= $cus->name_customer ?>' required name="name_customer" placeholder="Customer Name">
                                 </div>
                             </div>
 
@@ -54,7 +54,7 @@ foreach ($results['cus'] as $cus) {
                                     <label for="customer">Telephone</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="telephone" value='<?= $cus->telephone ?>' required name="telephone" placeholder="Nomor Telephone">
+                                    <input type="text" class="form-control" id="telephone" value='<?= $cus->telephone ?>' required name="telephone" placeholder="Phone Number">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -62,7 +62,7 @@ foreach ($results['cus'] as $cus) {
                                     <label for="customer"></label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="telephone_2" value='<?= $cus->telephone_2 ?>' name="telephone_2" placeholder="Nomor Telephone">
+                                    <input type="text" class="form-control" id="telephone_2" value='<?= $cus->telephone_2 ?>' name="telephone_2" placeholder="Phone Number">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -70,7 +70,7 @@ foreach ($results['cus'] as $cus) {
                                     <label for="customer">Fax</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="fax" required name="fax" value='<?= $cus->fax ?>' placeholder="Nomor Fax">
+                                    <input type="text" class="form-control" id="fax" required name="fax" value='<?= $cus->fax ?>' placeholder="Fax Number">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -83,10 +83,10 @@ foreach ($results['cus'] as $cus) {
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Tanggal Mulai</label>
+                                    <label for="customer">Start Date</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="date" class="form-control" id="start_date" required name="start_date" value='<?= $cus->start_date ?>' placeholder="Tanggal Mulai">
+                                    <input type="date" class="form-control" id="start_date" required name="start_date" value='<?= $cus->start_date ?>' placeholder="Start Date">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -95,7 +95,7 @@ foreach ($results['cus'] as $cus) {
                                 </div>
                                 <div class="col-md-6">
                                     <select id="id_karyawan" name="id_karyawan" class="form-control select" required>
-                                        <option value="">--pilih--</option>
+                                        <option value="">--select--</option>
                                         <?php foreach ($results['karyawan'] as $karyawan) {
                                             $select = $cus->id_karyawan == $karyawan->id_karyawan ? 'selected' : '';
                                         ?>
@@ -112,7 +112,7 @@ foreach ($results['cus'] as $cus) {
                                 </div>
                                 <div class="col-md-6">
                                     <select id="id_prov" name="id_prov" class="form-control select" onchange="get_kota()" required>
-                                        <option value="">--Pilih--</option>
+                                        <option value="">--Select--</option>
                                         <?php foreach ($results['prof'] as $prof) {
                                             $select = $cus->id_prov == $prof->id_prov ? 'selected' : '';
                                         ?>
@@ -124,11 +124,11 @@ foreach ($results['cus'] as $cus) {
 
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="id_category_supplier">Kota</label>
+                                    <label for="id_category_supplier">City</label>
                                 </div>
                                 <div class="col-md-6">
                                     <select id="id_kota" name="id_kota" class="form-control select" required>
-                                        <option value="">--Pilih--</option>
+                                        <option value="">--Select--</option>
                                         <?php foreach ($results['kota'] as $kota) {
                                             $select = $cus->id_kota == $kota->id_kota ? 'selected' : '';
                                         ?>
@@ -140,19 +140,19 @@ foreach ($results['cus'] as $cus) {
 
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Alamat</label>
+                                    <label for="customer">Address</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <textarea type="text" name="address_office" id="address_office" class="form-control input-sm required w70" placeholder="Alamat"><?= $cus->address_office ?></textarea>
+                                    <textarea type="text" name="address_office" id="address_office" class="form-control input-sm required w70" placeholder="Address"><?= $cus->address_office ?></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Kode Pos</label>
+                                    <label for="customer">Postcode</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="zip_code" value='<?= $cus->zip_code ?>' required name="zip_code" placeholder="Kode Pos">
+                                    <input type="text" class="form-control" id="zip_code" value='<?= $cus->zip_code ?>' required name="zip_code" placeholder="Postcode">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -178,7 +178,7 @@ foreach ($results['cus'] as $cus) {
                                 <?php if ($cus->activation == 'aktif') { ?>
                                     <div class="col-md-6">
                                         <label>
-                                            <input type="radio" class="radio-control" id="activation" name="activation" checked value="aktif" required> Aktif
+                                            <input type="radio" class="radio-control" id="activation" name="activation" checked value="aktif" required> Active
                                         </label>
                                         <label>
                                             <input type="radio" class="radio-control" id="activation" name="activation" value="inaktif" required> Inaktif
@@ -187,7 +187,7 @@ foreach ($results['cus'] as $cus) {
                                 <?php } else { ?>
                                     <div class="col-md-6">
                                         <label>
-                                            <input type="radio" class="radio-control" id="activation" name="activation" value="aktif" required> Aktif
+                                            <input type="radio" class="radio-control" id="activation" name="activation" value="aktif" required> Active
                                         </label>
                                         <label>
                                             <input type="radio" class="radio-control" id="activation" name="activation" checked value="inaktif" required> Inaktif
@@ -259,7 +259,7 @@ foreach ($results['cus'] as $cus) {
                                             echo "
 			</select>
 			</td>";
-                                            echo "<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return DelItem2(" . $loop . ");'><i class='fa fa-trash-o'></i></button></td></tr>";
+                                            echo "<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return DelItem2(" . $loop . ");'><i class='fa fa-trash-o'></i></button></td></tr>";
                                             echo "</tr>";
                                         } ?>
                                     </tbody>
@@ -284,10 +284,10 @@ foreach ($results['cus'] as $cus) {
                                 <table class='table table-bordered table-striped'>
                                     <thead>
                                         <tr class='bg-blue'>
-                                            <td align='center'><b>Nama PIC</b></td>
-                                            <td align='center'><b>Nomor Telp</b></td>
+                                            <td align='center'><b>PIC Name</b></td>
+                                            <td align='center'><b>Phone Number</b></td>
                                             <td align='center'><b>Email</b></td>
-                                            <td align='center'><b>Jabatan</b></td>
+                                            <td align='center'><b>Position</b></td>
                                             <td align='center'><b>Aksi</b></td>
                                         </tr>
 
@@ -302,7 +302,7 @@ foreach ($results['cus'] as $cus) {
                                             echo "<td align='left'><input type='text' class='form-control input-sm' name='data1[" . $loop . "][phone_pic]' value='$pic->phone_pic'  id='data1_" . $loop . "_phone_pic' label='FALSE' div='FALSE'></td>";
                                             echo "<td align='left'><input type='text' class='form-control input-sm' name='data1[" . $loop . "][email_pic]' value='$pic->email_pic'  id='data1_" . $loop . "_email_pic' label='FALSE' div='FALSE'></td>";
                                             echo "<td align='left'><input type='text' class='form-control input-sm' name='data1[" . $loop . "][position_pic]' value='$pic->position_pic' d='data1_" . $loop . "_position_pic' label='FALSE' div='FALSE'></td>";
-                                            echo "<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return DelItem(" . $loop . ");'><i class='fa fa-trash-o'></i></button></td></tr>";
+                                            echo "<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return DelItem(" . $loop . ");'><i class='fa fa-trash-o'></i></button></td></tr>";
                                             echo "</tr>";
                                         } ?>
                                     </tbody>
@@ -312,45 +312,45 @@ foreach ($results['cus'] as $cus) {
 
 
                         <center><label for="customer">
-                                <h3>INFORMASI PEMBAYARAN</h3>
+                                <h3>PAYMENT INFORMATION</h3>
                             </label></center>
 
                         <div class="col-sm-6">
                             <div class="col-md-12">
                                 <label for="id_supplier">
-                                    <h4>Informasi Bank</h4>
+                                    <h4>Bank Information</h4>
                                 </label>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="id_supplier">Nama Bank</label>
+                                    <label for="id_supplier">Bank Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="name_bank" value='<?= $cus->name_bank ?>' required name="name_bank" placeholder="Nama Bank">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <label for="id_category_supplier">Nomor Akun</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="no_rekening" value='<?= $cus->no_rekening ?>' required name="no_rekening" placeholder="No Rekening">
+                                    <input type="text" class="form-control" id="name_bank" value='<?= $cus->name_bank ?>' required name="name_bank" placeholder="Bank Name">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Nama Akun</label>
+                                    <label for="id_category_supplier">Account Number</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="nama_rekening" value='<?= $cus->nama_rekening ?>' required name="nama_rekening" placeholder="Nama Rekening">
+                                    <input type="text" class="form-control" id="no_rekening" value='<?= $cus->no_rekening ?>' required name="no_rekening" placeholder="Account Number">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Alamat Bank</label>
+                                    <label for="customer">Account Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="nama_rekening" value='<?= $cus->nama_rekening ?>' required name="nama_rekening" placeholder="Account Name">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="customer">Bank Address</label>
                                 </div>
                                 <div class="col-md-6">
                                     <textarea type="text" name="alamat_bank" id="alamat_bank" class="form-control input-sm required w70" placeholder="Alamat_Bank"><?= $cus->alamat_bank ?></textarea>
@@ -369,31 +369,31 @@ foreach ($results['cus'] as $cus) {
                         <div class="col-sm-6">
                             <div class="col-md-12">
                                 <label for="id_supplier">
-                                    <h4>Informasi Pajak</h4>
+                                    <h4>Tax Information</h4>
                                 </label>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Nomor NPWP/PKP</label>
+                                    <label for="customer">NPWP/PKP Number</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="npwp" value='<?= $cus->npwp ?>' required name="npwp" placeholder="Nomor NPWP">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <label for="customer">Nama NPWP/PKP</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="npwp_name" value='<?= $cus->npwp_name ?>' required name="npwp_name" placeholder="Nama NPWP">
+                                    <input type="text" class="form-control" id="npwp" value='<?= $cus->npwp ?>' required name="npwp" placeholder="NPWP Number">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Alamat NPWP</label>
+                                    <label for="customer">NPWP/PKP Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="npwp_address" value='<?= $cus->npwp_address ?>' required name="npwp_address" placeholder="Alamat NPWP">
+                                    <input type="text" class="form-control" id="npwp_name" value='<?= $cus->npwp_name ?>' required name="npwp_name" placeholder="NPWP Name">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="customer">NPWP Address</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="npwp_address" value='<?= $cus->npwp_address ?>' required name="npwp_address" placeholder="NPWP Address">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -417,12 +417,12 @@ foreach ($results['cus'] as $cus) {
                                     <label for="customer">Nominal DP</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="nominal_dp" value='<?= $cus->nominal_dp ?>' required name="nominal_dp" placeholder="Alamat NPWP">
+                                    <input type="text" class="form-control" id="nominal_dp" value='<?= $cus->nominal_dp ?>' required name="nominal_dp" placeholder="NPWP Address">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="id_category_customer">Sisa Pembayaran</label>
+                                    <label for="id_category_customer">Remaining Payment</label>
                                 </div>
                                 <div class="col-md-6">
                                     <select id="sisa_pembayaran" name="sisa_pembayaran" class="form-control select" required>
@@ -435,11 +435,11 @@ foreach ($results['cus'] as $cus) {
                         </div>
                     </div>
                     <center><label for="customer">
-                            <h3>INFORMASI INVOICE</h3>
+                            <h3>INVOICE INFORMATION</h3>
                         </label></center>
                     <div class="col-sm-12">
                         <div class="col-md-3">
-                            <label for="customer">Hari Terima</label>
+                            <label for="customer">Receiving Day</label>
                         </div>
                         <div class="col-md-9">
                             <label>
@@ -503,7 +503,7 @@ foreach ($results['cus'] as $cus) {
                         <div class="col-sm-6">
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <label for="customer">Waktu Penerimaan Invoice</label>
+                                    <label for="customer">Invoice Receiving Time</label>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -525,18 +525,18 @@ foreach ($results['cus'] as $cus) {
                         <div class="col-sm-6">
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="customer">Alamat Invoice</label>
+                                    <label for="customer">Invoice Address</label>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <textarea type="text" name="address_invoice" id="address_invoice" class="form-control input-sm required w70" placeholder="Alamat"><?= $cus->adress_invoice ?></textarea>
+                                    <textarea type="text" name="address_invoice" id="address_invoice" class="form-control input-sm required w70" placeholder="Address"><?= $cus->adress_invoice ?></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <center><label for="customer">
-                            <h3>Persyaratan Pembayaran</h3>
+                            <h3>Payment Terms</h3>
                         </label></center>
                     <div class="col-sm-12">
                         <div class="col-sm-4">
@@ -669,7 +669,7 @@ foreach ($results['cus'] as $cus) {
                     </div>
                     <div class="col-sm-12">
                         <center>
-                            <button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+                            <button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
                         </center>
                     </div>
                 </div>
@@ -762,14 +762,14 @@ foreach ($results['cus'] as $cus) {
             Template = '<tr id="tr_' + loop + '">';
             Template += '<td align="left">';
             Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
-            Template += '<option value="">--pilih--</option>';
+            Template += '<option value="">--select--</option>';
             Template += '<?php foreach ($results['category'] as $category) { ?>';
             Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower((string) $category->name_category_customer)) ?></option>';
             Template += '<?php } ?>';
             Template += '</select>';
             Template += '</td>';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Delete Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
             Template += '</tr>';
             $('#list_category').append(Template);
         });
@@ -796,7 +796,7 @@ foreach ($results['cus'] as $cus) {
             Template += '<td align="left">';
             Template += '<input type="text" class="form-control input-sm" name="data1[' + loop + '][position_pic]" id="data1_' + loop + '_position_pic" label="FALSE" div="FALSE">';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Delete Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
             Template += '</tr>';
             $('#list_payment').append(Template);
         });

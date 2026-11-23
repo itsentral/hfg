@@ -128,8 +128,8 @@
             success: function(msg) {
                 if (msg['save'] == '1') {
                     swal({
-                        title: "Sukses!",
-                        text: "Data Berhasil Di Simpan",
+                        title: "Success!",
+                        text: "Data saved successfully",
                         type: "success",
                         timer: 1500,
                         showConfirmButton: false
@@ -138,8 +138,8 @@
                     window.location.reload();
                 } else {
                     swal({
-                        title: "Gagal!",
-                        text: "Data Gagal Di Simpan",
+                        title: "Failed!",
+                        text: "Failed to save data",
                         type: "error",
                         timer: 1500,
                         showConfirmButton: false
@@ -148,8 +148,8 @@
             },
             error: function() {
                 swal({
-                    title: "Gagal!",
-                    text: "Ajax Data Gagal Di Proses",
+                    title: "Failed!",
+                    text: "Ajax request failed to process.",
                     type: "error",
                     timer: 1500,
                     showConfirmButton: false

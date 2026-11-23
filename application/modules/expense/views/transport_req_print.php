@@ -154,21 +154,21 @@ function formatDate($date)
 			<?php endif; ?>
 		</div>
 		<div style="text-align: right; min-width: 200px;">
-			<h4 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase;">Pengajuan Transportasi</h4>
+			<h4 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase;">Transport Request</h4>
 			<div style="font-size: 11px; color: #333; margin-top: 3px;">No: <strong><?= $data->no_doc ?></strong></div>
 		</div>
 	</div>
 	<hr style="border: none; border-top: 2px solid #333; margin: 6px 0 10px;">
 
 	<!-- Informasi Pengajuan -->
-	<div class="section-title">Informasi Pengajuan</div>
+	<div class="section-title">Request Information</div>
 	<table class="info-table">
 		<tr>
 			<td width="120">Department</td>
 			<td width="5">:</td>
 			<td width="150"><?= $nm_dept ?></td>
 			<td width="40"></td>
-			<td width="110">Keterangan</td>
+			<td width="110">Description</td>
 			<td width="5">:</td>
 			<td>Transportasi <?= date('d/m/Y', strtotime((string) $data->date1)) ?> - <?= date('d/m/Y', strtotime((string) $data->date2)) ?></td>
 		</tr>
@@ -182,7 +182,7 @@ function formatDate($date)
 			<td><?= $coa_display ?></td>
 		</tr>
 		<tr>
-			<td>Tanggal Pengajuan</td>
+			<td>Request Date</td>
 			<td>:</td>
 			<td><?= formatDate($data->tgl_doc) ?></td>
 			<td></td>
@@ -193,12 +193,12 @@ function formatDate($date)
 	</table>
 
 	<!-- Detail Pengajuan -->
-	<div class="section-title">Detail Pengajuan</div>
+	<div class="section-title">Request Detail</div>
 	<table class="detail-table">
 		<thead>
 			<tr>
 				<th width="30">No</th>
-				<th width="70">Tanggal</th>
+				<th width="70">Date</th>
 				<th>Keperluan</th>
 				<th width="65">KM Awal</th>
 				<th width="65">KM Akhir</th>
@@ -256,7 +256,7 @@ function formatDate($date)
 	<!-- Informasi Bank + Signature -->
 	<div class="bank-signature-wrapper">
 		<div class="bank-section">
-			<div class="section-title">Informasi Bank</div>
+			<div class="section-title">Bank Information</div>
 			<table class="info-table">
 				<tr>
 					<td width="90">Bank</td>
@@ -264,12 +264,12 @@ function formatDate($date)
 					<td><?= !empty($data->bank_id) ? $data->bank_id : '-' ?></td>
 				</tr>
 				<tr>
-					<td>No Rekening</td>
+					<td>Account Number</td>
 					<td>:</td>
 					<td><?= !empty($data->accnumber) ? $data->accnumber : '-' ?></td>
 				</tr>
 				<tr>
-					<td>Nama Rekening</td>
+					<td>Account Name</td>
 					<td>:</td>
 					<td><?= !empty($data->accname) ? $data->accname : '-' ?></td>
 				</tr>

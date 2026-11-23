@@ -26,9 +26,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			<thead>
 				<tr>
 					<th class="text-center" width="5">#</th>
-					<th class="text-center">Asal Permintaan</th>
-					<th class="text-center">Nomor Request</th>
-					<th class="text-center">Untuk Kebutuhan</th>
+					<th class="text-center">Request Origin</th>
+					<th class="text-center">Request Number</th>
+					<th class="text-center">Purpose</th>
 					<th class="text-center">Request By</th>
 					<th class="text-center">Request Date</th>
 					<th class="text-center">Status</th>
@@ -177,7 +177,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		})
 	});
 	$(document).on('click', '.add', function() {
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Tambah Inventory</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Add Inventory</b>");
 		$.ajax({
 			type: 'POST',
 			url: siteurl + 'penawaran/addHeader',
@@ -196,13 +196,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var so_number = $(this).data('so_number');
 		// alert(id);
 		swal({
-				title: "Anda Yakin?",
-				text: "PR ini akan di approve dan jadi PO !",
+				title: "Are you sure?",
+				text: "This PR will be approved and become a PO!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
 				confirmButtonText: "Ya",
-				cancelButtonText: "Batal",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			},
 			function(isConfirm) {
@@ -219,8 +219,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					success: function(result) {
 						if (result.status == '1') {
 							swal({
-									title: "Sukses",
-									text: "PR telah di approve dan sudah jadi PO !",
+									title: "Success",
+									text: "The PR has been approved and became a PO!",
 									type: "success"
 								},
 								function() {
@@ -229,7 +229,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						} else {
 							swal({
 								title: "Error",
-								text: "PR gagal di approve !",
+								text: "Failed to approve PR!",
 								type: "error"
 							})
 
@@ -238,7 +238,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					error: function() {
 						swal({
 							title: "Error",
-							text: "PR gagal di approve !",
+							text: "Failed to approve PR!",
 							type: "error"
 						})
 					}

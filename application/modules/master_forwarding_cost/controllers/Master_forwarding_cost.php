@@ -52,13 +52,13 @@ class Master_forwarding_cost extends Admin_Controller
         }
 
         if (!in_array($tipe, ['import', 'lokal'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Pilihan tipe tidak valid (harus Import atau Lokal)!']);
+            echo json_encode(['status' => 'error', 'message' => 'Invalid type option (must be Import or Local)!']);
             return;
         }
 
         // Cek duplikasi tipe
         if ($this->Master_forwarding_cost_model->check_existing_tipe($tipe, $id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tarif Forwarding Cost untuk tipe ' . strtoupper((string) $tipe) . ' sudah ada! Silakan edit data yang sudah ada.']);
+            echo json_encode(['status' => 'error', 'message' => 'Forwarding Cost rate for type ' . strtoupper((string) $tipe) . ' already exists! Please edit the existing data.']);
             return;
         }
 
@@ -80,7 +80,7 @@ class Master_forwarding_cost extends Admin_Controller
             $data['create_date'] = $this->datetime;
             $data['is_delete']   = '0';
             $result = $this->Master_forwarding_cost_model->save_data($data);
-            $msg = 'Tambah Forwarding Cost ' . ucfirst((string) $tipe) . ' berhasil';
+            $msg = 'Add Forwarding Cost ' . ucfirst((string) $tipe) . ' berhasil';
         }
 
         $logPayload = ($id && !empty($oldData)) ? ['old' => $oldData, 'new' => $data] : $data;
@@ -90,7 +90,7 @@ class Master_forwarding_cost extends Admin_Controller
             echo json_encode(['status' => 'success', 'message' => $msg]);
         } else {
             write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', 'Gagal menyimpan Forwarding Cost', $logPayload, null, 0);
-            echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to save data']);
         }
     }
 
@@ -102,10 +102,10 @@ class Master_forwarding_cost extends Admin_Controller
 
         if ($result) {
             write_log('Master Forwarding Cost', 'Delete', 'Hapus Forwarding Cost ID: ' . $id, ['id' => $id], null, 1);
-            echo json_encode(['status' => 'success', 'message' => 'Hapus Forwarding Cost berhasil']);
+            echo json_encode(['status' => 'success', 'message' => 'Forwarding Cost deleted successfully']);
         } else {
             write_log('Master Forwarding Cost', 'Delete', 'Gagal menghapus Forwarding Cost ID: ' . $id, ['id' => $id], null, 0);
-            echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data']);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete data']);
         }
     }
 }

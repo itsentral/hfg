@@ -11,7 +11,7 @@ if (isset($data->reject_reason) && !empty($data->reject_reason)) {
 	<div class="alert alert-danger border-0 shadow-sm rounded-3 p-3 mb-4 d-flex align-items-start gap-3">
 		<div class="fs-3 text-danger"><i class="fa fa-ban"></i></div>
 		<div>
-			<h6 class="fw-bold mb-1 text-danger">Pengajuan Expense Ditolak!</h6>
+			<h6 class="fw-bold mb-1 text-danger">Expense Request Rejected!</h6>
 			<p class="mb-0 text-dark small"><?= nl2br(htmlspecialchars((string) $reject_msg)) ?></p>
 		</div>
 	</div>

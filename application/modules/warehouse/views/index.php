@@ -95,7 +95,7 @@
                         <input type="text" id="hc_date_snap" class="form-control form-control-sm" placeholder="dd/mm/yyyy" readonly>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;"><i class="fa fa-filter"></i> Gudang</label>
+                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;"><i class="fa fa-filter"></i> Warehouse</label>
                         <select id="hc_gudang" class="form-select form-select-sm">
                             <option value="">-- All --</option>
                             <option value="PRO">Production</option>
@@ -126,7 +126,7 @@
                                 <th class="text-end" width="9%">N.W. Per Roll</th>
                                 <th class="text-end" width="9%">G.W. Total</th>
                                 <th class="text-end" width="9%">G.W. Per Roll</th>
-                                <th class="text-center" width="8%">Gudang</th>
+                                <th class="text-center" width="8%">Warehouse</th>
                                 <th class="text-center" width="6%">Status</th>
                             </tr>
                         </thead>

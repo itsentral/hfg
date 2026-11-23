@@ -180,7 +180,7 @@ class Purchase_order_payment extends Admin_Controller
 		$no_po  = $this->input->post('no_po');
 
 		if (empty($id_top) || empty($no_po)) {
-			echo "<div class='alert alert-warning'>Data tidak valid.</div>";
+			echo "<div class='alert alert-warning'>Invalid data.</div>";
 			return;
 		}
 
@@ -201,7 +201,7 @@ class Purchase_order_payment extends Admin_Controller
 			->row_array();
 
 		if (empty($data_po)) {
-			echo "<div class='alert alert-warning'>Data PO tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning'>PO data not found.</div>";
 			return;
 		}
 
@@ -255,14 +255,14 @@ class Purchase_order_payment extends Admin_Controller
 		$id_incoming = $this->input->post('id_incoming'); // kode_trans incoming untuk local
 
 		if (empty($no_po) || empty($tipe)) {
-			echo "<div class='alert alert-warning'>Data tidak valid.</div>";
+			echo "<div class='alert alert-warning'>Invalid data.</div>";
 			return;
 		}
 
 		// Ambil data PO
 		$data_po = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row_array();
 		if (empty($data_po)) {
-			echo "<div class='alert alert-warning'>Data PO tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning'>PO data not found.</div>";
 			return;
 		}
 
@@ -345,7 +345,7 @@ class Purchase_order_payment extends Admin_Controller
 		// Cek duplikat — 1 id_top hanya boleh 1 record
 		$cek = $this->db->get_where('tr_receive_invoice', ['id_top' => $id_top, 'tipe' => 'dp'])->row();
 		if ($cek) {
-			echo json_encode(['status' => 0, 'message' => 'Invoice DP untuk PO ini sudah pernah dibuat.']);
+			echo json_encode(['status' => 0, 'message' => 'A DP Invoice for this PO has already been created.']);
 			return;
 		}
 
@@ -355,7 +355,7 @@ class Purchase_order_payment extends Admin_Controller
 		$kurs     = strtoupper((string) $currency) === 'IDR' ? 1 : (float)$kurs_raw;
 
 		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
-			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
+			echo json_encode(['status' => 0, 'message' => 'Exchange rate is required and must be greater than 0.']);
 			return;
 		}
 
@@ -378,7 +378,7 @@ class Purchase_order_payment extends Admin_Controller
 			if ($this->upload->do_upload('upload_invoice')) {
 				$file_invoice = $this->upload->data('file_name');
 			} else {
-				echo json_encode(['status' => 0, 'message' => 'Gagal upload file: ' . $this->upload->display_errors('', '')]);
+				echo json_encode(['status' => 0, 'message' => 'File upload failed: ' . $this->upload->display_errors('', '')]);
 				return;
 			}
 		}
@@ -486,7 +486,7 @@ class Purchase_order_payment extends Admin_Controller
 			write_log('Purchase Order Payment', 'Save Invoice DP', 'Invoice DP berhasil disimpan & diajukan untuk PO: ' . $no_surat_disp, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice DP berhasil disimpan & diajukan.']);
+			echo json_encode(['status' => 1, 'message' => 'DP Invoice saved & submitted successfully.']);
 		} else {
 			$getPo = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row_array();
 			$no_surat_disp = (!empty($getPo['no_surat'])) ? $getPo['no_surat'] : $no_po;
@@ -494,7 +494,7 @@ class Purchase_order_payment extends Admin_Controller
 			write_log('Purchase Order Payment', 'Save Invoice DP', 'Gagal menyimpan invoice DP untuk PO: ' . $no_surat_disp, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
+			echo json_encode(['status' => 0, 'message' => 'Failed to save data.']);
 		}
 	}
 
@@ -527,7 +527,7 @@ class Purchase_order_payment extends Admin_Controller
 				'tipe'   => 'import'
 			])->row();
 			if ($cek) {
-				echo json_encode(['status' => 0, 'message' => 'Invoice Import untuk ROS ini sudah pernah dibuat.']);
+				echo json_encode(['status' => 0, 'message' => 'An Import Invoice for this ROS has already been created.']);
 				return;
 			}
 		}
@@ -538,7 +538,7 @@ class Purchase_order_payment extends Admin_Controller
 		$kurs     = ceil((float)$kurs_raw);
 
 		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
-			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
+			echo json_encode(['status' => 0, 'message' => 'Exchange rate is required and must be greater than 0.']);
 			return;
 		}
 
@@ -561,7 +561,7 @@ class Purchase_order_payment extends Admin_Controller
 			if ($this->upload->do_upload('upload_invoice')) {
 				$file_invoice = $this->upload->data('file_name');
 			} else {
-				echo json_encode(['status' => 0, 'message' => 'Gagal upload file: ' . $this->upload->display_errors('', '')]);
+				echo json_encode(['status' => 0, 'message' => 'File upload failed: ' . $this->upload->display_errors('', '')]);
 				return;
 			}
 		}
@@ -662,12 +662,12 @@ class Purchase_order_payment extends Admin_Controller
 			write_log('Purchase Order Payment', 'Save Invoice Import', 'Invoice Import berhasil disimpan & diajukan untuk ROS: ' . $id_ros, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice Import berhasil disimpan & diajukan.']);
+			echo json_encode(['status' => 1, 'message' => 'Import Invoice saved & submitted successfully.']);
 		} else {
 			write_log('Purchase Order Payment', 'Save Invoice Import', 'Gagal menyimpan invoice import untuk ROS: ' . $id_ros, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
+			echo json_encode(['status' => 0, 'message' => 'Failed to save data.']);
 		}
 	}
 
@@ -697,7 +697,7 @@ class Purchase_order_payment extends Admin_Controller
 				'tipe'        => 'local'
 			])->row();
 			if ($cek) {
-				echo json_encode(['status' => 0, 'message' => 'Invoice Local untuk Incoming ini sudah pernah dibuat.']);
+				echo json_encode(['status' => 0, 'message' => 'A Local Invoice for this Incoming has already been created.']);
 				return;
 			}
 		}
@@ -708,7 +708,7 @@ class Purchase_order_payment extends Admin_Controller
 		$kurs     = (float)$kurs_raw;
 
 		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
-			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
+			echo json_encode(['status' => 0, 'message' => 'Exchange rate is required and must be greater than 0.']);
 			return;
 		}
 
@@ -737,7 +737,7 @@ class Purchase_order_payment extends Admin_Controller
 			if ($this->upload->do_upload('upload_invoice')) {
 				$file_invoice = $this->upload->data('file_name');
 			} else {
-				echo json_encode(['status' => 0, 'message' => 'Gagal upload file: ' . $this->upload->display_errors('', '')]);
+				echo json_encode(['status' => 0, 'message' => 'File upload failed: ' . $this->upload->display_errors('', '')]);
 				return;
 			}
 		}
@@ -832,12 +832,12 @@ class Purchase_order_payment extends Admin_Controller
 			write_log('Purchase Order Payment', 'Save Invoice Local', 'Invoice Local berhasil disimpan & diajukan untuk Incoming: ' . $id_incoming, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice Local berhasil disimpan & diajukan.']);
+			echo json_encode(['status' => 1, 'message' => 'Local Invoice saved & submitted successfully.']);
 		} else {
 			write_log('Purchase Order Payment', 'Save Invoice Local', 'Gagal menyimpan invoice local untuk Incoming: ' . $id_incoming, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
+			echo json_encode(['status' => 0, 'message' => 'Failed to save data.']);
 		}
 	}
 
@@ -849,7 +849,7 @@ class Purchase_order_payment extends Admin_Controller
 		$id = $this->input->post('id');
 
 		if (empty($id)) {
-			echo "<div class='alert alert-warning'>Data tidak valid.</div>";
+			echo "<div class='alert alert-warning'>Invalid data.</div>";
 			return;
 		}
 
@@ -876,7 +876,7 @@ class Purchase_order_payment extends Admin_Controller
 			->row_array();
 
 		if (empty($data)) {
-			echo "<div class='alert alert-warning'>Data tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning'>Data not found.</div>";
 			return;
 		}
 
@@ -897,7 +897,7 @@ class Purchase_order_payment extends Admin_Controller
 		$id = $this->input->post('id');
 
 		if (empty($id)) {
-			echo "<div class='alert alert-warning'>Data tidak valid.</div>";
+			echo "<div class='alert alert-warning'>Invalid data.</div>";
 			return;
 		}
 
@@ -925,7 +925,7 @@ class Purchase_order_payment extends Admin_Controller
 			->row_array();
 
 		if (empty($data)) {
-			echo "<div class='alert alert-warning'>Data tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning'>Data not found.</div>";
 			return;
 		}
 
@@ -1246,7 +1246,7 @@ class Purchase_order_payment extends Admin_Controller
 		$id = $this->input->post('id');
 
 		$get_invoice = $this->db->get_where('tr_invoice_po', ['id' => $id])->row_array();
-		$id_po = str_replace(', ', ',', $get_invoice['no_incoming']);
+		$id_po = str_replace(', ', ',', $get_invoice['no_incoming'] ?? '');
 		$no_incoming = explode(',', (string) $id_po);
 
 		var_dump($id_po);
@@ -1942,7 +1942,7 @@ class Purchase_order_payment extends Admin_Controller
 		$currency = strtoupper(trim($post['currency'] ?? ''));
 		$kurs_raw = (float) str_replace(',', '', $post['kurs'] ?? '0');
 		if ($currency !== 'IDR' && $kurs_raw <= 0) {
-			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0 jika currency bukan IDR!']);
+			echo json_encode(['status' => 0, 'message' => 'Exchange rate is required and must be greater than 0 if the currency is not IDR!']);
 			return;
 		}
 
@@ -2005,9 +2005,9 @@ class Purchase_order_payment extends Admin_Controller
 				'no_po'               => $no_po,
 				'curr'                => $post['currency'],
 				'invoice_date'        => $post['invoice_date'],
-				'value_dp'            => str_replace(',', '', $post['value_dp']),
+				'value_dp'            => str_replace(',', '', $post['value_dp'] ?? ''),
 				'invoice_no'          => $post['nomor_invoice'],
-				'total_pembelian'     => str_replace(',', '', $post['total_pembelian']),
+				'total_pembelian'     => str_replace(',', '', $post['total_pembelian'] ?? ''),
 				'no_faktur_pajak'     => $post['nomor_faktur_pajak'] ?? '',
 				'persen_dp'           => $post['persen_dp'],
 				'link_doc'            => $link_doc,
@@ -2019,16 +2019,16 @@ class Purchase_order_payment extends Admin_Controller
 				'bank'                => $post['bank'] ?? '',
 				'no_bank'             => $post['no_bank'] ?? '',
 				'nm_acc_bank'         => $post['nm_acc_bank'] ?? '',
-				'nilai_disc'          => str_replace(',', '', $post['nilai_disc']),
-				'nilai_ppn'           => str_replace(',', '', $post['nilai_ppn']),
-				'total_invoice'       => (float) str_replace(',', '', $post['nilai_ppn']) + (float) str_replace(',', '', $post['total_pembelian']),
+				'nilai_disc'          => str_replace(',', '', $post['nilai_disc'] ?? ''),
+				'nilai_ppn'           => str_replace(',', '', $post['nilai_ppn'] ?? ''),
+				'total_invoice'       => (float) str_replace(',', '', $post['nilai_ppn'] ?? '') + (float) str_replace(',', '', $post['total_pembelian'] ?? ''),
 				'kurs'                => $kurs,
 				'created_by'          => $this->auth->user_id(),
 				'created_date'        => date('Y-m-d H:i:s'),
 			]);
 			if (!$insert_invoice) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert invoice: ' . json_encode($this->db->error())]);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert invoice: ' . json_encode($this->db->error())]);
 				return;
 			}
 
@@ -2043,7 +2043,7 @@ class Purchase_order_payment extends Admin_Controller
 				'created_on'  => date('Y-m-d H:i:s'),
 				'approved_by' => $get_users['nm_lengkap'],
 				'approved_on' => date('Y-m-d H:i:s'),
-				'jumlah'      => str_replace(',', '', $post['value_dp']),
+				'jumlah'      => str_replace(',', '', $post['value_dp'] ?? ''),
 				'informasi'   => 'Pembayaran ' . $label_tipe . ' : ' . $no_po . ' (' . $get_supplier->nama . ')',
 				'exp_inv_po'  => 1,
 				'bank_id'     => $post['bank'] ?? '',
@@ -2053,7 +2053,7 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_expense) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert expense']);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert expense']);
 				return;
 			}
 
@@ -2062,24 +2062,24 @@ class Purchase_order_payment extends Admin_Controller
 				'no_doc'      => $no_invoice,
 				'deskripsi'   => 'Pembayaran ' . $label_tipe . ' : ' . $no_po . ' (' . $get_supplier->nama . ')',
 				'qty'         => 1,
-				'harga'       => str_replace(',', '', $post['value_dp']),
-				'total_harga' => str_replace(',', '', $post['value_dp']),
+				'harga'       => str_replace(',', '', $post['value_dp'] ?? ''),
+				'total_harga' => str_replace(',', '', $post['value_dp'] ?? ''),
 				'status'      => 0,
 				'keterangan'  => 'Pembayaran ' . $label_tipe . ' : ' . $no_po . ' (' . $get_supplier->nama . ')',
-				'expense'     => str_replace(',', '', $post['value_dp']),
+				'expense'     => str_replace(',', '', $post['value_dp'] ?? ''),
 				'created_by'  => $get_users['nm_lengkap'],
 				'created_on'  => date('Y-m-d H:i:s'),
 			]);
 			if (!$insert_expense_detail) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert expense detail']);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert expense detail']);
 				return;
 			}
 
 			// ---- UPDATE tr_purchase_order (hanya untuk DP dan Progress) ----
 			if (in_array($group_top, [76, 77])) {
-				$dpp_idr = (float) str_replace(',', '', $post['total_pembelian']) * $kurs;
-				$dpp     = str_replace(',', '', $post['total_pembelian']);
+				$dpp_idr = (float) str_replace(',', '', $post['total_pembelian'] ?? '') * $kurs;
+				$dpp     = str_replace(',', '', $post['total_pembelian'] ?? '');
 				$this->db->update('tr_purchase_order', [
 					'uang_muka_idr'     => $dpp_idr,
 					'uang_muka'         => $dpp,
@@ -2093,8 +2093,8 @@ class Purchase_order_payment extends Admin_Controller
 
 			// ---- JURNAL: DP/Pro/Ret pakai JV083/JV084 ----
 			$jenis_jurnal  = ($currency === 'IDR') ? 'JV083' : 'JV084';
-			$nilai_invoice = (float) str_replace(',', '', $post['total_pembelian']) * $kurs;
-			$nilai_ppn     = (float) str_replace(',', '', $post['nilai_ppn']) * $kurs;
+			$nilai_invoice = (float) str_replace(',', '', $post['total_pembelian'] ?? '') * $kurs;
+			$nilai_ppn     = (float) str_replace(',', '', $post['nilai_ppn'] ?? '') * $kurs;
 			$kode_supplier = $get_supplier->kode_supplier;
 			$nama          = $get_supplier->nama;
 
@@ -2108,7 +2108,7 @@ class Purchase_order_payment extends Admin_Controller
 			$get_id_suplier = $this->db->query("
             SELECT a.id_suplier 
             FROM tr_purchase_order a 
-            WHERE a.no_surat IN ('" . str_replace(",", "','", $no_po1) . "') 
+            WHERE a.no_surat IN ('" . str_replace(",", "','", $no_po1 ?? '') . "') 
             GROUP BY a.id_suplier
         	")->result();
 			foreach ($get_id_suplier as $item) {
@@ -2160,7 +2160,7 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_invoice) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert invoice incoming']);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert incoming invoice']);
 				return;
 			}
 
@@ -2193,7 +2193,7 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_expense) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert expense incoming']);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert incoming expense']);
 				return;
 			}
 
@@ -2212,7 +2212,7 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_expense_detail) {
 				$this->db->trans_rollback();
-				echo json_encode(['status' => 0, 'message' => 'Gagal insert expense detail incoming']);
+				echo json_encode(['status' => 0, 'message' => 'Failed to insert incoming expense detail']);
 				return;
 			}
 
@@ -2256,7 +2256,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		if (empty($data_po)) {
 			$this->db->trans_rollback();
-			echo json_encode(['status' => 0, 'message' => 'Data PO tidak ditemukan untuk jurnal']);
+			echo json_encode(['status' => 0, 'message' => 'PO data not found for the journal']);
 			return;
 		}
 
@@ -2440,7 +2440,7 @@ class Purchase_order_payment extends Admin_Controller
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			write_log('Purchase Order Payment', 'Save Invoice PO', 'Transaksi simpan invoice gagal untuk: ' . $no_invoice, $post, null, 0);
-			echo json_encode(['status' => 0, 'message' => 'Transaksi gagal, semua perubahan dibatalkan']);
+			echo json_encode(['status' => 0, 'message' => 'Transaction failed, all changes have been rolled back']);
 		} else {
 			$this->db->trans_commit();
 			write_log('Purchase Order Payment', 'Save Invoice PO', 'Transaksi simpan invoice berhasil untuk: ' . $no_invoice, $post, null, 1);
@@ -2465,7 +2465,7 @@ class Purchase_order_payment extends Admin_Controller
                 <tr>
                     <th class="text-center">No.</th>
                     <th class="text-center">No. Invoice</th>
-                    <th class="text-center">Tanggal Invoice</th>
+                    <th class="text-center">Invoice Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">Status</th>
 					<th class="text-center">Action</th>
@@ -2476,7 +2476,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		$no_po = [];
 		foreach ($get_list_inc as $item) {
-			$get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $item['no_ipp']) . "')")->result();
+			$get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $item['no_ipp'] ?? '') . "')")->result();
 			if (!empty($get_no_po)) {
 				$list_no_po = [];
 				foreach ($get_no_po as $item_no_po) {
@@ -2787,9 +2787,9 @@ class Purchase_order_payment extends Admin_Controller
 					<th class="text-center">No. PO</th>
 					<th class="text-center">No. Purchase Invoice</th>
 					<th class="text-center">No. Invoice</th>
-					<th class="text-center">Nama Supplier</th>
-					<th class="text-center">Tanggal PO</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Supplier Name</th>
+					<th class="text-center">PO Date</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">Created By</th>
 					<th class="text-center">Status</th>
 					<th class="text-center">Action</th>
@@ -2888,8 +2888,8 @@ class Purchase_order_payment extends Admin_Controller
 				->result();
 
 			foreach ($get_invoice as $item_invoice) {
-				$no_purchase_invoice[] = str_replace(',', '', $item_invoice->id);
-				$no_invoice[] = str_replace(',', '', $item_invoice->invoice_no);
+				$no_purchase_invoice[] = str_replace(',', '', $item_invoice->id ?? '');
+				$no_invoice[] = str_replace(',', '', $item_invoice->invoice_no ?? '');
 			}
 
 			if (!empty($no_purchase_invoice)) {
@@ -2954,9 +2954,9 @@ class Purchase_order_payment extends Admin_Controller
 					<th class="text-center">No. PO</th>
 					<th class="text-center">No. Purchase Invoice</th>
 					<th class="text-center">No. Invoice</th>
-					<th class="text-center">Nama Supplier</th>
-					<th class="text-center">Tanggal PO</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Supplier Name</th>
+					<th class="text-center">PO Date</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">Created By</th>
 					<th class="text-center">Status</th>
 					<th class="text-center">Action</th>
@@ -3055,8 +3055,8 @@ class Purchase_order_payment extends Admin_Controller
 				->result();
 
 			foreach ($get_invoice as $item_invoice) {
-				$no_purchase_invoice[] = str_replace(',', '', $item_invoice->id);
-				$no_invoice[] = str_replace(',', '', $item_invoice->invoice_no);
+				$no_purchase_invoice[] = str_replace(',', '', $item_invoice->id ?? '');
+				$no_invoice[] = str_replace(',', '', $item_invoice->invoice_no ?? '');
 			}
 
 			if (!empty($no_purchase_invoice)) {
@@ -3145,7 +3145,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		$no_po = [];
 		foreach ($get_list_inc as $item) {
-			$get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $item['no_ipp']) . "') OR a.no_surat IN ('" . str_replace(",", "','", $item['no_ipp']) . "')")->result();
+			$get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $item['no_ipp'] ?? '') . "') OR a.no_surat IN ('" . str_replace(",", "','", $item['no_ipp'] ?? '') . "')")->result();
 			if (!empty($get_no_po)) {
 				$list_no_po = [];
 				foreach ($get_no_po as $item_no_po) {
@@ -3280,7 +3280,7 @@ class Purchase_order_payment extends Admin_Controller
 			->row_array();
 
 		if (empty($data_po)) {
-			echo "<div class='alert alert-warning text-center'>Tidak ada data PO yang dipilih atau data tidak ditemukan.</div>";
+			echo "<div class='alert alert-warning text-center'>No PO data selected or data not found.</div>";
 			return;
 		}
 
@@ -3298,7 +3298,7 @@ class Purchase_order_payment extends Admin_Controller
 		$tipe       = $this->input->post('tipe'); // 'dp', 'import', 'local'
 
 		if (empty($id_receive) || empty($tipe)) {
-			echo json_encode(['status' => 0, 'message' => 'Data tidak valid.']);
+			echo json_encode(['status' => 0, 'message' => 'Invalid data.']);
 			return;
 		}
 
@@ -3313,20 +3313,20 @@ class Purchase_order_payment extends Admin_Controller
 		} elseif ($tipe === 'local') {
 			$tipe_rp       = 'invoice_local';
 		} else {
-			echo json_encode(['status' => 0, 'message' => 'Tipe tidak valid.']);
+			echo json_encode(['status' => 0, 'message' => 'Invalid type.']);
 			return;
 		}
 
 		// Cek data exist
 		$data = $this->db->get_where($tabel_receive, ['id' => $id_receive])->row_array();
 		if (empty($data)) {
-			echo json_encode(['status' => 0, 'message' => 'Data invoice tidak ditemukan.']);
+			echo json_encode(['status' => 0, 'message' => 'Invoice data not found.']);
 			return;
 		}
 
 		// Cek status — jangan bisa re-request kalau sudah diajukan
 		if (isset($data['status']) && strtolower((string) $data['status']) !== 'draft') {
-			echo json_encode(['status' => 0, 'message' => 'Invoice ini sudah pernah diajukan.']);
+			echo json_encode(['status' => 0, 'message' => 'This invoice has already been submitted.']);
 			return;
 		}
 
@@ -3342,7 +3342,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		$cek_rp = $this->db->get_where('request_payment', $cek_rp_cond)->row();
 		if ($cek_rp) {
-			echo json_encode(['status' => 0, 'message' => 'Request payment untuk invoice ini sudah pernah dibuat.']);
+			echo json_encode(['status' => 0, 'message' => 'A payment request for this invoice has already been created.']);
 			return;
 		}
 
@@ -3369,7 +3369,7 @@ class Purchase_order_payment extends Admin_Controller
 			'no_surat'    => $data['no_surat'] ?? '',
 			'nama'        => $get_user['nm_lengkap'] ?? $this->auth->user_name(),
 			'tgl_doc'     => $data['invoice_date'] ?? date('Y-m-d'),
-			'keperluan'   => 'Pembayaran ' . ucfirst(str_replace('_', ' ', $tipe_rp)) . ' - ' . ($data['no_surat'] ?? '') . ' - ' . ($data['nomor_invoice'] ?? ''),
+			'keperluan'   => 'Pembayaran ' . ucfirst(str_replace('_', ' ', $tipe_rp ?? '')) . ' - ' . ($data['no_surat'] ?? '') . ' - ' . ($data['nomor_invoice'] ?? ''),
 			'tipe'        => $tipe_rp,
 			'jumlah'      => $jumlah_total,
 			'status'      => 'open',
@@ -3408,11 +3408,11 @@ class Purchase_order_payment extends Admin_Controller
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			write_log('Purchase Order Payment', 'Request Payment DP', 'Gagal mengajukan request payment ID receive: ' . $id_receive, $data_insert, null, 0);
-			echo json_encode(['status' => 0, 'message' => 'Gagal mengajukan request payment.']);
+			echo json_encode(['status' => 0, 'message' => 'Failed to submit payment request.']);
 		} else {
 			$this->db->trans_commit();
 			write_log('Purchase Order Payment', 'Request Payment DP', 'Berhasil mengajukan request payment ID receive: ' . $id_receive, $data_insert, null, 1);
-			echo json_encode(['status' => 1, 'message' => 'Request payment berhasil diajukan. Silakan isi tanggal pembayaran di menu Request Payment.']);
+			echo json_encode(['status' => 1, 'message' => 'Payment request submitted successfully. Please fill in the payment date in the Request Payment menu.']);
 		}
 	}
 
@@ -3427,7 +3427,7 @@ class Purchase_order_payment extends Admin_Controller
 	private function _auto_request_payment($id_receive, $tipe)
 	{
 		if (empty($id_receive) || empty($tipe)) {
-			return ['status' => 0, 'message' => 'Data tidak valid untuk pengajuan.'];
+			return ['status' => 0, 'message' => 'Invalid data for the request.'];
 		}
 
 		$tipe_rp_map = [
@@ -3436,13 +3436,13 @@ class Purchase_order_payment extends Admin_Controller
 			'local'  => 'invoice_local',
 		];
 		if (!isset($tipe_rp_map[$tipe])) {
-			return ['status' => 0, 'message' => 'Tipe tidak valid untuk pengajuan.'];
+			return ['status' => 0, 'message' => 'Invalid type for the request.'];
 		}
 		$tipe_rp = $tipe_rp_map[$tipe];
 
 		$data = $this->db->get_where('tr_receive_invoice', ['id' => $id_receive])->row_array();
 		if (empty($data)) {
-			return ['status' => 0, 'message' => 'Data invoice tidak ditemukan.'];
+			return ['status' => 0, 'message' => 'Invoice data not found.'];
 		}
 
 		// Cek duplikat di request_payment.
@@ -3453,7 +3453,7 @@ class Purchase_order_payment extends Admin_Controller
 		$cek_rp_cond = ['ids' => (string) $id_receive, 'tipe' => $tipe_rp];
 		$cek_rp = $this->db->get_where('request_payment', $cek_rp_cond)->row();
 		if ($cek_rp) {
-			return ['status' => 0, 'message' => 'Request payment untuk invoice ini sudah pernah dibuat.'];
+			return ['status' => 0, 'message' => 'A payment request for this invoice has already been created.'];
 		}
 
 		$data_po = $this->db->get_where('tr_purchase_order', ['no_po' => $data['no_po']])->row_array();
@@ -3469,7 +3469,7 @@ class Purchase_order_payment extends Admin_Controller
 			'no_surat'    => $data['no_surat'] ?? '',
 			'nama'        => $get_user['nm_lengkap'] ?? $this->auth->user_name(),
 			'tgl_doc'     => $data['invoice_date'] ?? date('Y-m-d'),
-			'keperluan'   => 'Pembayaran ' . ucfirst(str_replace('_', ' ', $tipe_rp)) . ' - ' . ($data['no_surat'] ?? '') . ' - ' . ($data['nomor_invoice'] ?? ''),
+			'keperluan'   => 'Pembayaran ' . ucfirst(str_replace('_', ' ', $tipe_rp ?? '')) . ' - ' . ($data['no_surat'] ?? '') . ' - ' . ($data['nomor_invoice'] ?? ''),
 			'tipe'        => $tipe_rp,
 			'jumlah'      => $jumlah_total,
 			'status'      => 'open',
@@ -3497,7 +3497,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		$this->db->insert('request_payment', $data_insert);
 
-		return ['status' => 1, 'message' => 'Request payment berhasil diajukan.'];
+		return ['status' => 1, 'message' => 'Payment request submitted successfully.'];
 	}
 
 	// ═══════════════════════════════════════════════════════════════════

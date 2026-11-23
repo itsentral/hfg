@@ -4,7 +4,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Buat SPK Produksi</h5>
         <a href="<?= base_url('production_issue') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -12,13 +12,13 @@
             <!-- Form pilih plan jika belum ada plan_no -->
             <div class="alert alert-info">
                 <i class="fa fa-info-circle"></i>
-                Pilih Production Plan yang sudah Released untuk membuat SPK.
+                Select a Released Production Plan to create an SPK.
             </div>
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label">No Plan <span class="text-danger">*</span></label>
                     <div class="input-group">
-                        <input type="text" id="input-plan-no" class="form-control" placeholder="Masukkan No Plan...">
+                        <input type="text" id="input-plan-no" class="form-control" placeholder="Enter Plan No...">
                         <button type="button" class="btn btn-primary" id="btn-load-plan">
                             <i class="fa fa-search"></i> Cari
                         </button>
@@ -42,7 +42,7 @@
 
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal SPK <span class="text-danger">*</span></label>
+                    <label class="form-label">SPK Date <span class="text-danger">*</span></label>
                     <input type="date" name="tgl_spk" class="form-control" value="<?= date('Y-m-d') ?>" required>
                 </div>
                 <div class="col-md-3">
@@ -56,7 +56,7 @@
                         value="<?= $plan ? $plan->target_qty : '' ?>" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Catatan</label>
+                    <label class="form-label">Notes</label>
                     <textarea name="catatan" class="form-control" rows="1"></textarea>
                 </div>
             </div>
@@ -64,7 +64,7 @@
             <!-- Tabel Coil dari Plan -->
             <div class="card mt-3">
                 <div class="card-header">
-                    <h6 class="mb-0">Coil yang Akan Di-issue</h6>
+                    <h6 class="mb-0">Coils to Be Issued</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -75,7 +75,7 @@
                                     <th>No Coil</th>
                                     <th>No ROS</th>
                                     <th>Material</th>
-                                    <th class="text-end">Berat Bersih (kg)</th>
+                                    <th class="text-end">Net Weight (kg)</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-coil-spk">
@@ -99,7 +99,7 @@
                                 <?php else: ?>
                                     <tr id="row-empty-coil">
                                         <td colspan="5" class="text-center text-muted py-3">
-                                            <?= $plan ? 'Tidak ada coil pada plan ini' : 'Pilih plan terlebih dahulu' ?>
+                                            <?= $plan ? 'There are no coils in this plan' : 'Select a plan first' ?>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -114,7 +114,7 @@
                     <?= !$plan ? 'disabled' : '' ?>>
                     <i class="fa fa-save"></i> Simpan SPK
                 </button>
-                <a href="<?= base_url('production_issue') ?>" class="btn btn-secondary">Batal</a>
+                <a href="<?= base_url('production_issue') ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
@@ -126,7 +126,7 @@ $(document).ready(function () {
     // Cari plan
     $('#btn-load-plan').on('click', function () {
         var plan_no = $('#input-plan-no').val().trim();
-        if (!plan_no) { alert('Masukkan No Plan terlebih dahulu'); return; }
+        if (!plan_no) { alert('Enter the Plan No first'); return; }
 
         $.get(siteurl + 'production_planning/get_plan_info', { plan_no: plan_no }, function (res) {
             if (res.status === 'ok' && res.plan) {
@@ -160,12 +160,12 @@ $(document).ready(function () {
                         coilHtml += '</tr>';
                     });
                 } else {
-                    coilHtml = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada coil pada plan ini</td></tr>';
+                    coilHtml = '<tr><td colspan="5" class="text-center text-muted py-3">There are no coils in this plan</td></tr>';
                 }
                 $('#tbody-coil-spk').html(coilHtml);
                 $('#btn-save-spk').prop('disabled', false);
             } else {
-                alert(res.message || 'Plan tidak ditemukan atau belum Released');
+                alert(res.message || 'Plan not found or not yet Released');
             }
         }, 'json');
     });

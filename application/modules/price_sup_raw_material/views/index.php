@@ -204,8 +204,8 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 			}
 
 			swal({
-				title: "Anda Yakin?",
-				text: "Data akan diproses!",
+				title: "Are you sure?",
+				text: "The data will be processed!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
@@ -229,7 +229,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 					success: function(res) {
 						if (res.status == '1') {
 							swal({
-								title: "Sukses",
+								title: "Success",
 								text: res.pesan,
 								type: "success"
 							}, function() {

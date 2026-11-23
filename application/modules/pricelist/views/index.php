@@ -87,7 +87,7 @@ if (!empty($status_filter)) {
             </div>
             <div class="d-flex align-items-center gap-2">
                 <a href="<?= base_url('simulasi_costing') ?>" class="btn btn-primary btn-sm shadow-sm">
-                    <i class="fa fa-calculator me-1"></i> Buka Simulasi Costing (+ Draft)
+                    <i class="fa fa-calculator me-1"></i> Open Costing Simulation (+ Draft)
                 </a>
             </div>
         </div>
@@ -96,7 +96,7 @@ if (!empty($status_filter)) {
         <ul class="nav nav-tabs card-header-tabs" id="plStatusTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link pl-tab-btn <?= ($active_tab === 'all') ? 'active' : '' ?>" id="tab-btn-all" data-bs-toggle="tab" data-bs-target="#tab-pane-all" data-tab="all" type="button" role="tab" aria-controls="tab-pane-all" aria-selected="<?= ($active_tab === 'all') ? 'true' : 'false' ?>">
-                    <i class="fa fa-list me-1 text-primary"></i> Semua
+                    <i class="fa fa-list me-1 text-primary"></i> All
                     <span class="badge rounded-pill bg-secondary ms-1" id="badge-count-all"><?= $counts['all'] ?? 0 ?></span>
                 </button>
             </li>
@@ -108,7 +108,7 @@ if (!empty($status_filter)) {
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link pl-tab-btn <?= ($active_tab === 'pending') ? 'active' : '' ?>" id="tab-btn-pending" data-bs-toggle="tab" data-bs-target="#tab-pane-pending" data-tab="pending" type="button" role="tab" aria-controls="tab-pane-pending" aria-selected="<?= ($active_tab === 'pending') ? 'true' : 'false' ?>">
-                    <i class="fa fa-clock-o me-1 text-warning"></i> Menunggu Approval
+                    <i class="fa fa-clock-o me-1 text-warning"></i> Awaiting Approval
                     <span class="badge rounded-pill bg-warning text-dark ms-1" id="badge-count-pending"><?= $counts['Menunggu Approval'] ?? 0 ?></span>
                 </button>
             </li>
@@ -181,24 +181,24 @@ if (!empty($status_filter)) {
     </div>
 </div>
 
-<!-- Modal View Dokumen Pricelist -->
+<!-- Modal View Pricelist Document -->
 <div class="modal fade" id="modal-pl-doc" tabindex="-1" aria-labelledby="modalPlDocLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title text-white" id="modalPlDocLabel">
-                    <i class="fa fa-list-alt me-2"></i>Dokumen Pricelist
+                    <i class="fa fa-list-alt me-2"></i>Pricelist Document
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="pl-doc-body" style="max-height: 65vh; overflow: auto;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <div class="mt-2 text-muted">Memuat dokumen pricelist...</div>
+                    <div class="mt-2 text-muted">Loading pricelist document...</div>
                 </div>
             </div>
             <div class="modal-footer bg-light" id="pl-doc-footer">
-                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -226,7 +226,7 @@ if (!empty($status_filter)) {
             content.data('loaded', true);
         }).fail(function() {
             skeleton.hide();
-            content.html('<div class="alert alert-danger my-3">Gagal memuat data tabel. Silakan refresh halaman.</div>').show();
+            content.html('<div class="alert alert-danger my-3">Failed to load table data. Please refresh the page.</div>').show();
         });
     }
 
@@ -265,9 +265,9 @@ if (!empty($status_filter)) {
         // View Dokumen
         $(document).on('click', '.btn-view-pl', function() {
             var id = $(this).data('id');
-            $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist');
+            $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Pricelist Document');
             $('#modal-pl-doc').modal('show');
-            $('#pl-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat dokumen pricelist...</div></div>');
+            $('#pl-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading pricelist document...</div></div>');
 
             $.ajax({
                 url: BASE_URL + '/view_doc',
@@ -290,7 +290,7 @@ if (!empty($status_filter)) {
                         });
                     };
 
-                    $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist — ' + h.no_pricelist);
+                    $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Pricelist Document — ' + h.no_pricelist);
 
                     var badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : (h.status === 'Menunggu Approval' ? 'bg-warning text-dark' : 'bg-secondary'));
 
@@ -307,12 +307,12 @@ if (!empty($status_filter)) {
                                     <span class="badge ${badgeClass} fs-6">${h.status}</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Dibuat Oleh / Tanggal</small>
+                                    <small class="text-muted d-block">Created By / Date</small>
                                     <strong>${h.created_by_name || 'Sales'}</strong>
                                     <div class="text-muted small">${h.created_at}</div>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Diajukan Pada</small>
+                                    <small class="text-muted d-block">Requested At</small>
                                     <strong>${h.submitted_at || '—'}</strong>
                                 </div>
                             </div>
@@ -345,7 +345,7 @@ if (!empty($status_filter)) {
                 `;
 
                     if (!details.length) {
-                        html += `<tr><td colspan="${h.status === 'Draft' ? 9 : 8}" class="text-center text-muted py-3">Belum ada baris varian. Masukkan varian dari menu Simulasi Costing.</td></tr>`;
+                        html += `<tr><td colspan="${h.status === 'Draft' ? 9 : 8}" class="text-center text-muted py-3">No variant rows yet. Add variants from the Costing Simulation menu.</td></tr>`;
                     } else {
                         details.forEach(function(d, k) {
                             html += `
@@ -360,7 +360,7 @@ if (!empty($status_filter)) {
                                 <td class="text-end fw-bold text-success">Rp ${fn(d.price_list_kg)}</td>
                                 ${h.status === 'Draft' ? `
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-danger btn-del-item py-0 px-2" data-id="${d.id}" data-header="${h.id}" title="Hapus baris">
+                                        <button type="button" class="btn btn-sm btn-danger btn-del-item py-0 px-2" data-id="${d.id}" data-header="${h.id}" title="Delete row">
                                             &times;
                                         </button>
                                     </td>
@@ -381,17 +381,17 @@ if (!empty($status_filter)) {
                     // Footer button
                     if (h.status === 'Draft' && details.length > 0) {
                         $('#pl-doc-footer').html(`
-                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-success px-4 btn-modal-submit" data-id="${h.id}" data-no="${h.no_pricelist}">
-                            <i class="fa fa-paper-plane me-1"></i> Ajukan ke Management
+                            <i class="fa fa-paper-plane me-1"></i> Submit to Management
                         </button>
                     `);
                     } else {
-                        $('#pl-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>`);
+                        $('#pl-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>`);
                     }
                 },
                 error: function(xhr) {
-                    $('#pl-doc-body').html('<div class="alert alert-danger">Gagal memuat dokumen (Status: ' + xhr.status + ')</div>');
+                    $('#pl-doc-body').html('<div class="alert alert-danger">Failed to load document (Status: ' + xhr.status + ')</div>');
                 }
             });
         });
@@ -402,13 +402,13 @@ if (!empty($status_filter)) {
             var no = $(this).data('no');
 
             Swal.fire({
-                title: 'Ajukan ke Management?',
-                text: 'Harga pada dokumen ' + no + ' akan dibekukan dan tidak dapat diubah lagi sampai diputuskan oleh Management.',
+                title: 'Submit to Management?',
+                text: 'Price in document ' + no + ' will be frozen and can no longer be changed until Management decides.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
-                confirmButtonText: 'Ya, Ajukan!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Submit!',
+                cancelButtonText: 'Cancel'
             }).then(function(res) {
                 if (!res.isConfirmed) return;
 
@@ -423,7 +423,7 @@ if (!empty($status_filter)) {
                         if (resp.status == 1) {
                             $('#modal-pl-doc').modal('hide');
                             Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1800,
@@ -433,7 +433,7 @@ if (!empty($status_filter)) {
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: resp.pesan,
                                 icon: 'error'
                             });
@@ -467,7 +467,7 @@ if (!empty($status_filter)) {
                         $('.btn-view-pl[data-id="' + header_id + '"]').trigger('click');
                     } else {
                         Swal.fire({
-                            title: 'Gagal!',
+                            title: 'Failed!',
                             text: resp.pesan,
                             icon: 'error'
                         });
@@ -482,13 +482,13 @@ if (!empty($status_filter)) {
             var no = $(this).data('no');
 
             Swal.fire({
-                title: 'Hapus Draft?',
+                title: 'Delete Draft?',
                 text: 'Draft Pricelist ' + no + ' beserta seluruh barisnya akan dihapus.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
-                confirmButtonText: 'Ya, Hapus Draft',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Delete Draft',
+                cancelButtonText: 'Cancel'
             }).then(function(res) {
                 if (!res.isConfirmed) return;
 
@@ -502,7 +502,7 @@ if (!empty($status_filter)) {
                     success: function(resp) {
                         if (resp.status == 1) {
                             Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1500,
@@ -512,7 +512,7 @@ if (!empty($status_filter)) {
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: resp.pesan,
                                 icon: 'error'
                             });

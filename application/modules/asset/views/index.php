@@ -31,7 +31,7 @@
                 <thead class="table-primary text-center">
                     <tr>
                         <th width="4%">#</th>
-                        <th>Kode Asset</th>
+                        <th>Asset Code</th>
                         <th>Asset Name</th>
                         <th width="10%">Tgl Perolehan</th>
                         <th width="12%">Category</th>
@@ -53,7 +53,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="head_title">Detail Asset</h5>
+                <h5 class="modal-title fw-bold" id="head_title">Asset Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="view">
@@ -81,7 +81,7 @@
     $(document).on('click', '.detail', function(e) {
         e.preventDefault();
         if (typeof loading_spinner === 'function') loading_spinner();
-        $("#head_title").html("<b>DETAIL ASSET</b>");
+        $("#head_title").html("<b>ASSET DETAIL</b>");
         $("#view").load(base_url + active_controller + '/modal_view/' + $(this).data('id'), function(){
             var myModal = new bootstrap.Modal(document.getElementById('ModalView'));
             myModal.show();

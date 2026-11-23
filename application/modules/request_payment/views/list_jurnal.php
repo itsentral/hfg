@@ -10,10 +10,10 @@
 			<thead>
 				<tr class='bg-blue'>
 					<th class="text-center">#</th>
-					<th class="text-center">Nomor</th>
-					<th class="text-center">No Transaksi</th>
+					<th class="text-center">Number</th>
+					<th class="text-center">Transaction No.</th>
 					<th class="text-center">Tgl Jurnal</th>
-					<th class="text-center">Jumlah</th>
+					<th class="text-center">Amount</th>
 					<th class="text-center">Status</th>
 					<th class="text-center">Option</th>
 				</tr>

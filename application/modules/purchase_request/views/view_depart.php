@@ -78,14 +78,14 @@ $disabled3        = 'readonly';
         <thead>
             <tr class='bg-blue'>
                 <th class='text-center' style='width: 3%;'>#</th>
-                <th class='text-center'>Nama Barang/Jasa</th>
+                <th class='text-center'>Item/Service Name</th>
                 <th class='text-center' style='width: 13%;'>Spec/ Requirement</th>
                 <th class='text-center' style='width: 7%;'>Qty</th>
-                <th class='text-center' style='width: 8%;'>Satuan</th>
-                <th class='text-center' style='width: 9%;'>Est Harga</th>
-                <th class='text-center' style='width: 9%;'>Est Total Harga</th>
-                <th class='text-center' style='width: 9%;'>Tanggal Dibutuhkan</th>
-                <th class='text-center' style='width: 15%;'>Keterangan</th>
+                <th class='text-center' style='width: 8%;'>Unit</th>
+                <th class='text-center' style='width: 9%;'>Est. Price</th>
+                <th class='text-center' style='width: 9%;'>Est. Total Price</th>
+                <th class='text-center' style='width: 9%;'>Required Date</th>
+                <th class='text-center' style='width: 15%;'>Description</th>
                 <th class='text-center' style='width: 15%;'>Status</th>
             </tr>
         </thead>
@@ -109,7 +109,7 @@ $disabled3        = 'readonly';
                     echo "<td align='left'><input type='text' " . $disabled2 . " id='qty_" . $nomor . "' name='detail[" . $nomor . "][qty]' class='form-control input-md text-right autoNumeric2 sum_tot' value='" . $valx['qty'] . "'></td>";
                     echo "<td align='left'>
 									<select name='detail[" . $nomor . "][satuan]' class='form-control wajib' " . $disabled2 . " required>";
-                    echo "<option value=''>Pilih</option>";
+                    echo "<option value=''>Select</option>";
                     foreach ($satuan as $key => $value) {
                         $selected = ($value['id'] == $valx['satuan']) ? 'selected' : '';
                         echo "<option value='" . $value['id'] . "' " . $selected . ">" . $value['code'] . "</option>";

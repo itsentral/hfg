@@ -20,15 +20,15 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 				<i class="fa fa-file-invoice-dollar fs-5"></i>
 			</div>
 			<div>
-				<h5 class="card-title mb-0 fw-bold text-dark">Daftar Pengajuan Penggantian Transport</h5>
-				<small class="text-muted">Kelola rekapitulasi dan pengajuan penggantian biaya transport ke Finance</small>
+				<h5 class="card-title mb-0 fw-bold text-dark">Transport Reimbursement Request List</h5>
+				<small class="text-muted">Manage transport cost reimbursement recaps and requests to Finance</small>
 			</div>
 		</div>
 		<div>
 			<?php if ($ENABLE_ADD) : ?>
 				<button class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm" type="button" onclick="data_add()">
 					<i class="fa fa-plus"></i>
-					<span>Tambah Pengajuan</span>
+					<span>Add Request</span>
 				</button>
 			<?php endif; ?>
 		</div>
@@ -40,11 +40,11 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 				<thead class="table-light">
 					<tr>
 						<th width="40" class="text-center">#</th>
-						<th>No. Dokumen</th>
-						<th>Tanggal</th>
-						<th>Nama Karyawan</th>
-						<th>Departemen</th>
-						<th class="text-end">Total Pengajuan</th>
+						<th>Document No.</th>
+						<th>Date</th>
+						<th>Employee Name</th>
+						<th>Department</th>
+						<th class="text-end">Total Request</th>
 						<th class="text-center">Status</th>
 						<th width="130" class="text-center">Aksi</th>
 					</tr>
@@ -83,13 +83,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 			paging: true,
 			language: {
 				search: "_INPUT_",
-				searchPlaceholder: "Cari no dokumen, nama, departemen...",
-				lengthMenu: "_MENU_ data per halaman",
-				info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+				searchPlaceholder: "Search document no, name, department...",
+				lengthMenu: "_MENU_ entries per page",
+				info: "Showing _START_ to _END_ of _TOTAL_ entries",
 				infoEmpty: "Menampilkan 0 data",
-				emptyTable: "Tidak ada data pengajuan transport",
-				zeroRecords: "Tidak ada data yang cocok",
-				processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+				emptyTable: "No transport requests",
+				zeroRecords: "No matching data",
+				processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
 			},
 			ajax: {
 				type: 'post',
@@ -121,12 +121,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 
 	function data_add() {
 		$('#card-list, .box').hide();
-		$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat formulir...</div></div>');
+		$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading form...</div></div>');
 		$('#form-data').load(url_add, function(response, status, xhr) {
 			if (status == "error") {
 				swal({
 					title: "Error!",
-					text: "Gagal memuat formulir: " + xhr.status + " " + xhr.statusText,
+					text: "Failed to load form: " + xhr.status + " " + xhr.statusText,
 					type: "error"
 				});
 				list_view();
@@ -141,12 +141,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 	function data_edit(id) {
 		if (id != "") {
 			$('#card-list, .box').hide();
-			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><div class="mt-2 text-muted">Memuat data edit...</div></div>');
+			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><div class="mt-2 text-muted">Loading edit data...</div></div>');
 			$('#form-data').load(url_edit + id, function(response, status, xhr) {
 				if (status == "error") {
 					swal({
 						title: "Error!",
-						text: "Gagal memuat formulir edit: " + xhr.status + " " + xhr.statusText,
+						text: "Failed to load edit form: " + xhr.status + " " + xhr.statusText,
 						type: "error"
 					});
 					list_view();
@@ -162,12 +162,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 	function data_view(id) {
 		if (id != "") {
 			$('#card-list, .box').hide();
-			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat detail data...</div></div>');
+			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading data details...</div></div>');
 			$('#form-data').load(url_view + id, function(response, status, xhr) {
 				if (status == "error") {
 					swal({
 						title: "Error!",
-						text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText,
+						text: "Failed to load details data: " + xhr.status + " " + xhr.statusText,
 						type: "error"
 					});
 					list_view();
@@ -182,14 +182,14 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 
 	function data_delete(id) {
 		swal({
-			title: "Konfirmasi Hapus",
-			text: "Apakah Anda yakin ingin menghapus data pengajuan ini? Item transport di dalamnya akan dikembalikan ke status belum diajukan.",
+			title: "Confirm Delete",
+			text: "Are you sure you want to delete this request? The transport items in it will be returned to not-submitted status.",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: "Ya, Hapus!",
-			cancelButtonText: "Batal",
+			confirmButtonText: "Yes, Delete!",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false
 		}, function(isConfirm) {
 			if (isConfirm) {
@@ -200,8 +200,8 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 					success: function(msg) {
 						if (msg.delete == true || msg.delete == 1) {
 							swal({
-								title: "Terhapus!",
-								text: "Data pengajuan berhasil dihapus.",
+								title: "Deleted!",
+								text: "Request data deleted successfully.",
 								type: "success",
 								timer: 1500,
 								showConfirmButton: false
@@ -211,8 +211,8 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 							}
 						} else {
 							swal({
-								title: "Gagal!",
-								text: "Data gagal dihapus atau sudah diproses.",
+								title: "Failed!",
+								text: "Failed to delete data or it has already been processed.",
 								type: "error"
 							});
 						}
@@ -220,7 +220,7 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi.Delete');
 					error: function(xhr) {
 						swal({
 							title: "Error!",
-							text: "Terjadi kesalahan saat menghapus data.",
+							text: "An error occurred while deleting data.",
 							type: "error"
 						});
 					}

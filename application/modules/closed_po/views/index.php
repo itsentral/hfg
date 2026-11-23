@@ -248,7 +248,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 	$(document).on('click', '.view', function() {
 		var id = $(this).data('no_po');
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Inventory</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Inventory Detail</b>");
 		$.ajax({
 			type: 'POST',
 			url: siteurl + 'purchase_order/Lihat/' + id,

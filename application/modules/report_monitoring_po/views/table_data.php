@@ -7,13 +7,13 @@
                     <tr>
                         <th class="text-center" style="width: 45px;">#</th>
                         <th style="width: 145px;">No. PO</th>
-                        <th style="width: 100px;">Tanggal PO</th>
+                        <th style="width: 100px;">PO Date</th>
                         <th style="width: 175px;">Supplier</th>
                         <th style="width: 170px;">No. PR & Tipe PR</th>
                         <th style="min-width: 250px;">Item / Spek Material</th>
                         <th class="text-end" style="width: 130px;">Total Qty PO (Kg)</th>
-                        <th class="text-end" style="width: 130px;">Total Diterima (Kg)</th>
-                        <th class="text-end" style="width: 130px;">Sisa Qty Belum Dikirim (Kg)</th>
+                        <th class="text-end" style="width: 130px;">Total Received (Kg)</th>
+                        <th class="text-end" style="width: 130px;">Remaining Undelivered Quantity (Kg)</th>
                         <th class="text-center" style="width: 140px;">% Progress & Status</th>
                     </tr>
                 </thead>
@@ -30,7 +30,7 @@
                                         class="btn-detail text-primary fw-bold text-decoration-none d-inline-flex align-items-center gap-1"
                                         data-id="<?= $record->no_po; ?>"
                                         data-surat="<?= htmlspecialchars($record->no_surat ?? $record->no_po, ENT_QUOTES, 'UTF-8'); ?>"
-                                        title="Klik untuk melihat detail riwayat kedatangan PO">
+                                        title="Click to view PO delivery history">
                                         <span><?= htmlspecialchars($record->no_surat ?? $record->no_po, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </a>
                                 </td>

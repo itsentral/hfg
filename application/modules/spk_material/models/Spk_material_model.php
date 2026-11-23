@@ -393,7 +393,7 @@ class Spk_material_model extends BF_Model
     {
         $spk_no = trim((string) $spk_no);
         if ($spk_no === '') {
-            return ['status' => false, 'message' => 'Nomor SPK tidak valid.'];
+            return ['status' => false, 'message' => 'Invalid SPK number.'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -406,17 +406,17 @@ class Spk_material_model extends BF_Model
 
         if (!$old) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK "' . $spk_no . '" tidak ditemukan.'];
+            return ['status' => false, 'message' => 'SPK "' . $spk_no . '" not found.'];
         }
 
         if ($old['status'] === 'Released') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah berstatus Released.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' already has status Released.'];
         }
 
         if ($old['status'] === 'Cancelled') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat di-release.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' has status Cancelled and cannot be released.'];
         }
 
         $update_data = [
@@ -429,14 +429,14 @@ class Spk_material_model extends BF_Model
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Gagal mengubah status SPK menjadi Released.'];
+            return ['status' => false, 'message' => 'Failed to change SPK status to Released.'];
         }
 
         $this->db->trans_commit();
 
         return [
             'status'      => true,
-            'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
+            'message'     => 'SPK ' . $spk_no . ' released successfully.',
             'log_payload' => [
                 'old' => $old,
                 'new' => array_merge($old ?? [], $update_data ?? []),

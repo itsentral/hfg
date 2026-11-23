@@ -76,7 +76,7 @@ class Rate_generals_model extends CI_Model
             [
                 'key'               => 'rate_biaya_koordinasi',
                 'group'             => 'Manufacturing Support',
-                'label'             => 'Biaya Koordinasi',
+                'label'             => 'Coordination Cost',
                 'basis'             => 'Rp/Kg Material',
                 'unit'              => 'rp_kg',
                 'required'          => true,

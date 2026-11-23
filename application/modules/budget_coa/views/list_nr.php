@@ -52,7 +52,7 @@ if ($tipek == 'NON RUTIN') {
                         <h5 class="card-title fw-bold text-dark mb-0">
                             Daftar Budget <?= ($tipek == 'NON RUTIN' ? 'Non Rutin' : 'Expense') ?>
                         </h5>
-                        <small class="text-muted">Kelola alokasi detail bulanan budget per departemen dan penanggung jawab</small>
+                        <small class="text-muted">Manage detailed monthly budget allocation per department and person in charge</small>
                     </div>
                 </div>
             </div>
@@ -72,10 +72,10 @@ if ($tipek == 'NON RUTIN') {
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="40">#</th>
-                        <th>Tanggal Dibuat</th>
-                        <th class="text-center" width="80">Tahun</th>
+                        <th>Created Date</th>
+                        <th class="text-center" width="80">Year</th>
                         <th>Penanggung Jawab</th>
-                        <th>Kategori</th>
+                        <th>Category</th>
                         <th class="text-end">Referensi</th>
                         <th class="text-end">Total Alokasi</th>
                         <th class="text-center" width="70">Revisi</th>
@@ -121,7 +121,7 @@ if ($tipek == 'NON RUTIN') {
                                     if ($record->status == '3') {
                                         echo '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa fa-check-circle me-1"></i> Approved</span>';
                                     } elseif ($record->status == '2') {
-                                        echo '<span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="fa fa-hourglass-half me-1"></i> Menunggu Approval</span>';
+                                        echo '<span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="fa fa-hourglass-half me-1"></i> Awaiting Approval</span>';
                                     } else {
                                         echo '<span class="badge bg-secondary-subtle text-secondary border">Draft</span>';
                                     }
@@ -145,7 +145,7 @@ if ($tipek == 'NON RUTIN') {
                                         <?php endif; ?>
 
                                         <?php if ($ENABLE_VIEW) : ?>
-                                            <button type="button" class="btn btn-outline-info" title="Cetak PDF" onclick="print_data('<?= $record->tahun ?>','<?= $record->kategori ?>','<?= $record->divisi ?>')">
+                                            <button type="button" class="btn btn-outline-info" title="Print PDF" onclick="print_data('<?= $record->tahun ?>','<?= $record->kategori ?>','<?= $record->divisi ?>')">
                                                 <i class="fa fa-print"></i>
                                             </button>
                                         <?php endif; ?>
@@ -171,7 +171,7 @@ if ($tipek == 'NON RUTIN') {
                     <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-2">
                         <i class="fa fa-filter"></i>
                     </div>
-                    <h5 class="modal-title fw-bold text-dark fs-6 mb-0">Pilih Parameter Budget</h5>
+                    <h5 class="modal-title fw-bold text-dark fs-6 mb-0">Select Budget Parameter</h5>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -180,14 +180,14 @@ if ($tipek == 'NON RUTIN') {
                     <input type="hidden" id="fkategori" name="fkategori" value="<?= $tipek ?>">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label fw-bold small text-muted">Penanggung Jawab / Departemen <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold small text-muted">Person in Charge / Department <span class="text-danger">*</span></label>
                             <?php
                             $datadept[0] = '- Pilih Departemen -';
                             echo form_dropdown('fdivisi', $datadept, '', array('id' => 'fdivisi', 'class' => 'form-select select2-modal', 'required' => 'required'));
                             ?>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-bold small text-muted">Tahun Anggaran <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold small text-muted">Budget Year <span class="text-danger">*</span></label>
                             <select id="ftahun" name="ftahun" class="form-select select2-modal" required>
                                 <?php
                                 $cur_y = date("Y");
@@ -202,10 +202,10 @@ if ($tipek == 'NON RUTIN') {
             </div>
             <div class="modal-footer bg-light border-top py-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">
-                    Batal
+                    Cancel
                 </button>
                 <button type="button" class="btn btn-sm btn-primary px-3 shadow-sm" onclick="add_data()">
-                    <i class="fa fa-arrow-right me-1"></i> Lanjut
+                    <i class="fa fa-arrow-right me-1"></i> Continue
                 </button>
             </div>
         </div>
@@ -228,7 +228,7 @@ if ($tipek == 'NON RUTIN') {
         $("#mytabledata").DataTable({
             paging: true,
             pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-2"lfB>rt<"d-flex flex-wrap justify-content-between align-items-center mt-2"ip>',
             buttons: [
                 {
@@ -241,16 +241,16 @@ if ($tipek == 'NON RUTIN') {
                 }
             ],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
                 infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Tidak ada data yang cocok",
+                zeroRecords: "No matching data",
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "Lanjut",
+                    next: "Continue",
                     previous: "Sebelum"
                 }
             }
@@ -265,7 +265,7 @@ if ($tipek == 'NON RUTIN') {
                     width: '100%',
                     language: {
                         noResults: function() {
-                            return '<div class="py-2 px-3 text-center text-muted"><i class="fa fa-info-circle text-warning me-1"></i> Data tidak ditemukan</div>';
+                            return '<div class="py-2 px-3 text-center text-muted"><i class="fa fa-info-circle text-warning me-1"></i> Data not found</div>';
                         }
                     },
                     escapeMarkup: function(markup) {
@@ -289,8 +289,8 @@ if ($tipek == 'NON RUTIN') {
         if (!divisi || divisi == '0') {
             Swal.fire({
                 icon: "warning",
-                title: "Perhatian",
-                text: "Silakan pilih Penanggung Jawab / Departemen terlebih dahulu!",
+                title: "Attention",
+                text: "Please select the Person in Charge / Department first!",
                 confirmButtonText: "OK"
             });
             return false;
@@ -302,7 +302,7 @@ if ($tipek == 'NON RUTIN') {
 
         var url = 'budget_coa/create_budget_category';
         $("#card-list, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir alokasi budget...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading budget allocation form...</p></div>');
         $("#form-data").load(siteurl + url, {
             kategori: $("#fkategori").val(),
             tahun: tahun,
@@ -313,7 +313,7 @@ if ($tipek == 'NON RUTIN') {
     function edit_data(tahun, kategori, divisi) {
         var url = 'budget_coa/create_budget_category';
         $("#card-list, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat data alokasi edit...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading allocation data for edit...</p></div>');
         $("#form-data").load(siteurl + url, {
             kategori: kategori,
             tahun: tahun,
@@ -324,18 +324,18 @@ if ($tipek == 'NON RUTIN') {
     function revisi_data(tahun, kategori, divisi, revisi) {
         Swal.fire({
             title: "Revisi Data Budget?",
-            text: "Status budget akan dikembalikan ke revisi untuk disesuaikan kembali.",
+            text: "The budget status will be returned to revision for readjustment.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#dc3545",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-undo me-1'></i> Ya, Revisi",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-undo me-1'></i> Yes, Revise",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang merevisi data...',
+                    text: 'Revising data...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -353,8 +353,8 @@ if ($tipek == 'NON RUTIN') {
                         if (msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data berhasil direvisi.",
+                                title: "Success!",
+                                text: "Data revised successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -363,9 +363,9 @@ if ($tipek == 'NON RUTIN') {
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data gagal direvisi.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Data failed to revise.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
@@ -373,8 +373,8 @@ if ($tipek == 'NON RUTIN') {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });
@@ -385,18 +385,18 @@ if ($tipek == 'NON RUTIN') {
     function approve_data(tahun, kategori, divisi) {
         Swal.fire({
             title: "Approve Data Budget?",
-            text: "Data alokasi budget akan disetujui (Approved).",
+            text: "The budget allocation data will be approved (Approved).",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#198754",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Approve",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Approve",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyetujui budget...',
+                    text: 'Approving budget...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -413,8 +413,8 @@ if ($tipek == 'NON RUTIN') {
                         if (msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Disetujui!",
-                                text: "Data budget berhasil disetujui.",
+                                title: "Approved!",
+                                text: "Budget data approved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -423,9 +423,9 @@ if ($tipek == 'NON RUTIN') {
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data gagal disetujui.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Data failed to approve.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
@@ -433,8 +433,8 @@ if ($tipek == 'NON RUTIN') {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

@@ -112,6 +112,7 @@ class Unpack_coil_model extends BF_Model
         WHERE wsc.id_pack = ?
           AND wsc.status = 1
           AND wsc.kd_gudang = 'PRT'
+          AND COALESCE(wsc.is_baby_coil,0) = 0
           AND (wsc.status_proses IS NULL OR wsc.status_proses != 'unpacked')
         GROUP BY wsc.id_material, wsc.id_gudang
         ORDER BY nm_material ASC
@@ -148,6 +149,7 @@ class Unpack_coil_model extends BF_Model
         AND wsc.id_gudang = ?
         AND wsc.status = 1
         AND wsc.kd_gudang = 'PRT'
+        AND COALESCE(wsc.is_baby_coil,0) = 0
         AND (wsc.status_proses IS NULL OR wsc.status_proses != 'unpacked')
         ORDER BY wsc.id ASC
         ";
@@ -256,7 +258,7 @@ class Unpack_coil_model extends BF_Model
             ->delete('warehouse_stock_coil');
     }
 
-    public function insert_baby_stock_coil($induk, $babycoil_code, $no_coil, $net, $gross, $costbook, $unpack_no, $kulit = 0, $clamp_ring = 0)
+    public function insert_baby_stock_coil($induk, $babycoil_code, $no_coil, $net, $gross, $costbook, $unpack_no, $kulit = 0, $clamp_ring = 0, $book_weight = null)
     {
         $this->db->insert('warehouse_stock_coil', array(
             'id_material'    => $induk['id_material'],
@@ -276,9 +278,10 @@ class Unpack_coil_model extends BF_Model
             'qty_roll'       => 1,
             'parent_coil_id' => $induk['id'],
             'harga_beli'     => $costbook,
-            'total_nilai'    => $net * $costbook,
+            'qty'            => $book_weight === null ? $net : $book_weight,
+            'total_nilai'    => ($book_weight === null ? $net : $book_weight) * $costbook,
             'status'         => 1,
-            'status_proses'  => 'in_transit',
+            'status_proses'  => 'unpacked',
             'no_ipp'         => $unpack_no,
         ));
         return $this->db->insert_id();

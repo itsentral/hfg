@@ -12,10 +12,10 @@ $status         = (!empty($data[0]->status))?$data[0]->status:'Y';
     <div class="box-body">
         <div class="form-group row">
             <div class="col-md-3">
-                <label>Keterangan</label> 
+                <label>Description</label> 
             </div>
             <div class="col-md-9">
-                <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" value='<?=$keterangan;?>'>
+                <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Description" value='<?=$keterangan;?>'>
                 <input type="hidden" class="form-control" id="id" name="id" value='<?=$id;?>'>
             </div>
         </div>

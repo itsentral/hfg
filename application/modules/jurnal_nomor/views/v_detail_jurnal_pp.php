@@ -19,7 +19,7 @@ if ($data_perkiraan) {
 								<thead>
 									<tr bgcolor='#9acfea'>
 										<th>
-											<center>Tanggal</center>
+											<center>Date</center>
 										</th>
 										<th>
 											<center>Tipe</center>
@@ -28,7 +28,7 @@ if ($data_perkiraan) {
 											<center>No. COA</center>
 										</th>
 										<th colspan="2">
-											<center>Keterangan</center>
+											<center>Description</center>
 										</th>
 										<th>
 											<center>No. Reff</center>
@@ -90,7 +90,7 @@ if ($data_perkiraan) {
 													?>
 												</select>
 												</td>
-												<td colspan="2"><textarea class="form-control" id="keterangan'.$no.'" name="keterangan[]" placeholder="Keterangan" readonly ><?= $row->keterangan ?></textarea></td>
+												<td colspan="2"><textarea class="form-control" id="keterangan'.$no.'" name="keterangan[]" placeholder="Description" readonly ><?= $row->keterangan ?></textarea></td>
 											    <td><input type="text" id="reff'.$no.'" name="reff[]" value="<?= $row->no_reff ?>" class="form-control" readonly/></td>
 											    <td><input type="hidden" id="debet'.$no.'" name="debet[]" value="<?= $row->debet ?>" class="form-control" readonly/>
 												<input type="text" id="debet2'.$no.'" name="debet2[]" value="<?= $format_debet ?>" class="form-control" readonly/></td>
@@ -150,12 +150,12 @@ $('.select2').select2();
 								
 function save_jurnal(){
 	Swal.fire({
-		title: "Peringatan !",
-		text: "Pastikan data sudah lengkap dan benar",
+		title: "Warning!",
+		text: "Make sure the data is complete and correct",
 		icon: "warning",
 		showCancelButton: true,
-		confirmButtonText: "Ya, simpan!",
-		cancelButtonText: "Batal!"
+		confirmButtonText: "Yes, save!",
+		cancelButtonText: "Cancelled!"
 	}).then(function(result) {
 		if (result.isConfirmed) {
 			var formdata = $("#form-detail-jurnal").serialize();
@@ -166,14 +166,14 @@ function save_jurnal(){
 				data: formdata,
 				success: function(result){
 					if(result.save=='1'){
-						Swal.fire({ title: "Sukses!", text: result['msg'], icon: "success", timer: 1500, showConfirmButton: false })
+						Swal.fire({ title: "Success!", text: result['msg'], icon: "success", timer: 1500, showConfirmButton: false })
 							.then(function(){ window.location.href=siteurl+'jurnal_nomor/approval_jurnal_po_nonstok'; });
 					} else {
-						Swal.fire({ title: "Gagal!", text: "Data Gagal Di Simpan", icon: "error", confirmButtonText: "OK" });
+						Swal.fire({ title: "Failed!", text: "Failed to save data", icon: "error", confirmButtonText: "OK" });
 					}
 				},
 				error: function(){
-					Swal.fire({ title: "Gagal!", text: "Ajax Data Gagal Di Proses", icon: "error", confirmButtonText: "OK" });
+					Swal.fire({ title: "Failed!", text: "Ajax request failed to process.", icon: "error", confirmButtonText: "OK" });
 				}
 			});
 		}

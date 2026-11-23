@@ -10,14 +10,14 @@
                                     <i class="fa fa-cart-plus fs-3"></i>
                                 </div>
                                 <div>
-                                    <h5 class="card-title fw-bold text-dark mb-0">Pengajuan Re-Order Point / PR Stok</h5>
-                                    <small class="text-muted">Hitung otomatis usulan pembelian stok barang berdasarkan konsumsi rutin</small>
+                                    <h5 class="card-title fw-bold text-dark mb-0">Re-Order Point Request / PR Stock</h5>
+                                    <small class="text-muted">Automatically calculate stock purchase proposals based on routine consumption</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6 col-12 text-md-end d-flex flex-wrap gap-2 justify-content-md-end">
                             <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm" id="back">
-                                <i class="fa fa-arrow-left me-1"></i> Kembali
+                                <i class="fa fa-arrow-left me-1"></i> Back
                             </a>
                             <button type="button" class="btn btn-outline-danger shadow-sm" id="autoDelete">
                                 <i class="fa fa-trash me-1"></i> Clear Propose
@@ -61,7 +61,7 @@
 
                         <div class="col-md-4 col-12">
                             <label class="form-label fw-bold text-dark mb-1">
-                                <i class="fa fa-calendar text-primary me-1"></i> Tanggal Dibutuhkan
+                                <i class="fa fa-calendar text-primary me-1"></i> Required Date
                             </label>
                             <?php
                             $tgl_now = date('Y-m-d');
@@ -69,7 +69,7 @@
                             ?>
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="fa fa-calendar-check-o text-muted"></i></span>
-                                <input type="text" id="tgl_butuh" name="tgl_butuh" class="form-control flatpickr-date changeSaveDate bg-white" readonly value="<?= $tgl_next_month ?>" placeholder="Pilih tanggal">
+                                <input type="text" id="tgl_butuh" name="tgl_butuh" class="form-control flatpickr-date changeSaveDate bg-white" readonly value="<?= $tgl_next_month ?>" placeholder="Select date">
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                             <div class="card border-0 bg-info bg-opacity-10 rounded-3 p-3">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <div class="text-muted small fw-bold text-uppercase">Nilai Budget Bulanan</div>
+                                        <div class="text-muted small fw-bold text-uppercase">Monthly Budget Value</div>
                                         <div class="input-group mt-1">
                                             <span class="input-group-text bg-white border-0 fw-bold text-info">Rp</span>
                                             <input type="text" class="form-control border-0 bg-white fw-bold text-end fs-5 nilai_budget" value="0" readonly>
@@ -97,7 +97,7 @@
                             <div class="card border-0 bg-success bg-opacity-10 rounded-3 p-3">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <div class="text-muted small fw-bold text-uppercase">Total Nilai Pengajuan</div>
+                                        <div class="text-muted small fw-bold text-uppercase">Total Request Value</div>
                                         <div class="input-group mt-1">
                                             <span class="input-group-text bg-white border-0 fw-bold text-success">Rp</span>
                                             <input type="text" class="form-control border-0 bg-white fw-bold text-end fs-5 nilai_pengajuan" value="0" readonly>
@@ -117,13 +117,13 @@
                             <thead class="table-light">
                                 <tr>
                                     <th class="text-center" width="4%">#</th>
-                                    <th class="text-start">Nama Barang</th>
+                                    <th class="text-start">Item Name</th>
                                     <th class="text-end" width="11%">Kebutuhan (1 Bln)</th>
-                                    <th class="text-end" width="10%">Stock Saat Ini</th>
+                                    <th class="text-end" width="10%">Current Stock</th>
                                     <th class="text-end" width="10%">Max Stock</th>
                                     <th class="text-center" width="12%">Propose Purchase</th>
-                                    <th class="text-center" width="9%">Satuan</th>
-                                    <th class="text-start" width="16%">Keterangan</th>
+                                    <th class="text-center" width="9%">Unit</th>
+                                    <th class="text-start" width="16%">Description</th>
                                     <th class="text-end" width="11%">Price Ref</th>
                                     <th class="text-end" width="12%">Total Price</th>
                                 </tr>
@@ -131,7 +131,7 @@
                             <tbody></tbody>
                             <tfoot class="table-light">
                                 <tr>
-                                    <th colspan="9" class="text-end fw-bold py-3 fs-6">Total Nilai Pengajuan (Item):</th>
+                                    <th colspan="9" class="text-end fw-bold py-3 fs-6">Total Request Value (Item):</th>
                                     <th class="text-end fw-bold py-3 fs-6 text-success total-price">0</th>
                                 </tr>
                             </tfoot>
@@ -140,7 +140,7 @@
 
                     <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
                         <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
-                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                            <i class="fa fa-arrow-left me-1"></i> Back
                         </a>
                         <button type="button" class="btn btn-success shadow-sm px-4" id="saveRequestBottom">
                             <i class="fa fa-paper-plane me-1"></i> Submit PR Stok
@@ -199,21 +199,21 @@
 
         if (!inventory || inventory == '0') {
             swal({
-                title: "Peringatan",
-                text: 'Pilih kategori barang terlebih dahulu.',
+                title: "Warning",
+                text: 'Please select the item category first.',
                 type: "warning"
             });
             return false;
         }
 
         swal({
-            title: "Konfirmasi Update",
-            text: "Lakukan update otomatis perhitungan untuk kategori " + nm_category + " ?",
+            title: "Confirm Update",
+            text: "Run automatic calculation update for category " + nm_category + " ?",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-primary",
-            confirmButtonText: "Ya, Proses",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Process",
+            cancelButtonText: "Cancel",
             closeOnConfirm: false
         }, function(isConfirm) {
             if (isConfirm) {
@@ -225,7 +225,7 @@
                     success: function(data) {
                         if (data.status == 1) {
                             swal({
-                                title: "Berhasil!",
+                                title: "Success!",
                                 text: data.pesan,
                                 type: "success",
                                 timer: 3000
@@ -234,7 +234,7 @@
                             hitungPengajuan();
                         } else {
                             swal({
-                                title: "Gagal!",
+                                title: "Failed!",
                                 text: data.pesan,
                                 type: "warning"
                             });
@@ -243,7 +243,7 @@
                     error: function() {
                         swal({
                             title: "Error!",
-                            text: 'Terjadi kesalahan sistem saat proses update.',
+                            text: 'A system error occurred during the update process.',
                             type: "error"
                         });
                     }
@@ -258,21 +258,21 @@
 
         if (!id_category || id_category == '0') {
             swal({
-                title: "Peringatan",
-                text: 'Pilih kategori barang terlebih dahulu.',
+                title: "Warning",
+                text: 'Please select the item category first.',
                 type: "warning"
             });
             return false;
         }
 
         swal({
-            title: "Konfirmasi Clear",
-            text: "Bersihkan usulan propose request untuk kategori " + nm_category + " ?",
+            title: "Confirm Clear",
+            text: "Clear the propose request proposals for category " + nm_category + " ?",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
-            confirmButtonText: "Ya, Bersihkan",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Clear",
+            cancelButtonText: "Cancel",
             closeOnConfirm: false
         }, function(isConfirm) {
             if (isConfirm) {
@@ -284,7 +284,7 @@
                     success: function(data) {
                         if (data.status == 1) {
                             swal({
-                                title: "Berhasil!",
+                                title: "Success!",
                                 text: data.pesan,
                                 type: "success",
                                 timer: 3000
@@ -294,7 +294,7 @@
                             hitungPengajuan();
                         } else {
                             swal({
-                                title: "Gagal!",
+                                title: "Failed!",
                                 text: data.pesan,
                                 type: "warning"
                             });
@@ -303,7 +303,7 @@
                     error: function() {
                         swal({
                             title: "Error!",
-                            text: 'Terjadi kesalahan sistem.',
+                            text: 'A system error occurred.',
                             type: "error"
                         });
                     }
@@ -323,8 +323,8 @@
         if (parseFloat(purchase) > parseFloat(max_propose)) {
             swal({
                 type: 'warning',
-                title: 'Peringatan !',
-                text: 'Nilai propose tidak boleh lebih dari Max Stock (' + max_propose + ') !'
+                title: 'Warning!',
+                text: 'Proposed value cannot exceed Max Stock (' + max_propose + ') !'
             });
             purchase = max_propose;
             $('#purchase_' + nomor).val(max_propose);
@@ -384,8 +384,8 @@
 
         if (!category || category == '0') {
             swal({
-                title: "Peringatan",
-                text: 'Pilih kategori barang terlebih dahulu.',
+                title: "Warning",
+                text: 'Please select the item category first.',
                 type: "warning"
             });
             return false;
@@ -394,13 +394,13 @@
         check_inputed_qty_stock().then(function(data) {
             if (data > 0) {
                 swal({
-                    title: "Konfirmasi Pengajuan",
-                    text: "Ajukan Purchase Request (PR) berdasarkan data kategori terpilih?",
+                    title: "Confirm Request",
+                    text: "Submit a Purchase Request (PR) based on the selected category data?",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonClass: "btn-success",
-                    confirmButtonText: "Ya, Ajukan",
-                    cancelButtonText: "Batal",
+                    confirmButtonText: "Yes, Submit",
+                    cancelButtonText: "Cancel",
                     closeOnConfirm: false
                 }, function(isConfirm) {
                     if (isConfirm) {
@@ -418,7 +418,7 @@
                             success: function(res) {
                                 if (res.status == 1) {
                                     swal({
-                                        title: "Berhasil!",
+                                        title: "Success!",
                                         text: res.pesan,
                                         type: "success"
                                     }, function() {
@@ -426,7 +426,7 @@
                                     });
                                 } else {
                                     swal({
-                                        title: "Gagal!",
+                                        title: "Failed!",
                                         text: res.pesan,
                                         type: "warning"
                                     });
@@ -435,7 +435,7 @@
                             error: function() {
                                 swal({
                                     title: "Error!",
-                                    text: 'Terjadi kesalahan sistem saat menyimpan PR.',
+                                    text: 'A system error occurred while saving the PR.',
                                     type: "error"
                                 });
                             }
@@ -444,15 +444,15 @@
                 });
             } else {
                 swal({
-                    title: 'Peringatan !',
-                    text: 'Minimal harus ada 1 barang dengan kuantitas propose purchase > 0.',
+                    title: 'Warning!',
+                    text: 'There must be at least 1 item with a propose purchase quantity > 0.',
                     type: 'warning'
                 });
             }
         }).fail(function() {
             swal({
                 title: 'Error !',
-                text: 'Gagal mengecek kuantitas usulan stok.',
+                text: 'Failed to check the proposed stock quantity.',
                 type: 'error'
             });
         });
@@ -539,15 +539,15 @@
                 }
             },
             "language": {
-                "search": "Cari Barang:",
-                "lengthMenu": "Tampilkan _MENU_ data",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Tidak ada data barang",
-                "zeroRecords": "Tidak ada barang yang cocok",
+                "search": "Search Item:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "No item data",
+                "zeroRecords": "No matching items",
                 "paginate": {
                     "first": "Awal",
                     "last": "Akhir",
-                    "next": "Lanjut",
+                    "next": "Continue",
                     "previous": "Sebelum"
                 }
             }

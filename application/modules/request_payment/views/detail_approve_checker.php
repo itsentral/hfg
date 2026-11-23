@@ -61,7 +61,7 @@ if ($type == 'expense') {
         }
     }
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
-    $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
+    $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type ?? '');
     $keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
     $no_doc = $header->no_po;
     $no_surat = $header->no_surat;
@@ -120,7 +120,7 @@ if ($type == 'expense') {
         <div class="row g-3">
             <div class="col-12 col-md-6">
                 <div class="row mb-3 align-items-center">
-                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Nomor Dokumen</label>
+                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Document Number</label>
                     <div class="col-sm-8">
                         <?php if (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local', 'ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) : ?>
                             <input type="text" class="form-control bg-light" readonly value="<?= $no_surat ?: $no_doc; ?>">
@@ -130,19 +130,19 @@ if ($type == 'expense') {
                     </div>
                 </div>
                 <div class="row align-items-center">
-                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Keterangan</label>
+                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Description</label>
                     <div class="col-sm-8">
                         <input type="text" name="informasi" class="form-control bg-light" readonly value="<?= ($keterangan) ?: ''; ?>">
                     </div>
                 </div>
                 <!-- <div class="row mb-3 align-items-center">
-                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Biaya Admin</label>
+                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Admin Fee</label>
                     <div class="col-sm-8">
                         <input type="text" name="admin_bank" class="form-control bg-light text-end fw-bold" readonly value="<?= number_format(($data_req_payment['admin_bank']), 2) ?>">
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Dokumen Req Payment</label>
+                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Req Payment Document</label>
                     <div class="col-sm-8">
                         <?php
                         if (!empty($data_req_payment['link_doc'])) {
@@ -152,7 +152,7 @@ if ($type == 'expense') {
                                       </a>';
                             }
                         } else {
-                            echo '<span class="text-muted small italic">Tidak ada file</span>';
+                            echo '<span class="text-muted small italic">No file</span>';
                         }
                         ?>
                     </div>
@@ -167,7 +167,7 @@ if ($type == 'expense') {
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Tanggal Doc</label>
+                    <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Doc Date</label>
                     <div class="col-sm-8">
                         <input type="text" name="date" class="form-control bg-light" readonly value="<?= $tgl_doc; ?>">
                     </div>
@@ -175,7 +175,7 @@ if ($type == 'expense') {
                 <div class="row mb-3 align-items-start">
                     <!-- <label class="col-sm-4 col-form-label text-md-end fw-semibold small text-danger">Reject Reason</label>
                     <div class="col-sm-8">
-                        <textarea name="reject_reason" class="form-control reject_reason" rows="2" placeholder="Wajib diisi jika menolak pengajuan..."></textarea>
+                        <textarea name="reject_reason" class="form-control reject_reason" rows="2" placeholder="Required when rejecting the request..."></textarea>
                     </div> -->
                 </div>
             </div>
@@ -186,16 +186,16 @@ if ($type == 'expense') {
                 <thead class="text-center">
                     <tr>
                         <th style="width: 4%">#</th>
-                        <th>Barang/Jasa</th>
-                        <th>Tanggal Transaksi</th>
+                        <th>Goods/Services</th>
+                        <th>Transaction Date</th>
                         <th style="width: 6%">Qty</th>
                         <th style="width: 8%">Currency</th>
-                        <th style="width: 35%">Rincian Nilai</th>
+                        <th style="width: 35%">Value Details</th>
                         <th style="width: 6%">Bukti</th>
                         <th style="width: 10%">
                             <div class="form-check d-flex justify-content-center align-items-center m-0">
                                 <input class="form-check-input master_check me-1" type="checkbox" id="checkAll" checked>
-                                <label class="form-check-label fw-bold small" for="checkAll">Semua</label>
+                                <label class="form-check-label fw-bold small" for="checkAll">All</label>
                             </div>
                         </th>
                     </tr>
@@ -220,19 +220,19 @@ if ($type == 'expense') {
                                 <tr>
                                     <td class="text-center"><?= $n; ?></td>
 
-                                    <td><?= $dtl->deskripsi; ?> <?= (isset($dtl->id_kasbon) && $dtl->id_kasbon !== '') ? '<span class="badge bg-warning text-dark ms-1">Kasbon</span>' : '' ?></td>
+                                    <td><?= $dtl->deskripsi; ?> <?= (isset($dtl->id_kasbon) && $dtl->id_kasbon !== '') ? '<span class="badge bg-warning text-dark ms-1">Cash Advance</span>' : '' ?></td>
                                     <td class="text-center"><?= $dtl->tanggal; ?></td>
                                     <td class="text-center"><?= $dtl->qty; ?></td>
                                     <td class="text-center fw-bold text-primary"><?= $data_req_payment['currency']; ?></td>
                                     <td>
                                         <table class="table table-nested table-sm mb-0 w-100 small">
                                             <tr>
-                                                <td>Nilai Pengajuan</td>
+                                                <td>Request Value</td>
                                                 <td class="text-center" style="width:10px">:</td>
                                                 <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                             </tr>
                                             <tr>
-                                                <td>Nilai PPh</td>
+                                                <td>PPh Value</td>
                                                 <td class="text-center">:</td>
                                                 <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
@@ -306,7 +306,7 @@ if ($type == 'expense') {
                                         echo '<td class="text-center fw-bold text-primary">' . $data_req_payment['currency'] . '</td>';
                                         echo '<td>
                                                 <table class="table table-nested table-sm mb-0 w-100 small">
-                                                    <tr><td>Harga Material</td><td class="text-center" style="width:10px">:</td><td class="text-end">' . number_format((float) $detail_kasbon_pr->total_harga, 2) . '</td></tr>
+                                                    <tr><td>Material Price</td><td class="text-center" style="width:10px">:</td><td class="text-end">' . number_format((float) $detail_kasbon_pr->total_harga, 2) . '</td></tr>
                                                     <tr><td>Bank Charge</td><td class="text-center">:</td><td class="text-end">' . number_format((float) $data_req_payment['admin_bank'], 2) . '</td></tr>
                                                 </table>
                                               </td>';
@@ -327,12 +327,12 @@ if ($type == 'expense') {
                                         <td>
                                             <table class="table table-nested table-sm mb-0 w-100 small">
                                                 <tr>
-                                                    <td>Nilai Pengajuan</td>
+                                                    <td>Request Value</td>
                                                     <td class="text-center" style="width:10px">:</td>
                                                     <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Nilai PPh</td>
+                                                    <td>PPh Value</td>
                                                     <td class="text-center">:</td>
                                                     <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                                 </tr>
@@ -380,12 +380,12 @@ if ($type == 'expense') {
                                     <td>
                                         <table class="table table-nested table-sm mb-0 w-100 small">
                                             <tr>
-                                                <td>Nilai Pengajuan</td>
+                                                <td>Request Value</td>
                                                 <td class="text-center" style="width:10px">:</td>
                                                 <td class="text-end fw-semibold"><?= number_format((float) $dtl->jumlah_kasbon, 2) ?></td>
                                             </tr>
                                             <tr>
-                                                <td>Nilai PPh</td>
+                                                <td>PPh Value</td>
                                                 <td class="text-center">:</td>
                                                 <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
@@ -434,12 +434,12 @@ if ($type == 'expense') {
                                     <td>
                                         <table class="table table-nested table-sm mb-0 w-100 small">
                                             <tr>
-                                                <td>Nilai Pengajuan</td>
+                                                <td>Request Value</td>
                                                 <td class="text-center" style="width:10px">:</td>
                                                 <td class="text-end fw-semibold"><?= number_format((float) $dtl->total_request, 2) ?></td>
                                             </tr>
                                             <tr>
-                                                <td>Nilai PPh</td>
+                                                <td>PPh Value</td>
                                                 <td class="text-center">:</td>
                                                 <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
@@ -480,12 +480,12 @@ if ($type == 'expense') {
                                     <td>
                                         <table class="table table-nested table-sm mb-0 w-100 small">
                                             <tr>
-                                                <td>Nilai Pengajuan</td>
+                                                <td>Request Value</td>
                                                 <td class="text-center" style="width:10px">:</td>
                                                 <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                             </tr>
                                             <tr>
-                                                <td>Nilai PPh</td>
+                                                <td>PPh Value</td>
                                                 <td class="text-center">:</td>
                                                 <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
@@ -567,7 +567,7 @@ if ($type == 'expense') {
                                                 </tr>
                                             <?php else : ?>
                                                 <tr>
-                                                    <td>Sisa Nilai</td>
+                                                    <td>Remaining Value</td>
                                                     <td class="text-center" style="width:10px">:</td>
                                                     <td class="text-end fw-semibold"><?= number_format($dtl->nilai_invoice ?? 0, 2) ?></td>
                                                 </tr>
@@ -610,7 +610,7 @@ if ($type == 'expense') {
                                 $label_ros = str_replace(
                                     ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'],
                                     ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],
-                                    $type
+                                    $type ?? ''
                                 );
                             ?>
                                 <tr>
@@ -678,7 +678,7 @@ if ($type == 'expense') {
 
             <div class="col-12 col-md-8 text-end d-flex justify-content-md-end justify-content-start gap-2">
                 <a href="<?= base_url($this->uri->segment(1) . '/list_approve_checker'); ?>" class="btn btn-secondary">
-                    <i class="fa fa-reply me-1"></i> Kembali
+                    <i class="fa fa-reply me-1"></i> Back
                 </a>
                 <!-- <button type="button" class="btn btn-danger" id="reject">
                     <i class="fa fa-close me-1"></i> Reject
@@ -727,7 +727,7 @@ if ($type == 'expense') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Warning!',
-                text: 'Bank tidak boleh kosong'
+                text: 'Bank cannot be empty'
             });
             return false;
         }
@@ -737,18 +737,18 @@ if ($type == 'expense') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Warning!',
-                text: 'Pilih minimal satu item yang akan di Approve!'
+                text: 'Select at least one item to Approve!'
             });
             return false;
         }
 
         Swal.fire({
-            title: "Anda Yakin?",
-            text: "Item terpilih akan disetujui (Approve)!",
+            title: "Are you sure?",
+            text: "The selected items will be approved (Approve)!",
             icon: "info",
             showCancelButton: true,
-            confirmButtonText: "Ya, Approve!",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Approve!",
+            cancelButtonText: "Cancel",
             customClass: {
                 confirmButton: 'btn btn-success me-2',
                 cancelButton: 'btn btn-secondary'
@@ -767,8 +767,8 @@ if ($type == 'expense') {
                     success: function(msg) {
                         if (msg['save'] == '1') {
                             Swal.fire({
-                                    title: "Sukses!",
-                                    text: "Data Berhasil Di Approve",
+                                    title: "Success!",
+                                    text: "Data Approved Successfully",
                                     icon: "success",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -778,16 +778,16 @@ if ($type == 'expense') {
                                 });
                         } else {
                             Swal.fire({
-                                title: "Gagal!",
-                                text: "Data Gagal Di Approve",
+                                title: "Failed!",
+                                text: "Data Failed to Approve",
                                 icon: "error"
                             });
                         }
                     },
                     error: function() {
                         Swal.fire({
-                            title: "Gagal!",
-                            text: "Gagal memproses data via AJAX",
+                            title: "Failed!",
+                            text: "Failed to process data via AJAX",
                             icon: "error"
                         });
                     }
@@ -806,19 +806,19 @@ if ($type == 'expense') {
         if (!isAnyChecked || reject_reason === '') {
             Swal.fire({
                 icon: 'warning',
-                title: 'Peringatan!',
-                text: 'Pastikan Anda mencentang item dan mengisi kolom Alasan Penolakan (Reject Reason)!'
+                title: 'Warning!',
+                text: 'Make sure you tick the items and fill in the Reject Reason field!'
             });
             return false;
         }
 
         Swal.fire({
-            title: "Anda Yakin?",
-            text: "Item terpilih akan ditolak (Reject)!",
+            title: "Are you sure?",
+            text: "The selected items will be rejected (Reject)!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Ya, Reject!",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Reject!",
+            cancelButtonText: "Cancel",
             customClass: {
                 confirmButton: 'btn btn-danger me-2',
                 cancelButton: 'btn btn-secondary'
@@ -837,8 +837,8 @@ if ($type == 'expense') {
                     success: function(msg) {
                         if (msg['save'] == '1') {
                             Swal.fire({
-                                    title: "Sukses!",
-                                    text: "Data Berhasil Di Reject",
+                                    title: "Success!",
+                                    text: "Data Rejected Successfully",
                                     icon: "success",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -848,16 +848,16 @@ if ($type == 'expense') {
                                 });
                         } else {
                             Swal.fire({
-                                title: "Gagal!",
-                                text: "Data Gagal Di Reject",
+                                title: "Failed!",
+                                text: "Data Failed to Reject",
                                 icon: "error"
                             });
                         }
                     },
                     error: function() {
                         Swal.fire({
-                            title: "Gagal!",
-                            text: "Gagal memproses data penolakan via AJAX",
+                            title: "Failed!",
+                            text: "Failed to process rejection data via AJAX",
                             icon: "error"
                         });
                     }

@@ -14,10 +14,10 @@
         <th class="text-left"><?= $no_do; ?></th>
     </tr>
     <tr>
-        <th>Tanggal SO</th>
+        <th>SO Date</th>
         <th class="text-center">:</th>
         <th class="text-left"><?= date('d-m-Y', strtotime((string) $results->tgl_so)); ?></th>
-        <th>Tanggal DO</th>
+        <th>DO Date</th>
         <th class="text-center">:</th>
         <th class="text-left"><?= $tanggal_do; ?></th>
     </tr>

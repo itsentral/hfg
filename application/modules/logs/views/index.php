@@ -144,17 +144,17 @@
         <div class="card-body p-3">
             <div class="row g-2 align-items-end">
                 <div class="col-lg-2 col-md-3 col-sm-6">
-                    <label class="filter-label"><i class="fa fa-calendar me-1"></i>Dari</label>
+                    <label class="filter-label"><i class="fa fa-calendar me-1"></i>From</label>
                     <input type="text" id="filter_start_date" class="form-control form-control-sm flatpickr-input" placeholder="Mulai" value="<?= $start_date; ?>">
                 </div>
                 <div class="col-lg-2 col-md-3 col-sm-6">
-                    <label class="filter-label"><i class="fa fa-calendar me-1"></i>Sampai</label>
-                    <input type="text" id="filter_end_date" class="form-control form-control-sm flatpickr-input" placeholder="Sampai" value="<?= $end_date; ?>">
+                    <label class="filter-label"><i class="fa fa-calendar me-1"></i>To</label>
+                    <input type="text" id="filter_end_date" class="form-control form-control-sm flatpickr-input" placeholder="To" value="<?= $end_date; ?>">
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <label class="filter-label"><i class="fa fa-cubes me-1"></i>Modul</label>
                     <select id="filter_module" class="form-select form-select-sm select2-module">
-                        <option value="">-- Semua Modul --</option>
+                        <option value="">-- All Modules --</option>
                         <?php foreach ($modules as $m): ?>
                             <option value="<?= htmlspecialchars($m); ?>"><?= htmlspecialchars(strtoupper(str_replace('_', ' ', $m))); ?></option>
                         <?php endforeach; ?>
@@ -163,7 +163,7 @@
                 <div class="col-lg-2 col-md-2 col-sm-6">
                     <label class="filter-label"><i class="fa fa-flag me-1"></i>Status</label>
                     <select id="filter_status" class="form-select form-select-sm">
-                        <option value="">-- Semua --</option>
+                        <option value="">-- All --</option>
                         <option value="SUCCESS">SUCCESS</option>
                         <option value="FAILED">FAILED</option>
                     </select>
@@ -221,11 +221,11 @@
             <div class="modal-body p-4" id="modalDetailBody">
                 <div class="text-center py-4">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2">Memuat rincian log...</p>
+                    <p class="text-muted mt-2">Loading log details...</p>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-light py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -244,7 +244,7 @@
         if (window.jQuery && jQuery.fn.select2) {
             $('.select2-module').select2({
                 theme: 'bootstrap-5',
-                placeholder: '-- Cari & Pilih Modul --',
+                placeholder: '-- Search and Select a Module --',
                 allowClear: true,
                 width: '100%'
             });
@@ -330,7 +330,7 @@
                 }
             },
             {
-                headerName: "Pesan / Ringkasan",
+                headerName: "Message / Summary",
                 field: "message",
                 minWidth: 260,
                 flex: 1,
@@ -372,8 +372,8 @@
             <div class="mb-3">
                 <i class="fa fa-folder-open-o fa-3x text-muted opacity-50"></i>
             </div>
-            <h6 class="fw-bold text-secondary mb-1">Tidak Ada Data Log Ditemukan</h6>
-            <p class="text-muted small mb-0">Tidak ada riwayat aktivitas log yang sesuai dengan rentang tanggal atau kriteria filter yang dipilih.</p>
+            <h6 class="fw-bold text-secondary mb-1">No Activity Logs Found</h6>
+            <p class="text-muted small mb-0">No activity logs match the selected date range or filters.</p>
         </div>
     `;
 
@@ -534,7 +534,7 @@
                 modalBody.innerHTML = `
                 <div class="text-center py-4">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2">Memuat rincian log #${id}...</p>
+                    <p class="text-muted mt-2">Loading details for log #${id}...</p>
                 </div>
             `;
                 modal.show();
@@ -554,7 +554,7 @@
                                     <div class="p-3 bg-light rounded-3">
                                         <div class="text-muted small">ID & Waktu:</div>
                                         <div class="fw-bold">#${d.id} - ${d.created_at}</div>
-                                        <div class="text-muted small mt-2">Pengguna:</div>
+                                        <div class="text-muted small mt-2">User:</div>
                                         <div class="fw-bold">${d.user_name}</div>
                                     </div>
                                 </div>
@@ -598,7 +598,7 @@
                                     html += `
                                     <div class="col-12">
                                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                            <label class="fw-bold small text-muted mb-0"><i class="fa fa-exchange me-1 text-primary"></i>Perubahan Data (Before & After):</label>
+                                            <label class="fw-bold small text-muted mb-0"><i class="fa fa-exchange me-1 text-primary"></i>Data Changes (Before and After):</label>
                                             <span class="badge bg-primary rounded-pill">${parsedData.total_changes || changeKeys.length} Field Berubah</span>
                                         </div>
                                     `;
@@ -609,9 +609,9 @@
                                             <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th style="width: 25%;">Nama Field / Kolom</th>
-                                                        <th style="width: 37.5%;" class="text-danger"><i class="fa fa-arrow-down me-1"></i>Nilai Sebelum (Before)</th>
-                                                        <th style="width: 37.5%;" class="text-success"><i class="fa fa-arrow-up me-1"></i>Nilai Sesudah (After)</th>
+                                                        <th style="width: 25%;">Field / Column Name</th>
+                                                        <th style="width: 37.5%;" class="text-danger"><i class="fa fa-arrow-down me-1"></i>Previous Value (Before)</th>
+                                                        <th style="width: 37.5%;" class="text-success"><i class="fa fa-arrow-up me-1"></i>New Value (After)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -619,8 +619,8 @@
 
                                         changeKeys.forEach(key => {
                                             const item = parsedData.changes[key];
-                                            const oldVal = (item.old === null || item.old === '') ? '<span class="text-muted fst-italic">[KOSONG/NULL]</span>' : escapeHtml(String(item.old));
-                                            const newVal = (item.new === null || item.new === '') ? '<span class="text-muted fst-italic">[KOSONG/NULL]</span>' : escapeHtml(String(item.new));
+                                            const oldVal = (item.old === null || item.old === '') ? '<span class="text-muted fst-italic">[EMPTY/NULL]</span>' : escapeHtml(String(item.old));
+                                            const newVal = (item.new === null || item.new === '') ? '<span class="text-muted fst-italic">[EMPTY/NULL]</span>' : escapeHtml(String(item.new));
 
                                             html += `
                                                 <tr>
@@ -646,7 +646,7 @@
 
                                     html += `
                                         <details class="mb-2">
-                                            <summary class="small text-muted fw-semibold" style="cursor: pointer;">Lihat Raw Payload Data (JSON)</summary>
+                                            <summary class="small text-muted fw-semibold" style="cursor: pointer;">View Raw Payload (JSON)</summary>
                                             <pre class="code-viewer mt-2"><code>${escapeHtml(d.data_json)}</code></pre>
                                         </details>
                                     </div>
@@ -664,12 +664,12 @@
                             html += '</div>';
                             modalBody.innerHTML = html;
                         } else {
-                            modalBody.innerHTML = `<div class="alert alert-danger">${res.msg || 'Gagal memuat detail.'}</div>`;
+                            modalBody.innerHTML = `<div class="alert alert-danger">${res.msg || 'Failed to load details.'}</div>`;
                         }
                     })
                     .catch(err => {
                         console.error(err);
-                        modalBody.innerHTML = `<div class="alert alert-danger">Terjadi kesalahan jaringan saat memuat detail log.</div>`;
+                        modalBody.innerHTML = `<div class="alert alert-danger">A network error occurred while loading log details.</div>`;
                     });
             }
         });

@@ -37,8 +37,8 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                                 <i class="fa fa-scale-balanced fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Costbook Stock Neraca Gudang</h5>
-                                <small class="text-muted">Laporan neraca mutasi nilai stok gudang per periode bulan dan tahun</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Costbook Stock Warehouse Balance Sheet</h5>
+                                <small class="text-muted">Warehouse stock value mutation balance sheet report per month and year period</small>
                             </div>
                         </div>
                     </div>
@@ -52,7 +52,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                 <!-- Filter Section -->
                 <div class="row g-2 align-items-end mt-2 pt-3 border-top">
                     <div class="col-md-3 col-sm-6 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-alt text-primary me-1"></i> Bulan</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-alt text-primary me-1"></i> Month</label>
                         <select name="bulan_input" class="form-select select2 periode_bulan">
                             <option value="">-- Pilih Bulan --</option>
                             <?php
@@ -70,9 +70,9 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                         </select>
                     </div>
                     <div class="col-md-3 col-sm-6 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar text-primary me-1"></i> Tahun</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar text-primary me-1"></i> Year</label>
                         <select name="tahun_input" class="form-select select2 periode_tahun">
-                            <option value="">-- Pilih Tahun --</option>
+                            <option value="">-- Select Year --</option>
                             <?php
                             $current_year = date('Y');
                             for ($y = $current_year + 1; $y >= 2019; $y--) {
@@ -83,9 +83,9 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                         </select>
                     </div>
                     <div class="col-md-4 col-sm-8 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Gudang</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Warehouse</label>
                         <select class="form-select select2 select_warehouse">
-                            <option value="">-- SEMUA GUDANG --</option>
+                            <option value="">-- ALL WAREHOUSES --</option>
                             <?php foreach ($results['list_warehouse'] as $item_warehouse) : ?>
                                 <option value="<?= $item_warehouse->id ?>"><?= strtoupper((string) $item_warehouse->nm_gudang) ?></option>
                             <?php endforeach; ?>
@@ -93,7 +93,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                     </div>
                     <div class="col-md-2 col-sm-4 col-12 d-flex gap-2">
                         <button type="button" class="btn btn-primary w-100 get_costbook_data shadow-sm">
-                            <i class="fa fa-search me-1"></i> Tampilkan
+                            <i class="fa fa-search me-1"></i> Show
                         </button>
                     </div>
                 </div>
@@ -105,22 +105,22 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" width="4%">#</th>
-                                <th class="text-start" width="16%">Transaksi</th>
-                                <th class="text-center" width="13%">No. Transaksi</th>
-                                <th class="text-center" width="11%">Tgl Transaksi</th>
+                                <th class="text-start" width="16%">Transaction</th>
+                                <th class="text-center" width="13%">Transaction No.</th>
+                                <th class="text-center" width="11%">Transaction Date</th>
                                 <th class="text-center" width="7%">Tipe</th>
-                                <th class="text-center" width="12%">Dari Gudang</th>
-                                <th class="text-center" width="12%">Ke Gudang</th>
+                                <th class="text-center" width="12%">From Warehouse</th>
+                                <th class="text-center" width="12%">To Warehouse</th>
                                 <th class="text-end" width="11%">Value In</th>
                                 <th class="text-end" width="11%">Value Out</th>
-                                <th class="text-end" width="13%">Saldo</th>
+                                <th class="text-end" width="13%">Balance</th>
                             </tr>
                         </thead>
                         <tbody class="list_data">
                             <tr>
                                 <td colspan="10" class="text-center py-5 text-muted empty-state">
                                     <i class="fa fa-circle-info fs-3 d-block mb-2 text-primary"></i>
-                                    Silakan tentukan filter <b>Bulan</b>, <b>Tahun</b>, dan <b>Gudang</b> lalu klik tombol <b>Tampilkan</b> untuk memuat neraca.
+                                    Silakan tentukan filter <b>Month</b>, <b>Year</b>, dan <b>Warehouse</b> then click the <b>Show</b> untuk memuat neraca.
                                 </td>
                             </tr>
                         </tbody>
@@ -152,22 +152,22 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Peringatan',
-                    text: 'Silakan pilih Periode Bulan dan Tahun terlebih dahulu!'
+                    title: 'Warning',
+                    text: 'Please select the Month and Year period first!'
                 });
             } else if (typeof swal === 'function') {
                 swal({
-                    title: 'Peringatan!',
-                    text: 'Silakan pilih Periode Bulan dan Tahun terlebih dahulu!',
+                    title: 'Warning!',
+                    text: 'Please select the Month and Year period first!',
                     type: 'warning'
                 });
             } else {
-                alert('Silakan pilih Periode Bulan dan Tahun terlebih dahulu!');
+                alert('Please select the Month and Year period first!');
             }
             return false;
         }
 
-        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Memuat...');
+        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Loading...');
 
         $.ajax({
             type: 'POST',
@@ -188,10 +188,10 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Terjadi kesalahan sistem saat memuat data neraca gudang.'
+                        text: 'A system error occurred while loading the warehouse balance sheet data.'
                     });
                 } else {
-                    alert('Terjadi kesalahan sistem saat memuat data neraca gudang.');
+                    alert('A system error occurred while loading the warehouse balance sheet data.');
                 }
             }
         });
@@ -220,7 +220,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
         var warehouseName = $('.select_warehouse option:selected').text();
 
         var printWindow = window.open('', '', 'height=750,width=1050');
-        printWindow.document.write('<!DOCTYPE html><html><head><title>Cetak Neraca Gudang</title>');
+        printWindow.document.write('<!DOCTYPE html><html><head><title>Print Warehouse Balance Sheet</title>');
         printWindow.document.write('<style>');
         printWindow.document.write('@page { size: landscape; margin: 10mm; }');
         printWindow.document.write('body { font-family: Arial, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 10px; }');
@@ -238,7 +238,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
         printWindow.document.write('</style></head><body>');
 
         printWindow.document.write('<div class="header-cetak">');
-        printWindow.document.write('<h3>LAPORAN COSTBOOK STOK NERACA GUDANG</h3>');
+        printWindow.document.write('<h3>WAREHOUSE BALANCE SHEET COSTBOOK STOCK REPORT</h3>');
         printWindow.document.write('<p>Periode: <b>' + bulanText + ' ' + tahunText + '</b> | Gudang: <b>' + warehouseName + '</b> | Dicetak: ' + new Date().toLocaleString('id-ID') + '</p>');
         printWindow.document.write('</div>');
 
@@ -257,17 +257,17 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal Mencetak!',
-                text: 'Tidak ada data neraca di dalam tabel untuk dicetak. Silakan tampilkan data terlebih dahulu.'
+                title: 'Print Failed!',
+                text: 'There is no balance sheet data in the table to print. Please display the data first.'
             });
         } else if (typeof swal === 'function') {
             swal({
-                title: 'Gagal Mencetak!',
-                text: 'Tidak ada data neraca di dalam tabel untuk dicetak. Silakan tampilkan data terlebih dahulu.',
+                title: 'Print Failed!',
+                text: 'There is no balance sheet data in the table to print. Please display the data first.',
                 type: 'error'
             });
         } else {
-            alert('Gagal Mencetak: Tidak ada data neraca di dalam tabel untuk dicetak.');
+            alert('Print Failed: There is no balance sheet data in the table to print.');
         }
     }
 </script>

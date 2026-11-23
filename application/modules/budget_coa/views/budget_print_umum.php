@@ -16,17 +16,17 @@
 <table width="700">
 <tr><td align="center" colspan="4"><h1>Budget</h1></td></tr>
 <tr>
-	<td>Departemen : <?=$data[0]->nm_dept?></td>
+	<td>Department : <?=$data[0]->nm_dept?></td>
 	<td colspan=2></td>
 	<td>Update On : <?=date("d-M-Y",strtotime((string) $data[0]->created_on_dept))?></td>
 </tr>
 <tr>
-	<td>Tahun : <?=$dataset['tahun']?></td>
+	<td>Year : <?=$dataset['tahun']?></td>
 	<td colspan=2></td>
 	<td></td>
 </tr>
 <tr>
-	<td>Kategori : <?=$dataset['kategori']?></td>
+	<td>Category : <?=$dataset['kategori']?></td>
 	<td colspan=2></td>
 	<td></td>
 </tr>
@@ -36,8 +36,8 @@
 	<tr>
 		<th>No COA</th>
 		<th>Deskripsi</th>
-		<th>Jenis</th>
-		<th>Nilai</th>
+		<th>Type</th>
+		<th>Value</th>
 	</tr>
 	<?php
 	if(isset($data)){

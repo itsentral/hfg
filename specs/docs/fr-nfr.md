@@ -235,8 +235,9 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
 - **FR-19** — Sistem menghitung HPP Finish Good KW 1 dan Stok Bebas per produk: Biaya
   Material/Pcs = Berat/Pcs × Costbook Material (nilai rata-rata material pada gudang asal baby
   coil yang sebenarnya dipakai — Gudang Produksi 2 / Gudang WIP / Gudang Material Hold, sesuai
-  FR-08); Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi masing-masing =
-  Berat/Pcs × standard rate produk terkait dari Product Costing; Finish Good Value/Pcs = jumlah
+  FR-08); Man Power, FOH, Bahan Pendukung Khusus masing-masing = Berat/Pcs × Rp/Kg Hasil Costing
+  varian BOM; Consumables dan Biaya Koordinasi = General Rate (Rp/Kg) × Berat/Pcs; Scrap = %Scrap
+  General Rate × Biaya Material/Pcs (rincian FR-48, direvisi 2026-11-20); Finish Good Value/Pcs = jumlah
   seluruh komponen biaya di atas; Total per komponen = nilai per pcs × Qty FG.
   _(sheet, baris 115–118)_
 - **FR-20** — Sistem menghitung HPP Finish Good KW 2 (Internal dan Supplier terpisah) dengan
@@ -254,7 +255,11 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
 - **FR-24** — Accounting melakukan Posting Jurnal Produksi ke GL Interface berdasarkan Nilai
   Material dan HPP hasil FR-19 s.d. FR-23, mencakup jurnal: KW1, KW2, Scrap, Inventory, Hutang
   Biaya Proses, Hutang Scrap, dan Hutang Koordinasi. _(BPMN: Posting Jurnal Produksi di GL
-  Interface; sheet judul "Jurnal:")_
+  Interface; sheet judul "Jurnal:")_ **Ditambahkan 2026-11-20 (user):** kolom `production_reports` yang
+  dirujuk template jurnal JV016 (`master_oto_jurnal_detail.field`, lewat `ms_jurnal_mapping`) **disimpan tanpa
+  desimal** (dibulatkan ke Rupiah penuh). Agar Debit = Kredit tetap terjaga setelah pembulatan, Total COGM =
+  jumlah tujuh komponen COGM yang sudah dibulatkan, Total Inventory FG = Total COGM − Loss KW 2 (20%), dan
+  Biaya KW 2 20% = Loss KW 2 (20%).
 
 ### Field-level baru dari ERD revisi klien (Rev.1) — 2026-09-22
 
@@ -482,17 +487,18 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
 
 **Pemakaian rate di HPP Laporan Produksi**
 
-- **FR-48** (**direvisi 2026-10-26**) — HPP per item pada `production_report_items` memakai enam
-  komponen biaya selain Material, dan **rate-nya diambil dalam Rp/Kg dari Hasil Costing varian BOM
-  yang dipakai SPK** (FR-74), bukan dari Master Rate Laporan Produksi (`rate.html`) lagi:
-  1. **Man Power** ← Rp/Kg Man Power Cost,
-  2. **FOH** ← Rp/Kg FOH,
-  3. **Bahan Pendukung Khusus** ← Rp/Kg Bahan Pendukung Khusus,
-  4. **Consumables** ← Rp/Kg Consumables,
-  5. **Biaya Koordinasi** ← Rp/Kg Biaya Koordinasi,
-  6. **Scrap** ← Rp/Kg Scrap.
+- **FR-48** (**direvisi 2026-10-26; komponen 4–6 direvisi 2026-11-20**) — HPP per item pada `production_report_items`
+  memakai enam komponen biaya selain Material. Komponen 1–3 diambil dalam **Rp/Kg dari Hasil Costing varian BOM
+  yang dipakai SPK** (FR-74); komponen 4–6 diambil dari **General Rate** (`rate_generals`, `pc-general-rate.html`);
+  tidak ada yang diambil dari Master Rate Laporan Produksi (`rate.html`):
+  1. **Man Power** ← Rp/Kg Man Power Cost (Hasil Costing),
+  2. **FOH** ← Rp/Kg FOH (Hasil Costing),
+  3. **Bahan Pendukung Khusus** ← Rp/Kg Bahan Pendukung Khusus (Hasil Costing),
+  4. **Consumables** = General Rate Consumables (`rate_consumables`, Rp/Kg) × `berat_per_pcs`,
+  5. **Biaya Koordinasi** = General Rate Biaya Koordinasi (`rate_biaya_koordinasi`, Rp/Kg) × `berat_per_pcs`,
+  6. **Scrap** = General Rate %Scrap (`rate_scrap`, disimpan sebagai pecahan, 0,02 = 2%) × Biaya Material/Pcs.
 
-  Biaya per pcs = Rp/Kg komponen × `berat_per_pcs` item (Kg); Material tetap dari Costbook
+  Untuk komponen 1–3, biaya per pcs = Rp/Kg komponen × `berat_per_pcs` item (Kg); Material tetap dari Costbook
   Material (FR-19/FR-20). Rp/Kg Hasil Costing = Rp/Meter komponen ÷ Berat/Meter (FR-46; contoh
   Type 001.1: Berat/Meter 1,3397 Kg). Ini mengisi kolom `main_power_cost_*`,
   `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`, `coordinator_cost_*`,
@@ -502,10 +508,13 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   **KW 2** (Internal dan Supplier) memakai varian produk yang sama bila produknya ada di SPK, kalau
   tidak memakai varian SPK yang pertama (lihat FR-74). _Teks FR-48 sebelumnya (rate dicari
   lewat Product Category (Level 2), KW 2 memakai Master Rate Generals "Scrap") digantikan._
+  _Sumber revisi 2026-11-20: `input/2026-11-20-hpp-rate-general-pembulatan-jurnal/notes.md` (disetujui user).
+  Teks 2026-10-26 untuk komponen 4–6 (Rp/Kg Consumables, Biaya Koordinasi, dan Scrap dari Hasil Costing × `berat_per_pcs`) digantikan._
 - **FR-49** — Rate yang dipakai FR-48 **dibekukan saat laporan produksi dibuat**: perubahan Rate
   Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
   pada laporan yang sudah ada (keputusan user 2026-10-07). Sejak 2026-10-26 yang dibekukan adalah
-  Rp/Kg Hasil Costing varian BOM terpilih (FR-48, FR-74). Mekanisme penyimpanan (salinan nilai
+  Rp/Kg Hasil Costing varian BOM terpilih (FR-48, FR-74); sejak 2026-11-20 juga General Rate Consumables,
+  Biaya Koordinasi, dan %Scrap yang dipakai komponen 4–6 FR-48. Mekanisme penyimpanan (salinan nilai
   ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
 
 ### Revisi Rev.1 — Use Case, BPMN To Be, dan ERD Product Costing — 2026-10-19
@@ -1198,7 +1207,8 @@ yang sudah resolved di atas (± 0,7%).
   criterion: setelah Rate Man Power / Rate Bahan Pendukung / Rate FOH / General Rate diubah,
   `total_hpp_item` dan seluruh kolom `*_cost_*` laporan yang dibuat sebelum perubahan **tidak
   berubah satu rupiah pun**, dan setiap baris item dapat menunjukkan rate (nilai atau versi) apa
-  yang dipakai (sejak 2026-10-26: Rp/Kg Hasil Costing varian BOM, FR-48/FR-74). NFR-07(b) (Costbook Material) tidak berubah.
+  yang dipakai (sejak 2026-10-26: Rp/Kg Hasil Costing varian BOM, FR-48/FR-74; sejak 2026-11-20 Consumables, Biaya
+  Koordinasi, dan Scrap memakai General Rate, FR-48). NFR-07(b) (Costbook Material) tidak berubah.
 - **NFR-10 (Auditability master costing).** Setiap perubahan pada master Product Costing (Kurs,
   Price Reference & keputusan pemakaiannya, BOM, Flow Process, Man Power Rate, Rate Bahan
   Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
@@ -1358,3 +1368,9 @@ email supplier) ditunda dan Master Jurnal Claim dibuat kemudian. Tabel claim (9 
 Slitting), FR-97 (kolom Progres turunan); FR-83/FR-84 direvisi (satu SPK dan satu SJ memuat beberapa claim satu supplier); FR-87 dipertegas (baris Debit Note
 dan Jual Material; Retur dan Lanjut Produksi tidak). OQ-C10 dijawab. Tidak ada pertanyaan terbuka untuk mockup; tersisa OQ-C2 (master email, ditunda) dan Master
 Jurnal Claim (dibuat kemudian).
+
+**Pembaruan 2026-11-20 (HPP: General Rate + pembulatan jurnal).** Permintaan user, disetujui
+(`input/2026-11-20-hpp-rate-general-pembulatan-jurnal/notes.md`): komponen HPP Consumables dan Biaya Koordinasi = General Rate
+(Rp/Kg) × Berat/Pcs, Scrap = %Scrap General Rate × Biaya Material/Pcs; Man Power, FOH, Bahan Pendukung Khusus tetap Rp/Kg Hasil
+Costing varian BOM. Kolom `production_reports` yang dipakai template jurnal JV016 disimpan tanpa desimal. FR-19, FR-24, FR-48,
+FR-49, NFR-09 disesuaikan.

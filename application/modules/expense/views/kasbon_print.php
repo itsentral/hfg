@@ -43,7 +43,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Formulir Pengajuan Kasbon - <?= $data->no_doc ?></title>
+	<title>Cash Advance Request Form - <?= $data->no_doc ?></title>
 	<style>
 		@page {
 			size: A4 portrait;
@@ -405,7 +405,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 	<!-- Toolbar Aksi di Atas (Hanya tampil di browser) -->
 	<div class="no-print-toolbar">
 		<div>
-			<strong>Formulir Kasbon:</strong> <?= $data->no_doc ?>
+			<strong>Cash Advance Form:</strong> <?= $data->no_doc ?>
 		</div>
 		<div style="display: flex; gap: 10px;">
 			<button type="button" class="btn btn-primary" onclick="window.print()">
@@ -416,7 +416,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 				Cetak Dokumen
 			</button>
 			<button type="button" class="btn btn-secondary" onclick="window.close()">
-				Tutup
+				Close
 			</button>
 		</div>
 	</div>
@@ -442,7 +442,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 					</p>
 				</td>
 				<td class="doc-title-box">
-					<h3>PENGAJUAN KASBON</h3>
+					<h3>CASH ADVANCE REQUEST</h3>
 					<div class="doc-badge">No. <?= $data->no_doc ?></div>
 				</td>
 			</tr>
@@ -453,29 +453,29 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 		<!-- Info Pengajuan & Transfer -->
 		<table class="info-table">
 			<tr>
-				<td class="info-label">Tanggal Dokumen</td>
+				<td class="info-label">Document Date</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 
-				<td class="info-label">Bank Penerima</td>
+				<td class="info-label">Recipient Bank</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= $data->bank_id ?: '-' ?></td>
 			</tr>
 			<tr>
-				<td class="info-label">Nama Pemohon</td>
+				<td class="info-label">Requester Name</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= $nmuser ?></td>
 
-				<td class="info-label">No. Rekening</td>
+				<td class="info-label">Account Number</td>
 				<td class="info-separator">:</td>
 				<td class="info-value font-monospace"><strong><?= $data->accnumber ?: '-' ?></strong></td>
 			</tr>
 			<tr>
-				<td class="info-label">Departemen</td>
+				<td class="info-label">Department</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= !empty($nm_dept) ? $nm_dept : '-' ?></td>
 
-				<td class="info-label">Atas Nama Rekening</td>
+				<td class="info-label">Account Holder Name</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= $data->accname ?: '-' ?></td>
 			</tr>
@@ -495,7 +495,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			</tr>
 			<?php if (!empty($data->keterangan)) : ?>
 				<tr>
-					<td class="info-label">Keterangan</td>
+					<td class="info-label">Description</td>
 					<td class="info-separator">:</td>
 					<td class="info-value" colspan="4"><?= nl2br(htmlspecialchars((string) $data->keterangan)) ?></td>
 				</tr>
@@ -504,7 +504,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 
 		<!-- Box Nominal Kasbon -->
 		<div class="nominal-card">
-			<div class="nominal-card-header">Jumlah Kasbon yang Diajukan :</div>
+			<div class="nominal-card-header">Requested Cash Advance Amount :</div>
 			<div class="nominal-card-amount">
 				Rp <?= number_format((float) $data->jumlah_kasbon, 0, ',', '.') ?>
 			</div>
@@ -524,10 +524,10 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 				<thead>
 					<tr>
 						<th style="width: 35px;">No</th>
-						<th>Nama Barang / Material</th>
+						<th>Item / Material Name</th>
 						<th style="width: 70px;">Qty</th>
-						<th style="width: 70px;">Satuan</th>
-						<th style="width: 130px;">Estimasi Harga (Rp)</th>
+						<th style="width: 70px;">Unit</th>
+						<th style="width: 130px;">Estimated Price (Rp)</th>
 						<th style="width: 140px;">Total (Rp)</th>
 					</tr>
 				</thead>
@@ -561,10 +561,10 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 		<!-- Kolom Pengesahan / Tanda Tangan -->
 		<table class="signature-table">
 			<tr>
-				<td class="signature-header">Diajukan Oleh,</td>
+				<td class="signature-header">Submitted By,</td>
 				<td class="signature-header">Mengetahui,</td>
 				<td class="signature-header">Diperiksa (Finance),</td>
-				<td class="signature-header">Disetujui (Management),</td>
+				<td class="signature-header">Approved (Management),</td>
 			</tr>
 			<tr>
 				<td class="signature-space"></td>
@@ -599,7 +599,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 		<!-- Lampiran Berkas Information -->
 		<?php if (!empty($all_files)) : ?>
 			<div class="attachments-box">
-				<strong>Dokumen / Berkas Lampiran Pendukung:</strong>
+				<strong>Supporting Documents / Attachments:</strong>
 				<ol style="margin: 4px 0 0 16px; padding: 0;">
 					<?php foreach ($all_files as $af) : ?>
 						<li><?= htmlspecialchars((string) $af['name']) ?> (<?= strtoupper((string) $af['ext']) ?>)</li>
@@ -620,9 +620,9 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			<div class="pagebreak"></div>
 			<div class="print-container attachment-img-page">
 				<div style="text-align: left; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">
-					<strong>Lampiran Berkas:</strong> <?= htmlspecialchars((string) $img_att['name']) ?> &bull; No Dokumen: <?= $data->no_doc ?>
+					<strong>File Attachments:</strong> <?= htmlspecialchars((string) $img_att['name']) ?> &bull; No Dokumen: <?= $data->no_doc ?>
 				</div>
-				<img src="<?= $img_att['path'] ?>" alt="Lampiran Kasbon">
+				<img src="<?= $img_att['path'] ?>" alt="Cash Advance Attachment">
 			</div>
 	<?php
 		endforeach;

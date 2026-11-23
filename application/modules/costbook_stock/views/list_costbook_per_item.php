@@ -3,11 +3,11 @@
         <thead class="table-light">
             <tr>
                 <th class="text-center" width="4%">#</th>
-                <th class="text-center" width="12%">Kode Produk</th>
-                <th class="text-start">Nama Barang</th>
-                <th class="text-center" width="15%">Gudang</th>
-                <th class="text-end" width="10%">Qty Stok</th>
-                <th class="text-end" width="12%">Nilai Costbook</th>
+                <th class="text-center" width="12%">Product Code</th>
+                <th class="text-start">Item Name</th>
+                <th class="text-center" width="15%">Warehouse</th>
+                <th class="text-end" width="10%">Stock Qty</th>
+                <th class="text-end" width="12%">Costbook Value</th>
                 <th class="text-end" width="13%">Value Neraca</th>
                 <th class="text-center" width="14%">Update Terakhir</th>
                 <th class="text-center" width="8%">Aksi</th>
@@ -37,7 +37,7 @@
                     <td class="text-end fw-bold text-primary font-monospace">Rp <?= number_format((float) $value_neraca, 2) ?></td>
                     <td class="text-center text-muted font-monospace" style="font-size:0.85rem;"><?= $last_update ?></td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-info check_costbook shadow-sm" data-id_material="<?= $item->id_material ?>" data-id_gudang="<?= $item->id_gudang ?>" title="Lihat Riwayat Transaksi Costbook">
+                        <button type="button" class="btn btn-sm btn-outline-info check_costbook shadow-sm" data-id_material="<?= $item->id_material ?>" data-id_gudang="<?= $item->id_gudang ?>" title="View Costbook Transaction History">
                             <i class="fa fa-eye me-1"></i> Detail
                         </button>
                     </td>

@@ -12,7 +12,7 @@ $this->load->view('include/side_menu');
 				<!-- <a href="<?php echo site_url('asset/download_excel_all/0') ?>" target='_blank' class="btn btn-md btn-info" '>
 					<i class="fa fa-file-excel-o"></i> Download ALL
 				</a> -->
-				<button type='button' id='jurnal' class="btn btn-md btn-primary" title="Next Depresiasi"></i>Next Depresiasi</button>
+				<button type='button' id='jurnal' class="btn btn-md btn-primary" title="Next Depreciation"></i>Next Depreciation</button>
 			<?php } ?>
 			</div>
 			<div class="box-tool pull-left">
@@ -25,7 +25,7 @@ $this->load->view('include/side_menu');
 					?>
 				</select>
 				<?php
-					echo form_input(array('type'=>'hidden','id'=>'tanggalx','name'=>'tanggalx','class'=>'form-control input-sm','autocomplete'=>'off','placeholder'=>'Tanggal', 'readonly'=>'readonly'));
+					echo form_input(array('type'=>'hidden','id'=>'tanggalx','name'=>'tanggalx','class'=>'form-control input-sm','autocomplete'=>'off','placeholder'=>'Date', 'readonly'=>'readonly'));
 				?> 
 				<select id='bulan' name='bulan' class='form-control input-sm' style='width:120px;'>
 					<option value='0'>Select Month</option>
@@ -63,16 +63,16 @@ $this->load->view('include/side_menu');
 					<thead>
 						<tr class='bg-blue' >
 							<th class="text-center">#</th>
-							<th class="text-center">Kode Asset</th>
+							<th class="text-center">Asset Code</th>
 							<th class="text-center">Asset Name</th>
 							<th class="text-center">Tgl Perolehan</th>
 							<th class="text-center">Category</th>
-							<th class="text-center">Kelompok Penyusutan</th>
+							<th class="text-center">Depreciation Group</th>
 							<th class="text-center">Costcenter</th>
 							<th class="text-center">Depreciation</th>
 							<th class="text-center">Acquisition</th>
 							<th class="text-center">Depreciation</th>
-							<th class="text-center">Akumulasi Depresiasi</th>
+							<th class="text-center">Accumulated Depreciation</th>
 							<th class="text-center">Asset&nbsp;Val</th>
 							<th class="text-center no-sort">#</th>
 						</tr>
@@ -156,7 +156,7 @@ $this->load->view('include/side_menu');
 		if(bulan == 0){
 			swal({
 				title	: "Error Message!",
-				text	: 'Filter bulan asset empty ...',
+				text	: 'Asset month filter is empty.',
 				type	: "warning"
 			});
 			return false;
@@ -164,7 +164,7 @@ $this->load->view('include/side_menu');
         if(tahun == 0){
 			swal({
 				title	: "Error Message!",
-				text	: 'Filter tahun asset empty ...',
+				text	: 'Asset year filter is empty.',
 				type	: "warning"
 			});
 			return false;
@@ -196,7 +196,7 @@ $this->load->view('include/side_menu');
         if(bulan == 0){
 			swal({
 				title	: "Error Message!",
-				text	: 'Filter bulan asset empty ...',
+				text	: 'Asset month filter is empty.',
 				type	: "warning"
 			});
 			return false;
@@ -204,7 +204,7 @@ $this->load->view('include/side_menu');
         if(tahun == 0){
 			swal({
 				title	: "Error Message!",
-				text	: 'Filter tahun asset empty ...',
+				text	: 'Asset year filter is empty.',
 				type	: "warning"
 			});
 			return false;
@@ -225,14 +225,14 @@ $this->load->view('include/side_menu');
 	$(document).on('click', '.detail', function(e){
 		e.preventDefault();
 		loading_spinner();
-		$("#head_title").html("<b>DETAIL ASSET</b>");
+		$("#head_title").html("<b>ASSET DETAIL</b>");
 		$("#view").load(base_url + active_controller +'/modal_view/'+$(this).data('id'));
 		$("#ModalView").modal();
 	});
 
 	$(document).on('click', '#jurnal', function(e){
 		e.preventDefault();
-		$("#head_title").html("<b>NEXT DEPRESIASI</b>");
+		$("#head_title").html("<b>NEXT DEPRECIATION</b>");
 		$("#view").load(base_url + active_controller +'/modal_jurnal');
 		$("#ModalView").modal();
 	});
@@ -240,13 +240,13 @@ $this->load->view('include/side_menu');
 	$(document).on('click', '#simpanjurnal', function(e){
 		e.preventDefault();
 		swal({
-			  title: "Apakah anda yakin ?",
-			  text: "Data akan diproses ke jurnal erp!",
+			  title: "Are you sure?",
+			  text: "The data will be processed to the ERP journal!",
 			  type: "warning",
 			  showCancelButton: true,
 			  confirmButtonClass: "btn-danger",
-			  confirmButtonText: "Ya, Lanjutkan!",
-			  cancelButtonText: "Tidak, Batalkan!",
+			  confirmButtonText: "Yes, Continue!",
+			  cancelButtonText: "No, Cancel!",
 			  closeOnConfirm: false,
 			  closeOnCancel: false
 			},
@@ -266,7 +266,7 @@ $this->load->view('include/side_menu');
 						success		: function(data){								
 							if(data.status == 1){											
 								swal({
-									  title	: "Berhasil Tersimpan !",
+									  title	: "Saved successfully!",
 									  text	: data.pesan,
 									  type	: "success",
 									  timer	: 7000
@@ -276,7 +276,7 @@ $this->load->view('include/side_menu');
 							else{ 
 								if(data.status == 0){
 									swal({
-									  title	: "Gagal Tersimpan !",
+									  title	: "Failed to save!",
 									  text	: data.pesan,
 									  type	: "warning",
 									  timer	: 7000
@@ -284,7 +284,7 @@ $this->load->view('include/side_menu');
 								}
 								else{
 									swal({
-									  title	: "Terjadi kesalahan saat proses simpan data!",
+									  title	: "An error occurred while saving the data!",
 									  text	: data.pesan,
 									  type	: "warning",
 									  timer	: 7000
@@ -296,7 +296,7 @@ $this->load->view('include/side_menu');
 						error: function() {
 							swal({
 							  title				: "Error Message !",
-							  text				: 'Terjadi kesalahan saat proses simpan data!',						
+							  text				: 'An error occurred while saving the data!',						
 							  type				: "warning",								  
 							  timer				: 7000
 							});
@@ -304,7 +304,7 @@ $this->load->view('include/side_menu');
 						}
 					});
 			  } else {
-				swal("Dibatalkan", "Data dapat diproses kembali", "error");
+				swal("Cancelled", "The data can be processed again", "error");
 				$('#simpanjurnal').prop('disabled',false);
 				return false;
 			  }

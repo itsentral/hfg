@@ -35,11 +35,11 @@ $this->load->view('include/side_menu');
 					<input type="hidden" class="form-control divide" id="sisa_dp" name="sisa_dp" value="<?php echo $data->sisa_dp; ?>" readonly tabindex="-1">
 					<label class="control-label">Payment Date</label>
 					<input type="text" id="req_payment_date" name="req_payment_date" value="<?php echo $data->req_payment_date; ?>" class="form-control tanggal" required>
-					<label class="control-label">Nomor Invoice</label>
+					<label class="control-label">Invoice Number</label>
 					<input type="text" class="form-control" id="no_invoice" name="no_invoice" value="<?php echo $data->no_invoice; ?>" readonly>
-					<label class="control-label">Keterangan Invoice</label>
+					<label class="control-label">Invoice Description</label>
 					<input type="text" class="form-control" id="keterangan" name="keterangan" value="<?php echo $data->keterangan; ?>" readonly>
-					<label class="control-label">PO yang akan dibayar</label>
+					<label class="control-label">PO to be paid</label>
 					<input type="text" class="form-control divide" id="nilai_po_invoice" name="nilai_po_invoice" value="<?=(isset($data)?$data->nilai_po_invoice:0)?>" placeholder=0 readonly>
 					<label class="control-label">PPN</label>
 					<div class="input-group">
@@ -54,11 +54,11 @@ $this->load->view('include/side_menu');
 					<input type="text" class="form-control divide" id="nilai_pph_invoice" name="nilai_pph_invoice" value="<?=(isset($data)?$data->nilai_pph_invoice:0)?>" readonly tabindex="-1">
 					<label class="control-label">PO+PPN-PPH</label>
 					<input type="text" class="form-control divide" id="nilai_invoice" name="nilai_invoice" value="<?=(isset($data)?$data->nilai_invoice:0)?>" placeholder=0 required readonly>
-					<label class="control-label">Nilai Potongan DP</label>
+					<label class="control-label">DP Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_dp" name="potongan_dp" placeholder=0 value="<?=(isset($data)?$data->potongan_dp:0)?>" readonly>
-					<label class="control-label">Nilai Potongan Claim</label>
+					<label class="control-label">Claim Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_claim" name="potongan_claim" placeholder=0 value="<?=(isset($data)?$data->potongan_claim:0)?>" readonly>
-					<label class="control-label">Keterangan Potongan</label>
+					<label class="control-label">Deduction Description</label>
 					<input type="text" class="form-control" id="keterangan_potongan" name="keterangan_potongan" value="<?=(isset($data)?$data->keterangan_potongan:0)?>" readonly>
 					<label class="control-label">Request Payment</label>
 					<input type="text" class="form-control divide" id="request_payment" name="request_payment" value="<?=(isset($data)?$data->request_payment:0)?>" placeholder=0 required readonly>
@@ -66,17 +66,17 @@ $this->load->view('include/side_menu');
 			    </div>
 				<div class="row">
 				  <div class="col-md-6">
-					<label class="control-label">Tanggal Pembayaran</label>
+					<label class="control-label">Payment Date</label>
 					<input type="text" id="payment_date" name="payment_date" value="<?php echo $data->payment_date; ?>" class="form-control tanggal" required>
 					<label class="control-label">Bank</label>
 					<?php
 						echo form_dropdown('bank_coa',$datacoa, $data->bank_coa, array('id'=>'bank_coa','class'=>'form-control select2','required'=>'required'));
 					?>
-					<label class="control-label">Nilai Bank</label>
+					<label class="control-label">Bank Value</label>
 					<input type="text" class="form-control divide" id="nilai_bayar_bank" name="nilai_bayar_bank" value="<?php echo $data->nilai_bayar_bank; ?>" placeholder=0 onblur="cek_kurs()" required>
 					<label class="control-label">Kurs Bank</label>
 					<input type="text" class="form-control divide" id="curs" name="curs" value="<?php echo $data->curs; ?>" onblur="cek_kurs()" >
-					<label class="control-label">Nilai Bank Rupiah</label>
+					<label class="control-label">Bank Rupiah Value</label>
 					<input type="text" class="form-control divide" id="bank_nilai" name="bank_nilai" value="<?php echo $data->bank_nilai; ?>" placeholder=0 required tabindex="-1" >
 					<!--
 					readonly
@@ -87,18 +87,18 @@ $this->load->view('include/side_menu');
 					-->
 				  </div>
 				  <div class="col-md-6"><br /><br /><br />
-					<label class="control-label">Biaya Admin Bank</label>
+					<label class="control-label">Bank Admin Fee</label>
 					<input type="text" class="form-control divide" id="biaya_admin_forex" name="biaya_admin_forex" value="<?php echo $data->biaya_admin_forex; ?>" placeholder=0 onblur="cek_kurs_admin('')">
 					<label class="control-label">Kurs Admin 1</label>
 					<input type="text" class="form-control divide" id="curs_admin" name="curs_admin" value="<?php echo $data->curs_admin; ?>" onblur="cek_kurs_admin('')" >
-					<label class="control-label">Biaya Admin 1 Rupiah</label>
+					<label class="control-label">Admin Fee 1 Rupiah</label>
 					<input type="text" class="form-control divide" id="biaya_admin" name="biaya_admin" value="<?php echo $data->biaya_admin; ?>" placeholder=0 required readonly tabindex="-1">
 
-					<label class="control-label">Biaya Admin Bank 2</label>
+					<label class="control-label">Bank Admin Fee 2</label>
 					<input type="text" class="form-control divide" id="biaya_admin_forex2" name="biaya_admin_forex2" value="<?php echo $data->biaya_admin_forex2; ?>" placeholder=0 onblur="cek_kurs_admin('2')">
 					<label class="control-label">Kurs Admin 2</label>
 					<input type="text" class="form-control divide" id="curs_admin2" name="curs_admin2" value="<?php echo $data->curs_admin2; ?>" onblur="cek_kurs_admin('2')" >
-					<label class="control-label">Biaya Admin 2 Rupiah</label>
+					<label class="control-label">Admin Fee 2 Rupiah</label>
 					<input type="text" class="form-control divide" id="biaya_admin2" name="biaya_admin2" value="<?php echo $data->biaya_admin2; ?>" placeholder=0 required tabindex="-1">
 
 				  </div>
@@ -108,7 +108,7 @@ $this->load->view('include/side_menu');
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?=base_url()?>pembayaran_material/payment" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>pembayaran_material/payment" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>
@@ -122,11 +122,11 @@ $this->load->view('include/side_menu');
               </div>
             </div>
             <div class="box-body">
-				<h4>Detail PO</h4>
+				<h4>PO Detail</h4>
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th>Nama Barang</th>
+							<th>Item Name</th>
 							<th>Qty</th>
 							<th>Price/Unit</th>
 							<th>Total Price</th>
@@ -162,7 +162,7 @@ $this->load->view('include/side_menu');
 						<th class="text-center" width='5%'>Group TOP</th>
 						<th class="text-center" width='8%'>Progress (%)</th>
 						<th class="text-center" width='11%'>Value</th>
-						<th class="text-center" width='25%'>Keterangan</th>
+						<th class="text-center" width='25%'>Description</th>
 						<th class="text-center" width='10%'>Est Jatuh Tempo</th>
 						<th class="text-center" width='25%'>Persyaratan</th>
 					</tr>
@@ -222,7 +222,7 @@ $this->load->view('include/side_menu');
 			ttl_alokasi=(parseFloat(ttl_alokasi)+parseFloat($(this).val()));
 		});
 		if(nilai_req!=ttl_alokasi) {
-			alert("Nilai Request tidak sama dengan nilai alokasi");
+			alert("The Request Value does not equal the allocation value");
 			return "ERROR";
 		}else{
 			return "OK";

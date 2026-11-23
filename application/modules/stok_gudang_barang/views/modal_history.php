@@ -4,18 +4,18 @@
         <div class="card-body p-3">
             <div class="row align-items-center g-2">
                 <div class="col-md-7 col-12">
-                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Nama Barang Stok</span>
+                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Stock Item Name</span>
                     <h5 class="fw-bold text-primary mb-0">
-                        <?= strtoupper(get_name('accessories', 'stock_name', 'id', $material)); ?>
+                        <?= strtoupper((string) get_name('accessories', 'stock_name', 'id', $material)); ?>
                     </h5>
                     <small class="text-muted font-monospace">
-                        Kode: <?= strtoupper(get_name('accessories', 'id_stock', 'id', $material)); ?>
+                        Kode: <?= strtoupper((string) get_name('accessories', 'id_stock', 'id', $material)); ?>
                     </small>
                 </div>
                 <div class="col-md-5 col-12 text-md-end">
-                    <span class="text-muted text-uppercase fw-semibold d-block" style="font-size: 0.75rem;">Gudang Terpilih</span>
+                    <span class="text-muted text-uppercase fw-semibold d-block" style="font-size: 0.75rem;">Selected Warehouse</span>
                     <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 fs-6">
-                        <i class="fa fa-warehouse me-1"></i> <?= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $gudang)); ?>
+                        <i class="fa fa-warehouse me-1"></i> <?= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $gudang)); ?>
                     </span>
                 </div>
             </div>
@@ -28,15 +28,15 @@
             <thead class="table-light sticky-top">
                 <tr>
                     <th class="text-center" width="4%">#</th>
-                    <th class="text-center" width="13%">Waktu Mutasi</th>
-                    <th class="text-start" width="12%">Oleh (User)</th>
-                    <th class="text-start" width="10%">Dari Gudang</th>
-                    <th class="text-start" width="10%">Ke Gudang</th>
-                    <th class="text-end" width="9%">Qty Mutasi</th>
-                    <th class="text-end" width="9%">Stok Awal</th>
-                    <th class="text-end" width="9%">Stok Akhir</th>
-                    <th class="text-center" width="11%">No Transaksi</th>
-                    <th class="text-start">Keterangan</th>
+                    <th class="text-center" width="13%">Mutation Time</th>
+                    <th class="text-start" width="12%">By (User)</th>
+                    <th class="text-start" width="10%">From Warehouse</th>
+                    <th class="text-start" width="10%">To Warehouse</th>
+                    <th class="text-end" width="9%">Mutation Qty</th>
+                    <th class="text-end" width="9%">Opening Stock</th>
+                    <th class="text-end" width="9%">Closing Stock</th>
+                    <th class="text-center" width="11%">Transaction No.</th>
+                    <th class="text-start">Description</th>
                 </tr>
             </thead>
             <tbody>

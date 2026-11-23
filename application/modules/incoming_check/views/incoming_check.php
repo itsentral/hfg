@@ -87,7 +87,7 @@
 	$(document).on('click', '.detailAjust', function(e) {
 		e.preventDefault();
 
-		$("#head_title2").html("<b>DETAIL INCOMING</b>");
+		$("#head_title2").html("<b>INCOMING DETAIL</b>");
 		$.ajax({
 			type: 'POST',
 			url: base_url + active_controller + '/modal_detail_adjustment/' + $(this).data('kode_trans') + '/' + $(this).data('tanda'),

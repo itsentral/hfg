@@ -47,7 +47,7 @@ $pembeda = substr((string) $header[0]['so_number'],0,1);
 							<th class='text-center th'>Estimasi (Kg)</th>
 							<th class='text-center th'>Stock Free (Kg)</th>
 							<th class='text-center th'>Use Stock (Kg)</th>
-							<th class='text-center th'>Sisa Stock Free (Kg)</th>
+							<th class='text-center th'>Remaining Free Stock (Kg)</th>
 							<?php } ?>
 							<th class='text-center th'>Min Stock</th>
 							<th class='text-center th'>Max Stock</th>
@@ -240,13 +240,13 @@ $pembeda = substr((string) $header[0]['so_number'],0,1);
 			var pr_rev 	= $('#pr_rev_'+id).val();
 			// alert(id);
 			swal({
-			title: "Anda Yakin?",
+			title: "Are you sure?",
 			text: "Process "+action+" PR !",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonClass: "btn-info",
 			confirmButtonText: "Ya!",
-			cancelButtonText: "Batal",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false
 			},
 			function(isConfirm){
@@ -261,7 +261,7 @@ $pembeda = substr((string) $header[0]['so_number'],0,1);
 				success:function(result){
 					if(result.status == '1'){
 						swal({
-							title: "Sukses",
+							title: "Success",
 							text : result.pesan,
 							type : "success"
 							},
@@ -279,7 +279,7 @@ $pembeda = substr((string) $header[0]['so_number'],0,1);
 				error : function(){
 					swal({
 						title : "Error",
-						text  : "Data error. Gagal request Ajax",
+						text  : "Data error. Ajax request failed.",
 						type  : "error"
 						})
 				}

@@ -159,7 +159,7 @@ class Request_pr_stok_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $row['request_date'] . "</div>";
 
             $approve  = "";
-            $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-warning' title='Detail PR' data-role='qtip'><i class='fa fa-eye'></i></a>";
+            $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-warning' title='PR Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
             $edit   = "";
             if ($this->ENABLE_MANAGE and COUNT($getCheck ?? []) > 0) {
                 $edit   = "<a href='" . site_url($this->uri->segment(1)) . '/edit_planning/' . $row['so_number'] . "' class='btn btn-sm btn-info' title='Edit PR' data-role='qtip'><i class='fa fa-edit'></i></a>";
@@ -490,7 +490,7 @@ class Request_pr_stok_model extends BF_Model
             $unit_pack = ($unit_packing != '0') ? $unit_packing : '';
 
             $nestedData[]  = "<div align='left'>
-									<input type='text' name='info_" . $nomor . "' id='info_" . $nomor . "' data-id='" . $row['id'] . "' data-no='" . $nomor . "' class='form-control input-md changeSave' style='width:100%;' placeholder='- Keterangan -' value='" . $info_pr . "'></div>
+									<input type='text' name='info_" . $nomor . "' id='info_" . $nomor . "' data-id='" . $row['id'] . "' data-no='" . $nomor . "' class='form-control input-md changeSave' style='width:100%;' placeholder='- Description -' value='" . $info_pr . "'></div>
 									<style>.tgl{cursor:pointer;}</style>
 									<script type='text/javascript'>
 									$('.chosen_select').select2({width: '100%'});

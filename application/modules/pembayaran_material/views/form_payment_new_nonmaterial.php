@@ -4,11 +4,11 @@
 		  <div class="box-header">
 				<div class="row">
 				  <div class="col-md-6">
-					<label class="control-label">Nomor Payment</label>
+					<label class="control-label">Payment Number</label>
 					<input type="text" id="no_payment" name="no_payment" value="<?php echo (isset($data)?$data->no_payment:""); ?>" class="form-control" placeholder ="Auto" readonly>
 				  </div>
 				  <div class="col-md-6">
-					<label class="control-label">Tanggal Pembayaran</label>
+					<label class="control-label">Payment Date</label>
 					<input type="text" id="payment_date" name="payment_date" value="<?php echo (isset($data)?$data->payment_date:date("Y-m-d")); ?>" class="form-control tanggal" required>
 				  </div>
 				</div>
@@ -22,7 +22,7 @@
 						<th class="text-center">Supplier</th>
 						<th class="text-center">Tipe Payment</th>
 						<th class="text-center">Currency</th>
-						<th class="text-center">PO yang akan dibayar</th>
+						<th class="text-center">PO to be paid</th>
 						<th class="text-center">PPN</th>
 						<th class="text-center">PPH</th>
 						<th class="text-center">Request Payment</th>
@@ -117,11 +117,11 @@
 					<?php
 						echo form_dropdown('bank_coa',$datacoa, (isset($data)?$data->bank_coa:''), array('id'=>'bank_coa','class'=>'form-control select2','required'=>'required'));
 					?>
-					<label class="control-label">Nilai Bank</label>
+					<label class="control-label">Bank Value</label>
 					<input type="text" class="form-control divide" id="nilai_bayar_bank" name="nilai_bayar_bank" value="<?php echo (isset($data)?$data->nilai_bayar_bank:$total); ?>" placeholder=0 onblur="cek_kurs()" required>
 					<label class="control-label">Kurs Bank</label>
 					<input type="text" class="form-control divide" id="curs" name="curs" value="<?php echo (isset($data)?$data->curs:1); ?>" onblur="cek_kurs()" >
-					<label class="control-label">Nilai Bank Rupiah</label>
+					<label class="control-label">Bank Rupiah Value</label>
 					<input type="text" class="form-control divide" id="bank_nilai" name="bank_nilai" value="<?php echo (isset($data)?$data->bank_nilai:0); ?>" placeholder=0 required tabindex="-1" >
 				  </div>
 				  <div class="col-md-6">
@@ -129,18 +129,18 @@
 					<?php
 						echo form_dropdown('bank_coa_admin',$datacoa, (isset($data)?$data->bank_coa_admin:''), array('id'=>'bank_coa_admin','class'=>'form-control select2','required'=>'required'));
 					?>
-					<label class="control-label">Biaya Admin Bank</label>
+					<label class="control-label">Bank Admin Fee</label>
 					<input type="text" class="form-control divide" id="biaya_admin_forex" name="biaya_admin_forex" value="<?php echo (isset($data)?$data->biaya_admin_forex:0); ?>" placeholder=0 onblur="cek_kurs_admin('')">
 					<label class="control-label">Kurs Admin 1</label>
 					<input type="text" class="form-control divide" id="curs_admin" name="curs_admin" value="<?php echo (isset($data)?$data->curs_admin:1); ?>" onblur="cek_kurs_admin('')" >
-					<label class="control-label">Biaya Admin 1 Rupiah</label>
+					<label class="control-label">Admin Fee 1 Rupiah</label>
 					<input type="text" class="form-control divide" id="biaya_admin" name="biaya_admin" value="<?php echo (isset($data)?$data->biaya_admin:0); ?>" placeholder=0 required readonly tabindex="-1">
 
-					<label class="control-label">Biaya Admin Bank 2</label>
+					<label class="control-label">Bank Admin Fee 2</label>
 					<input type="text" class="form-control divide" id="biaya_admin_forex2" name="biaya_admin_forex2" value="<?php echo (isset($data)?$data->biaya_admin_forex2:0); ?>" placeholder=0 onblur="cek_kurs_admin('2')">
 					<label class="control-label">Kurs Admin 2</label>
 					<input type="text" class="form-control divide" id="curs_admin2" name="curs_admin2" value="<?php echo (isset($data)?$data->curs_admin2:1); ?>" onblur="cek_kurs_admin('2')" >
-					<label class="control-label">Biaya Admin 2 Rupiah</label>
+					<label class="control-label">Admin Fee 2 Rupiah</label>
 					<input type="text" class="form-control divide" id="biaya_admin2" name="biaya_admin2" value="<?php echo (isset($data)?$data->biaya_admin2:0); ?>" placeholder=0 required tabindex="-1">
 				  </div>
 				</div>
@@ -149,7 +149,7 @@
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?=base_url()?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>
@@ -257,7 +257,7 @@
 			ttl_alokasi=(parseFloat(ttl_alokasi)+parseFloat($(this).val()));
 		});
 		if(nilai_req!=ttl_alokasi) {
-			alert("Nilai Request tidak sama dengan nilai alokasi");
+			alert("The Request Value does not equal the allocation value");
 			return "ERROR";
 		}else{
 			return "OK";

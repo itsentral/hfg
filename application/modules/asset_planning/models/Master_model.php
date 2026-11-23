@@ -302,7 +302,7 @@ class Master_model extends BF_Model {
 	}
 
 	function GetCategory(){
-		$category=array(''=>'','EXPENSE'=>'EXPENSE','RUTIN'=>'RUTIN','NON RUTIN'=>'NON RUTIN','PEMBAYARAN PERIODIK'=>'PEMBAYARAN PERIODIK','UMUM'=>'UMUM');
+		$category=array(''=>'','EXPENSE'=>'EXPENSE','RUTIN'=>'Routine','NON RUTIN'=>'Non-Routine','PEMBAYARAN PERIODIK'=>'Periodic Payment','UMUM'=>'General');
 		return $category;
 	}
 

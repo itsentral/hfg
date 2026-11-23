@@ -1744,7 +1744,7 @@ class Request_payment extends Admin_Controller
 				->row();
 			if ($nm_supplier == '' && !empty($get_invoice)) {
 				$nm_supplier = [];
-				$no_po = str_replace(', ', ',', $get_invoice->no_po);
+				$no_po = str_replace(', ', ',', $get_invoice->no_po ?? '');
 
 				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
@@ -1755,7 +1755,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 						
 						UNION ALL
@@ -1767,7 +1767,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -1781,7 +1781,7 @@ class Request_payment extends Admin_Controller
 							tr_purchase_order a
 							LEFT JOIN new_supplier b ON b.kode_supplier = a.id_suplier
 						WHERE
-							a.no_surat IN ('" . str_replace(",", "','", $no_po) . "')
+							a.no_surat IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY b.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -2022,7 +2022,7 @@ class Request_payment extends Admin_Controller
 				->row();
 			if ($nm_supplier == '' && !empty($get_invoice)) {
 				$nm_supplier = [];
-				$no_po = str_replace(', ', ',', $get_invoice->no_po);
+				$no_po = str_replace(', ', ',', $get_invoice->no_po ?? '');
 
 				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
@@ -2033,7 +2033,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 						
 						UNION ALL
@@ -2045,7 +2045,7 @@ class Request_payment extends Admin_Controller
 							LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp
 							LEFT JOIN new_supplier c ON c.kode_supplier = b.id_suplier
 						WHERE
-							a.kode_trans IN ('" . str_replace(",", "','", $no_po) . "')
+							a.kode_trans IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY c.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -2059,7 +2059,7 @@ class Request_payment extends Admin_Controller
 							tr_purchase_order a
 							LEFT JOIN new_supplier b ON b.kode_supplier = a.id_suplier
 						WHERE
-							a.no_surat IN ('" . str_replace(",", "','", $no_po) . "')
+							a.no_surat IN ('" . str_replace(",", "','", $no_po ?? '') . "')
 						GROUP BY b.nama
 					")->result();
 					foreach ($get_supplier as $item_supplier) {
@@ -2264,7 +2264,7 @@ class Request_payment extends Admin_Controller
 				$this->template->render('view_ret');
 			}
 		} else {
-			$id_po = str_replace(', ', ',', $get_invoice['no_po']);
+			$id_po = str_replace(', ', ',', $get_invoice['no_po'] ?? '');
 			$no_incoming = explode(',', (string) $id_po);
 
 			$this->template->set('data_invoice', $get_invoice);

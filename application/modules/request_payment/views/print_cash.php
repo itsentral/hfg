@@ -35,9 +35,9 @@ $nmuser = (!empty($data_pr->nm_pic)) ? $data_pr->nm_pic : '';
             <th colspan=6>PEMBELIAN CASH<br /><br /><br /></th>
         </tr>
         <tr>
-            <td nowrap colspan=2>No Dokumen : <?= $data_pr->no_non_po ?></td>
+            <td nowrap colspan=2>Document No : <?= $data_pr->no_non_po ?></td>
             <td nowrap colspan=2>Total : <?= number_format((float) $data_pr->total_pr) ?></td>
-            <td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime((string) $v_req_payment->tanggal)) ?></td>
+            <td nowrap colspan=2>Date : <?= date('d F Y', strtotime((string) $v_req_payment->tanggal)) ?></td>
         </tr>
         <tr>
             <th colspan=6><br /></th>

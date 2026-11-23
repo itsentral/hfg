@@ -40,8 +40,8 @@
                         <tr>
                             <th width="5%">#</th>
                             <th width="15%">No PR</th>
-                            <th width="15%">Tanggal PR</th>
-                            <th>Nama Barang</th>
+                            <th width="15%">PR Date</th>
+                            <th>Item Name</th>
                             <th width="15%">PR By</th>
                             <th width="15%">PR Date</th>
                             <th width="15%">Status</th>
@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<!-- Modal View Detail PR Asset -->
+<!-- Modal View PR Detail Asset -->
 <div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
@@ -104,11 +104,11 @@
         $('.child-' + idOfParent).toggle('slow');
     });
 
-    // Modal View Detail PR
+    // Modal View PR Detail
     $(document).on('click', '.view_modal_pr', function(e) {
         e.preventDefault();
         var no_pr = $(this).data('no_pr');
-        $('#head_title2').html('<i class="fa fa-file-text-o me-2"></i>Detail PR Asset [' + no_pr + ']');
+        $('#head_title2').html('<i class="fa fa-file-text-o me-2"></i>PR Asset Detail [' + no_pr + ']');
         $('#view2').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
         var modalEl = document.getElementById('ModalView2');
@@ -129,7 +129,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Gagal memuat detail PR Asset. Silakan coba kembali.'
+                    text: 'Failed to load PR Asset detail. Please try again.'
                 });
             }
         });

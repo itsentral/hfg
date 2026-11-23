@@ -40,11 +40,11 @@
 				</div>
 				<div class="col-md-4">
 					<label>
-					<input type="radio" class="radio-control" name="status" value="1" <?=$status1;?>> Aktif
+					<input type="radio" class="radio-control" name="status" value="1" <?=$status1;?>> Active
 					</label>
 					&nbsp &nbsp &nbsp
 					<label>
-					<input type="radio" class="radio-control" name="status" value="0" <?=$status2;?>> Non-Aktif
+					<input type="radio" class="radio-control" name="status" value="0" <?=$status2;?>> Inactive
 					</label>
 				</div>
 			</div>

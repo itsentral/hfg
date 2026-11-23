@@ -40,12 +40,12 @@ class Rate_negotiation_allowance extends Admin_Controller
         $rate_pct = (float) $this->input->post('rate_negotiation_allowance');
 
         if (empty($code_lv2)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Product Category wajib dipilih']);
+            echo json_encode(['status' => 0, 'pesan' => 'Product Category is required']);
             return;
         }
 
         if ($rate_pct < 0 || $rate_pct > 100) {
-            echo json_encode(['status' => 0, 'pesan' => 'Rate Extra Margin harus antara 0% dan 100%']);
+            echo json_encode(['status' => 0, 'pesan' => 'Extra Margin Rate must be between 0% and 100%']);
             return;
         }
 
@@ -58,7 +58,7 @@ class Rate_negotiation_allowance extends Admin_Controller
         if ($existing) {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Masih ada pengajuan perubahan untuk kategori ini yang menunggu keputusan GM.',
+                'pesan'  => 'There is still a change request for this category awaiting a GM decision.',
             ]);
             return;
         }
@@ -77,12 +77,12 @@ class Rate_negotiation_allowance extends Admin_Controller
 
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Pengajuan perubahan Extra Margin untuk ' . $cat_name . ' berhasil dikirim ke GM.',
+                'pesan'  => 'Extra Margin change request for ' . $cat_name . ' sent to the GM successfully.',
             ]);
         } else {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal mengirim pengajuan perubahan rate.',
+                'pesan'  => 'Failed to send the rate change request.',
             ]);
         }
     }
@@ -113,13 +113,13 @@ class Rate_negotiation_allowance extends Admin_Controller
 
         $id = (int) $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID pengajuan tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid request ID']);
             return;
         }
 
         $req = $this->rna_model->get_request_by_id($id);
         if (!$req || $req->status !== 'Menunggu Approval GM') {
-            echo json_encode(['status' => 0, 'pesan' => 'Pengajuan sudah tidak dalam status menunggu']);
+            echo json_encode(['status' => 0, 'pesan' => 'The request is no longer pending']);
             return;
         }
 
@@ -130,12 +130,12 @@ class Rate_negotiation_allowance extends Admin_Controller
 
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Pengajuan Extra Margin ' . $req->nm_category . ' berhasil disetujui (Approved). Rate aktif telah diperbarui.',
+                'pesan'  => 'Extra Margin Request ' . $req->nm_category . ' berhasil disetujui (Approved). Rate aktif telah diperbarui.',
             ]);
         } else {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal memproses persetujuan pengajuan.',
+                'pesan'  => 'Failed to process the request approval.',
             ]);
         }
     }
@@ -149,18 +149,18 @@ class Rate_negotiation_allowance extends Admin_Controller
         $reason = trim($this->input->post('reject_reason'));
 
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID pengajuan tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid request ID']);
             return;
         }
 
         if (empty($reason)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Alasan Reject wajib diisi']);
+            echo json_encode(['status' => 0, 'pesan' => 'Reject Reason is required']);
             return;
         }
 
         $req = $this->rna_model->get_request_by_id($id);
         if (!$req || $req->status !== 'Menunggu Approval GM') {
-            echo json_encode(['status' => 0, 'pesan' => 'Pengajuan sudah tidak dalam status menunggu']);
+            echo json_encode(['status' => 0, 'pesan' => 'The request is no longer pending']);
             return;
         }
 
@@ -170,12 +170,12 @@ class Rate_negotiation_allowance extends Admin_Controller
 
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Pengajuan Extra Margin ' . $req->nm_category . ' berhasil ditolak (Rejected). Alasan telah disimpan.',
+                'pesan'  => 'Extra Margin Request ' . $req->nm_category . ' berhasil ditolak (Rejected). Alasan telah disimpan.',
             ]);
         } else {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal memproses penolakan pengajuan.',
+                'pesan'  => 'Failed to process the request rejection.',
             ]);
         }
     }
@@ -184,7 +184,7 @@ class Rate_negotiation_allowance extends Admin_Controller
     public function get_detail_impact()
     {
         if (!has_permission($this->viewPermission) && !has_permission($this->viewAppPermission)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Akses ditolak']);
+            echo json_encode(['status' => 0, 'pesan' => 'Access denied']);
             return;
         }
 
@@ -207,7 +207,7 @@ class Rate_negotiation_allowance extends Admin_Controller
         }
 
         if (empty($code_lv2)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Kategori produk tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid product category']);
             return;
         }
 

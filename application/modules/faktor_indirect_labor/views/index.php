@@ -22,7 +22,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
             <h5 class="mb-0 fw-bold text-dark">
                 <i class="fa fa-percent text-primary me-2"></i> Faktor Indirect Labor (Global)
             </h5>
-            <small class="text-muted">Pengali Man Power Cost (satu nilai untuk seluruh produk).</small>
+            <small class="text-muted">Man Power Cost multiplier (one value for all products).</small>
         </div>
         <?php if ($ENABLE_MANAGE): ?>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-faktor">
@@ -32,7 +32,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
     </div>
     <div class="card-body">
         <div class="alert alert-info py-2 mb-4">
-            <i class="fa fa-info-circle me-1"></i> Faktor mengalikan <code>(Total Man Hour &times; Rate 1/3 Operator + Rate Borongan Helper Rp/Meter)</code> pada Man Power Cost. Perubahan nilai tidak mengubah Pricelist snapshot yang sudah disetujui.
+            <i class="fa fa-info-circle me-1"></i> The factor multiplies <code>(Total Man Hour &times; Rate 1/3 Operator + Rate Borongan Helper Rp/Meter)</code> in Man Power Cost. Changing the value does not change approved Pricelist snapshots.
         </div>
 
         <div class="table-responsive">
@@ -40,7 +40,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                 <thead class="table-light">
                     <tr>
                         <th class="text-end" width="220">Faktor Indirect Labor</th>
-                        <th>Keterangan Rumus</th>
+                        <th>Formula Description</th>
                         <th class="text-center" width="200">Last Update</th>
                         <?php if ($ENABLE_MANAGE): ?>
                             <th class="text-center" width="120">Aksi</th>
@@ -79,7 +79,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
             <i class="fa fa-table me-2"></i> Contoh Dampak: Man Power Cost per Product Category
         </h5>
         <small class="text-muted">
-            Formula: <code>Man Power Cost (Rp/Meter) = Jumlah sebelum Faktor &times; Faktor Indirect Labor</code>. Hanya baca.
+            Formula: <code>Man Power Cost (Rp/Meter) = Amount before Factor &times; Indirect Labor Factor</code>. Hanya baca.
         </small>
     </div>
     <div class="card-body p-0">
@@ -89,7 +89,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                     <tr>
                         <th class="text-center" width="50">#</th>
                         <th>Product Category</th>
-                        <th class="text-end" width="250">Jumlah sebelum Faktor (Rp/Meter)</th>
+                        <th class="text-end" width="250">Amount before Factor (Rp/Meter)</th>
                         <th class="text-end" width="180">&times; Faktor Indirect Labor</th>
                         <th class="text-end" width="250">Man Power Cost (Rp/Meter)</th>
                     </tr>
@@ -101,7 +101,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                                 <td class="text-center"><?= $idx + 1 ?></td>
                                 <td class="fw-bold"><?= htmlspecialchars(strtoupper((string) $s->nama)) ?></td>
                                 <td class="text-end">
-                                    <?= $s->has_data ? 'Rp ' . number_format((float) $s->subtotal, 2, ',', '.') : '<span class="badge bg-warning text-dark">Data belum lengkap</span>' ?>
+                                    <?= $s->has_data ? 'Rp ' . number_format((float) $s->subtotal, 2, ',', '.') : '<span class="badge bg-warning text-dark">Data is incomplete</span>' ?>
                                 </td>
                                 <td class="text-end fw-bold text-primary">
                                     <?= number_format((float) $s->faktor, 2) ?>
@@ -131,18 +131,18 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                 </div>
                 <div class="modal-body p-4">
                     <div class="alert alert-warning py-2 small mb-3">
-                        <i class="fa fa-exclamation-triangle me-1"></i> Perubahan nilai ini berlaku untuk semua produk dan mempengaruhi perhitungan Man Power Cost.
+                        <i class="fa fa-exclamation-triangle me-1"></i> Changing this value applies to all products and affects the Man Power Cost calculation.
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Faktor Indirect Labor <span class="text-danger">*</span></label>
                         <input type="number" step="0.0001" min="0.0001" name="faktor_indirect_labor" class="form-control form-control-lg" required
                             value="<?= number_format((float) $faktor->faktor_indirect_labor, 4, '.', '') ?>">
-                        <div class="form-text text-muted">Nilai pengali harus lebih besar dari 0 (default: 1.5000).</div>
+                        <div class="form-text text-muted">The multiplier must be greater than 0 (default: 1.5000).</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Simpan</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Save</button>
                 </div>
             </form>
         </div>

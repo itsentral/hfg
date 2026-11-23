@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-4 mt-3">
             <select name="supplier" id="select_supplier" class="form-control">
-                <option value="">- Pilih Supplier -</option>
+                <option value="">- Select Supplier -</option>
                 <?php
                 foreach ($list_supplier as $item_supp) {
                     echo '<option value="' . $item_supp->kode_supplier . '">' . $item_supp->nama . '</option>';
@@ -34,7 +34,7 @@
                     <th class="text-center">No. PO</th>
                     <th class="text-center">No. Invoice</th>
                     <th class="text-center">No. Payment</th>
-                    <th class="text-center">Tanggal Invoice</th>
+                    <th class="text-center">Invoice Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">Nominal Invoice</th>
                     <th class="text-center">Status</th>
@@ -89,7 +89,7 @@
                         $nm_supplier = '';
                     }
 
-                    $status = '<div class="badge rounded-pill bg-warning">Belum Lunas</div>';
+                    $status = '<div class="badge rounded-pill bg-warning">Unpaid</div>';
                     // if($id_rec_invoice !== ''){
                     $get_invoice_payment = $this->db->get_where('payment_approve', ['no_doc' => $item['id'], 'status' => 2])->result();
                     if (count($get_invoice_payment ?? []) > 0) {
@@ -113,7 +113,7 @@
                             LEFT JOIN dt_trans_po b ON b.id = a.id_po_detail
                             LEFT JOIN tr_purchase_order c ON c.no_po = b.no_po
                         WHERE
-                            a.kode_trans IN ('" . str_replace(', ', ',', str_replace(",", "','", $item['no_po'])) . "')
+                            a.kode_trans IN ('" . str_replace(', ', ',', str_replace(",", "','", $item['no_po'] ?? '')) . "')
                         GROUP BY c.no_surat
 
                         UNION ALL
@@ -125,7 +125,7 @@
                             LEFT JOIN dt_trans_po b ON b.id = a.no_ipp
                             LEFT JOIN tr_purchase_order c ON c.no_po = b.no_po
                         WHERE
-                            a.kode_trans IN ('" . str_replace(', ', ',', str_replace(",", "','", $item['no_po'])) . "')
+                            a.kode_trans IN ('" . str_replace(', ', ',', str_replace(",", "','", $item['no_po'] ?? '')) . "')
                         GROUP BY c.no_surat
                     ")->result();
                     foreach ($get_no_po as $item_no_po) {

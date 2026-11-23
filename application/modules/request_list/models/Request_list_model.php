@@ -2,6 +2,12 @@
 
 class Request_list_model extends BF_Model
 {
+    private $stock_move_error = null;
+    private $stock_move_changes = [];
+
+    public function get_stock_move_error() { return $this->stock_move_error; }
+    public function get_stock_move_changes() { return $this->stock_move_changes; }
+
     public function __construct()
     {
         parent::__construct();
@@ -199,7 +205,7 @@ class Request_list_model extends BF_Model
     {
         $pack_code = trim((string) $pack_code);
         if ($pack_code === '') {
-            return ['status' => false, 'message' => 'Nomor Pack wajib diisi.'];
+            return ['status' => false, 'message' => 'Pack Number is required.'];
         }
 
         $pack = $this->db->query(
@@ -208,15 +214,15 @@ class Request_list_model extends BF_Model
         )->row_array();
 
         if (!$pack) {
-            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" tidak ditemukan atau tidak aktif.'];
+            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" not found or inactive.'];
         }
 
         $pack_kd = strtoupper(trim((string) $pack['kd_gudang']));
         if ($pack_kd === 'PRT') {
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah berada di gudang WRH Production 2 (PRT).'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' is already in warehouse WRH Production 2 (PRT).'];
         }
         if ($pack_kd !== 'PRO') {
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' berada di gudang ' . ($pack_kd ?: '-') . '. Scan hanya menerima pack dari gudang PRO (WRH Production 1).'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' is in warehouse ' . ($pack_kd ?: '-') . '. Scan hanya menerima pack dari gudang PRO (WRH Production 1).'];
         }
 
         $coils = $this->db->query(
@@ -229,7 +235,7 @@ class Request_list_model extends BF_Model
         )->result_array();
 
         if (empty($coils)) {
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' tidak memiliki coil aktif (kosong / sudah terpakai).'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' has no active coils (empty / already used).'];
         }
 
         $eligible_coils = [];
@@ -241,13 +247,13 @@ class Request_list_model extends BF_Model
             $sp      = trim((string) $c['status_proses']);
 
             if ($coil_kd === 'PRT' || $sp === 'in_transit') {
-                return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah memiliki coil di WRH Production 2 (PRT).'];
+                return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' already has coils in WRH Production 2 (PRT).'];
             }
             if ($coil_kd !== 'PRO') {
-                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' berada di gudang ' . ($coil_kd ?: '-') . ' (scan hanya menerima PRO).'];
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' in pack ' . $pack['pack_code'] . ' is in warehouse ' . ($coil_kd ?: '-') . ' (scan hanya menerima PRO).'];
             }
             if (in_array($sp, ['unpacked', 'consumed', 'wip', 'on_hold', 'finish_good'], true)) {
-                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' berstatus "' . $sp . '" dan tidak dapat dipindahkan.'];
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' in pack ' . $pack['pack_code'] . ' berstatus "' . $sp . '" and cannot be moved.'];
             }
 
             $total_net   += (float) $c['net_weight'];
@@ -257,7 +263,7 @@ class Request_list_model extends BF_Model
 
         $spk_list = $this->get_scannable_spk_list();
         if (empty($spk_list)) {
-            return ['status' => false, 'message' => 'Tidak ada SPK aktif yang dapat dipilih saat ini.'];
+            return ['status' => false, 'message' => 'There is no active SPK to select at this time.'];
         }
 
         return [
@@ -289,11 +295,13 @@ class Request_list_model extends BF_Model
      */
     public function confirm_scan_pack_to_prt($pack_code, $spk_no, $created_by)
     {
+        $this->stock_move_error = null;
+        $this->stock_move_changes = [];
         $pack_code = trim((string) $pack_code);
         $spk_no    = trim((string) $spk_no);
 
         if ($pack_code === '' || $spk_no === '') {
-            return ['status' => false, 'message' => 'No. Pack dan No. SPK wajib diisi.'];
+            return ['status' => false, 'message' => 'Pack No. and SPK No. are required.'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -312,7 +320,7 @@ class Request_list_model extends BF_Model
         }
         if ($spk['status'] === 'Cancelled') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat dipilih.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' has status Cancelled and cannot be selected.'];
         }
 
         $done_pr = $this->db->query(
@@ -327,7 +335,7 @@ class Request_list_model extends BF_Model
 
         if ($done_pr) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah selesai (Done) pada Production Report.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' is already finished (Done) in the Production Report.'];
         }
 
         $pack = $this->db->query(
@@ -337,17 +345,17 @@ class Request_list_model extends BF_Model
 
         if (!$pack) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" tidak ditemukan atau tidak aktif.'];
+            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" not found or inactive.'];
         }
 
         $pack_kd = strtoupper(trim((string) $pack['kd_gudang']));
         if ($pack_kd === 'PRT') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah berada di gudang WRH Production 2 (PRT).'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' is already in warehouse WRH Production 2 (PRT).'];
         }
         if ($pack_kd !== 'PRO') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' berada di gudang ' . ($pack_kd ?: '-') . ' (hanya menerima PRO).'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' is in warehouse ' . ($pack_kd ?: '-') . ' (hanya menerima PRO).'];
         }
 
         $coils = $this->db->query(
@@ -357,7 +365,7 @@ class Request_list_model extends BF_Model
 
         if (empty($coils)) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' tidak memiliki coil aktif.'];
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' has no active coils.'];
         }
 
         foreach ($coils as $c) {
@@ -365,7 +373,7 @@ class Request_list_model extends BF_Model
             $sp      = trim((string) $c['status_proses']);
             if ($coil_kd !== 'PRO' || in_array($sp, ['in_transit', 'unpacked', 'consumed', 'wip', 'on_hold', 'finish_good'], true)) {
                 $this->db->trans_rollback();
-                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' tidak berada pada kondisi siap di gudang PRO.'];
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' in pack ' . $pack['pack_code'] . ' is not in a ready state in the PRO warehouse.'];
             }
         }
 
@@ -377,7 +385,7 @@ class Request_list_model extends BF_Model
             $res = $this->_move_coil_to_prt((int) $c['id'], $spk_no, (int) $created_by);
             if ($res === false) {
                 $this->db->trans_rollback();
-                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' gagal dipindahkan ke PRT.'];
+                return ['status' => false, 'message' => $this->stock_move_error ?: 'Coil ' . $c['no_coil'] . ' failed to be moved to PRT.'];
             }
 
             $moved_coils[] = $c['no_coil'];
@@ -395,13 +403,13 @@ class Request_list_model extends BF_Model
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Gagal menyimpan transaksi pindah pack ke PRT.'];
+            return ['status' => false, 'message' => 'Failed to save the pack transfer transaction to PRT.'];
         }
 
         $this->db->trans_commit();
 
         $new_pack_snapshot = array_merge($old_pack_snapshot ?? [], [
-            'id_gudang' => 3,
+            'id_gudang' => $res['destination_id'],
             'kd_gudang' => 'PRT',
         ]);
 
@@ -415,6 +423,7 @@ class Request_list_model extends BF_Model
             'log_payload' => [
                 'old' => $old_pack_snapshot,
                 'new' => $new_pack_snapshot,
+                'detail_changes' => $this->stock_move_changes,
             ],
         ];
     }
@@ -431,7 +440,7 @@ class Request_list_model extends BF_Model
     {
         $spk_no = trim((string) $spk_no);
         if ($spk_no === '') {
-            return ['status' => false, 'message' => 'Nomor SPK tidak valid.'];
+            return ['status' => false, 'message' => 'Invalid SPK number.'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -449,12 +458,12 @@ class Request_list_model extends BF_Model
 
         if ($old['status'] === 'Released') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah berstatus Released.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' already has status Released.'];
         }
 
         if ($old['status'] === 'Cancelled') {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat di-release.'];
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' has status Cancelled and cannot be released.'];
         }
 
         $update_data = [
@@ -467,14 +476,14 @@ class Request_list_model extends BF_Model
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            return ['status' => false, 'message' => 'Gagal mengubah status SPK menjadi Released.'];
+            return ['status' => false, 'message' => 'Failed to change SPK status to Released.'];
         }
 
         $this->db->trans_commit();
 
         return [
             'status'      => true,
-            'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
+            'message'     => 'SPK ' . $spk_no . ' released successfully.',
             'log_payload' => [
                 'old' => $old,
                 'new' => array_merge($old ?? [], $update_data ?? []),
@@ -1139,20 +1148,10 @@ class Request_list_model extends BF_Model
     }
 
     /**
-     * Konfirmasi coil: PURE PINDAH POSISI GUDANG (status), TANPA perubahan nilai.
-     *
-     * Aturan bisnis:
-     * - Coil dipindah ke gudang PRT (id_gudang=3, kd_gudang='PRT', status_proses='in_transit').
-     * - warehouse_pack induk ikut dipindah ke PRT.
-     * - SELURUH coil dalam pack yang sama ikut dipindah ke PRT (walaupun tidak masuk detail SPK).
-     * - TIDAK ADA perubahan nilai apa pun pada warehouse_stock (qty_stock/total_nilai/harga_beli).
-     * - Ledger tetap dicatat sebagai keterangan pergerakan (history, transaction_detail, coil_per_day).
-     * - Nilai pada ledger memakai info coil itu sendiri (total_nilai = net_weight x harga_beli).
-     *
-     * @param int    $id_coil    ID coil yang dikonfirmasi (dari detail SPK)
-     * @param string $kode_trans Nomor SPK Coil (spk_coil_no)
-     * @param int    $created_by ID user
-     * @return array Array of result per coil (bisa lebih dari 1 karena companion pack). Kosong jika tidak ada yang diproses.
+     * Konfirmasi material: transfer coil PRO beserta companion pack dan saldo bukunya ke PRT.
+     * Qty/nilai OUT dan IN sama; nilai sumber memakai costbook PRO, tujuan moving average.
+     * WIP/Hold tetap dipakai langsung dari gudang asal. Caller wajib rollback jika ada error.
+     * @return array Ringkasan coil yang ditransfer; kosong jika sudah diproses atau sumber WIP/Hold.
      */
     public function reduce_coil_stock($id_coil, $kode_trans, $created_by)
     {
@@ -1186,230 +1185,83 @@ class Request_list_model extends BF_Model
     }
 
     /**
-     * Pindahkan SATU coil ke gudang PRT + catat ledger. TANPA perubahan nilai warehouse_stock.
+     * Pindahkan satu coil PRO ke PRT bersama saldo, ledger, snapshot dan kartu pemakaian.
      * Idempoten: coil yang sudah in_transit akan di-skip (return false).
      *
      * @return array|false Ringkasan per coil, atau false jika di-skip/invalid.
      */
     private function _move_coil_to_prt($id_coil, $kode_trans, $created_by)
     {
-        $coil = $this->db->query(
-            "SELECT * FROM warehouse_stock_coil WHERE id = ? AND status = 1 LIMIT 1 FOR UPDATE",
-            [$id_coil]
-        )->row_array();
-
-        if (!$coil) {
+        $this->load->helper(['material_stock', 'coil_kartu_stok']);
+        try {
+            $coil = $this->db->query(
+                'SELECT * FROM warehouse_stock_coil WHERE id = ? AND status = 1 LIMIT 1 FOR UPDATE',
+                [$id_coil]
+            )->row_array();
+            if (!$coil || ($coil['kd_gudang'] === 'PRT' && $coil['status_proses'] === 'in_transit')) {
+                return false;
+            }
+            // WIP/Hold dipakai langsung dari gudang asal, bukan ditransfer ulang ke PRT.
+            if (in_array($coil['kd_gudang'], ['WIP', 'HLD'], true)) {
+                return false;
+            }
+            if ($coil['kd_gudang'] !== 'PRO') {
+                throw new RuntimeException('Transfer scan only accepts coils from PRO.');
+            }
+            if (in_array($coil['status_proses'], ['in_transit','unpacked','consumed','wip','on_hold','finish_good'], true)) {
+                throw new RuntimeException('The source coil status in PRO is not ready to be moved.');
+            }
+            $source = material_stock_warehouse($this->db, 'PRO');
+            $destination = material_stock_warehouse($this->db, 'PRT');
+            if ((string)$coil['id_gudang'] !== (string)$source['id']) {
+                throw new RuntimeException('The coil source warehouse identity does not match the PRO master.');
+            }
+            $pack = !empty($coil['id_pack'])
+                ? $this->db->get_where('warehouse_pack', ['id' => $coil['id_pack']])->row_array() : [];
+            $now = date('Y-m-d H:i:s');
+            $qty = round((float)$coil['net_weight'], 3);
+            $context = [
+                'kode_trans' => $kode_trans, 'user' => $created_by, 'now' => $now,
+                'source' => $source, 'destination' => $destination, 'to_status' => 'in_transit',
+                'description' => 'Scan Pack PRO -> PRT (' . $kode_trans . ')',
+                'pack_code' => $pack['pack_code'] ?? null,
+            ];
+            $out = material_stock_post($this->db, $coil, $source, $qty, 'OUT', $context, $this->stock_move_changes);
+            $context['rate'] = $out['rate'];
+            $context['value'] = $out['value'];
+            $context['material_meta'] = $out['old'];
+            $in = material_stock_post($this->db, $coil, $destination, $qty, 'IN', $context, $this->stock_move_changes);
+            $update = ['id_gudang' => $destination['id'], 'kd_gudang' => 'PRT', 'status_proses' => 'in_transit',
+                'harga_beli' => $out['rate'], 'total_nilai' => $out['value']];
+            material_stock_write($this->db->where('id', $id_coil)->update('warehouse_stock_coil', $update));
+            if (!empty($coil['id_pack'])) {
+                material_stock_write($this->db->where('id', $coil['id_pack'])->update('warehouse_pack', [
+                    'id_gudang' => $destination['id'], 'kd_gudang' => 'PRT',
+                ]));
+            }
+            foreach ($update as $field => $value) {
+                $this->stock_move_changes['Coil ' . $id_coil . ' - ' . $field] = [
+                    'old' => $coil[$field] ?? null, 'new' => $value,
+                ];
+            }
+            material_stock_coil_snapshot($this->db, $coil, 'OUT', $created_by, $now);
+            material_stock_coil_snapshot($this->db, array_merge($coil, $update), 'IN', $created_by, $now);
+            if (!$this->db->table_exists('warehouse_coil_kartu_stok')) {
+                throw new RuntimeException('The Material Usage Card table is not available yet.');
+            }
+            material_stock_write(kartu_stok_record_entry([
+                'id_coil' => (int)$id_coil, 'no_trs' => kartu_stok_extract_parent_spk($kode_trans),
+                'id_material' => $coil['id_material'], 'nm_material' => $coil['nm_material'],
+                'no_coil' => $coil['no_coil'], 'kode_internal' => $coil['kode_internal'],
+                'status' => 'in', 'dari' => 'Produksi 1', 'ke' => 'prod. 2', 'qty_trans' => $qty,
+                'keterangan' => $context['description'], 'created_by' => $created_by, 'created_at' => $now,
+            ]));
+            return ['id_material' => $coil['id_material'], 'id_pack' => $coil['id_pack'],
+                'net_weight' => $qty, 'total_nilai' => $out['value'], 'destination_id' => $destination['id']];
+        } catch (RuntimeException $e) {
+            $this->stock_move_error = $e->getMessage();
             return false;
         }
-
-        // Guard idempoten: jika sudah in_transit (mis. sudah diproses sebagai companion), skip.
-        if (isset($coil['status_proses']) && $coil['status_proses'] === 'in_transit') {
-            return false;
-        }
-
-        $source_id_gudang = $coil['id_gudang'];
-        $source_kd_gudang = $coil['kd_gudang'];
-        $now              = date('Y-m-d H:i:s');
-        $today            = date('Y-m-d');
-
-        // Nilai info coil (opsi c) — TIDAK dipakai untuk mengubah warehouse_stock.
-        $harga_coil  = isset($coil['harga_beli']) ? (float) $coil['harga_beli'] : 0;
-        $net_weight  = isset($coil['net_weight']) ? (float) $coil['net_weight'] : 0;
-        $total_nilai = isset($coil['total_nilai']) && $coil['total_nilai'] !== null
-            ? (float) $coil['total_nilai']
-            : ($net_weight * $harga_coil);
-
-        // ===== UPDATE COIL: pindah ke PRT + set stage =====
-        $this->db->where('id', $id_coil)->update('warehouse_stock_coil', [
-            'id_gudang'     => 3,
-            'kd_gudang'     => 'PRT',
-            'status_proses' => 'in_transit',
-        ]);
-
-        // ===== UPDATE warehouse_pack: pindahkan pack ke PRT mengikuti coil =====
-        // Idempoten: aman meski dipanggil berkali-kali untuk coil pada pack yang sama.
-        if (!empty($coil['id_pack'])) {
-            $this->db->where('id', $coil['id_pack'])->update('warehouse_pack', [
-                'id_gudang' => 3,
-                'kd_gudang' => 'PRT',
-            ]);
-        }
-
-        // ===== LEDGER: warehouse_history (tanpa perubahan saldo) =====
-        $this->db->insert('warehouse_history', [
-            'id_material'     => $coil['id_material'],
-            'nm_material'     => $coil['nm_material'],
-            'id_gudang'       => $source_id_gudang,
-            'kd_gudang'       => $source_kd_gudang,
-            'id_gudang_dari'  => $source_id_gudang,
-            'kd_gudang_dari'  => $source_kd_gudang,
-            'id_gudang_ke'    => 3,
-            'kd_gudang_ke'    => 'PRT',
-            'qty_stock_awal'  => 0,
-            'qty_stock_akhir' => 0,
-            'no_ipp'          => $kode_trans,
-            'jumlah_mat'      => $net_weight,
-            'ket'             => 'Coil pindah ke PRT via SPK ' . $kode_trans . ' (Coil: ' . $coil['no_coil'] . ', dari ' . $source_kd_gudang . ')',
-            'no_coil'         => $coil['no_coil'],
-            'harga_beli'      => $harga_coil,
-            'total_harga'     => $total_nilai,
-            'saldo_awal'      => 0,
-            'saldo_akhir'     => 0,
-            'harga_baru'      => $harga_coil,
-            'harga_lama'      => $harga_coil,
-            'update_by'       => $created_by,
-            'update_date'     => $now,
-        ]);
-
-        // ===== TRANSACTION DETAIL: 2 baris — OUT dari sumber, IN ke PRT =====
-        $this->db->insert('warehouse_stock_transaction_detail', [
-            'kode_trans'     => $kode_trans,
-            'id_material'    => $coil['id_material'],
-            'nm_material'    => $coil['nm_material'],
-            'id_gudang'      => $source_id_gudang,
-            'kd_gudang'      => $source_kd_gudang,
-            'no_coil'        => $coil['no_coil'],
-            'parent_no_coil' => null,
-            'kode_internal'  => $coil['kode_internal'],
-            'gross_weight'   => !empty($coil['gross_weight']) ? $coil['gross_weight'] : 0,
-            'net_weight'     => $net_weight,
-            'length'         => !empty($coil['length']) ? $coil['length'] : 0,
-            'price_per_coil' => $harga_coil,
-            'cost_book'      => $harga_coil,
-            'status_qc'      => 'OUT',
-            'to_status'      => 'in_transit',
-            'created_at'     => $now,
-        ]);
-
-        $this->db->insert('warehouse_stock_transaction_detail', [
-            'kode_trans'     => $kode_trans,
-            'id_material'    => $coil['id_material'],
-            'nm_material'    => $coil['nm_material'],
-            'id_gudang'      => 3,
-            'kd_gudang'      => 'PRT',
-            'no_coil'        => $coil['no_coil'],
-            'parent_no_coil' => null,
-            'kode_internal'  => $coil['kode_internal'],
-            'gross_weight'   => !empty($coil['gross_weight']) ? $coil['gross_weight'] : 0,
-            'net_weight'     => $net_weight,
-            'length'         => !empty($coil['length']) ? $coil['length'] : 0,
-            'price_per_coil' => $harga_coil,
-            'cost_book'      => $harga_coil,
-            'status_qc'      => 'IN',
-            'to_status'      => 'in_transit',
-            'created_at'     => $now,
-        ]);
-
-        // ===== SNAPSHOT HARIAN: sisi OUT dari gudang sumber =====
-        $coil_snap_out = $this->db->query("
-            SELECT id FROM warehouse_coil_per_day
-            WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
-            LIMIT 1
-        ", [$coil['id_material'], $source_id_gudang, $coil['no_coil'], $today])->row();
-
-        $coil_snap_out_data = [
-            'nm_material'   => $coil['nm_material'],
-            'kd_gudang'     => $source_kd_gudang,
-            'kode_internal' => $coil['kode_internal'],
-            'gross_weight'  => $coil['gross_weight'],
-            'net_weight'    => $coil['net_weight'],
-            'length'        => $coil['length'],
-            'harga_beli'    => $harga_coil,
-            'total_nilai'   => $total_nilai,
-            'status'        => 'OUT',
-            'hist_date'     => $now,
-            'hist_by'       => $created_by,
-        ];
-
-        if (empty($coil_snap_out)) {
-            $this->db->insert('warehouse_coil_per_day', array_merge([
-                'id_material' => $coil['id_material'],
-                'id_gudang'   => $source_id_gudang,
-                'no_coil'     => $coil['no_coil'],
-            ], $coil_snap_out_data ?? []));
-        } else {
-            $this->db->update('warehouse_coil_per_day', $coil_snap_out_data, ['id' => $coil_snap_out->id]);
-        }
-
-        // ===== SNAPSHOT HARIAN: sisi IN ke gudang PRT =====
-        $coil_snap_in = $this->db->query("
-            SELECT id FROM warehouse_coil_per_day
-            WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
-            LIMIT 1
-        ", [$coil['id_material'], 3, $coil['no_coil'], $today])->row();
-
-        $coil_snap_in_data = [
-            'nm_material'   => $coil['nm_material'],
-            'kd_gudang'     => 'PRT',
-            'kode_internal' => $coil['kode_internal'],
-            'gross_weight'  => $coil['gross_weight'],
-            'net_weight'    => $coil['net_weight'],
-            'length'        => $coil['length'],
-            'harga_beli'    => $harga_coil,
-            'total_nilai'   => $total_nilai,
-            'status'        => 'IN',
-            'hist_date'     => $now,
-            'hist_by'       => $created_by,
-        ];
-
-        if (empty($coil_snap_in)) {
-            $this->db->insert('warehouse_coil_per_day', array_merge([
-                'id_material' => $coil['id_material'],
-                'id_gudang'   => 3,
-                'no_coil'     => $coil['no_coil'],
-            ], $coil_snap_in_data ?? []));
-        } else {
-            $this->db->update('warehouse_coil_per_day', $coil_snap_in_data, ['id' => $coil_snap_in->id]);
-        }
-
-        // ===== KARTU PEMAKAIAN MATERIAL: Catat IN masuk WRH. Production 2 (PRT) =====
-        $this->load->helper('coil_kartu_stok');
-        if ($this->db->table_exists('warehouse_coil_kartu_stok')) {
-            $parent_spk = kartu_stok_extract_parent_spk($kode_trans);
-            if ($parent_spk === '') {
-                $parent_spk = $kode_trans;
-            }
-            $exists_ks = $this->db->get_where('warehouse_coil_kartu_stok', [
-                'id_coil' => (int) $id_coil,
-                'no_trs'  => $parent_spk,
-                'status'  => 'in',
-                'ke'      => 'prod. 2',
-            ])->row();
-            if (!$exists_ks) {
-                kartu_stok_record_entry([
-                    'id_coil'       => (int) $id_coil,
-                    'no_trs'        => $parent_spk,
-                    'id_material'   => $coil['id_material'],
-                    'nm_material'   => $coil['nm_material'],
-                    'no_coil'       => $coil['no_coil'],
-                    'kode_internal' => $coil['kode_internal'],
-                    'status'        => 'in',
-                    'dari'          => kartu_stok_map_gudang_label($source_kd_gudang),
-                    'ke'            => 'prod. 2',
-                    'qty_trans'     => $net_weight,
-                    'keterangan'    => 'Coil pindah ke WRH Production 2 (' . $kode_trans . ')',
-                    'created_by'    => $created_by,
-                    'created_at'    => $now,
-                ]);
-            }
-        }
-
-        // Ringkasan per coil — TANPA nilai saldo (tidak menggerakkan warehouse_stock).
-        return [
-            'id_material' => $coil['id_material'],
-            'nm_material' => $coil['nm_material'],
-            'id_gudang'   => $source_id_gudang,
-            'kd_gudang'   => $source_kd_gudang,
-            'id_pack'     => isset($coil['id_pack']) ? $coil['id_pack'] : null,
-            'qty_awal'    => 0,
-            'qty_akhir'   => 0,
-            'saldo_awal'  => 0,
-            'saldo_akhir' => 0,
-            'net_weight'  => $net_weight,
-            'total_nilai' => $total_nilai,
-            'costbook'    => $harga_coil,
-            'harga_lama'  => $harga_coil,
-        ];
     }
 
     public function insert_transaction_summary($data)
@@ -1487,11 +1339,11 @@ class Request_list_model extends BF_Model
     {
         $header = $this->db->where('id', $request_id)->get('tr_warehouse_request_header')->row_array();
         if (!$header) {
-            return array('status' => false, 'message' => 'SPK Coil tidak ditemukan.');
+            return array('status' => false, 'message' => 'SPK Coil not found.');
         }
 
         if (in_array($header['status'], array('Material Confirmed', 'Confirmed', 'Released'))) {
-            return array('status' => false, 'message' => 'SPK Coil tidak dapat dihapus karena status sudah ' . $header['status']);
+            return array('status' => false, 'message' => 'SPK Coil cannot be deleted because its status is already ' . $header['status']);
         }
 
         // Cek apakah ada coil non-WIP yang sudah discan manual (coil WIP auto-scan boleh dihapus)
@@ -1502,7 +1354,7 @@ class Request_list_model extends BF_Model
             ->count_all_results('tr_warehouse_request_coil_detail');
 
         if ($scanned_count > 0) {
-            return array('status' => false, 'message' => 'SPK Coil tidak dapat dihapus karena terdapat coil (non-WIP) yang sudah discan.');
+            return array('status' => false, 'message' => 'SPK Coil cannot be deleted because it contains scanned (non-WIP) coils.');
         }
 
         $spk_no = $header['spk_no'];
@@ -1531,7 +1383,7 @@ class Request_list_model extends BF_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
-            return array('status' => false, 'message' => 'Gagal menghapus SPK Coil.');
+            return array('status' => false, 'message' => 'Failed to delete SPK Coil.');
         }
 
         return array('status' => true, 'message' => 'SPK Coil ' . $header['spk_coil_no'] . ' berhasil dihapus.', 'spk_no' => $spk_no);
@@ -1547,18 +1399,18 @@ class Request_list_model extends BF_Model
     {
         $detail = $this->db->where('id', $detail_id)->get('tr_warehouse_request_coil_detail')->row_array();
         if (!$detail) {
-            return array('status' => false, 'message' => 'Detail coil tidak ditemukan.');
+            return array('status' => false, 'message' => 'Coil details not found.');
         }
 
         $request_id = $detail['request_id'];
         $header     = $this->db->where('id', $request_id)->get('tr_warehouse_request_header')->row_array();
 
         if (!$header) {
-            return array('status' => false, 'message' => 'SPK Coil tidak ditemukan.');
+            return array('status' => false, 'message' => 'SPK Coil not found.');
         }
 
         if (in_array($header['status'], array('Material Confirmed', 'Confirmed', 'Released'))) {
-            return array('status' => false, 'message' => 'Item tidak dapat dihapus karena status SPK Coil sudah ' . $header['status']);
+            return array('status' => false, 'message' => 'The item cannot be deleted because the SPK Coil status is already ' . $header['status']);
         }
 
         if (isset($detail['scan_status']) && $detail['scan_status'] == 1) {
@@ -1566,7 +1418,7 @@ class Request_list_model extends BF_Model
             // Hanya coil non-WIP yang sudah discan manual yang tidak bisa dihapus
             $is_wip = (isset($detail['id_gudang_sumber']) && $detail['id_gudang_sumber'] == 4);
             if (!$is_wip) {
-                return array('status' => false, 'message' => 'Coil ' . (!empty($detail['no_coil']) ? $detail['no_coil'] : $detail['kode_internal']) . ' sudah discan dan tidak dapat dihapus.');
+                return array('status' => false, 'message' => 'Coil ' . (!empty($detail['no_coil']) ? $detail['no_coil'] : $detail['kode_internal']) . ' has been scanned and cannot be deleted.');
             }
         }
 
@@ -1597,10 +1449,10 @@ class Request_list_model extends BF_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
-            return array('status' => false, 'message' => 'Gagal menghapus item coil.');
+            return array('status' => false, 'message' => 'Failed to delete coil item.');
         }
 
-        return array('status' => true, 'message' => 'Coil ' . $no_coil . ' berhasil dikeluarkan dari SPK Coil.', 'spk_no' => $spk_no);
+        return array('status' => true, 'message' => 'Coil ' . $no_coil . ' removed successfully from SPK Coil.', 'spk_no' => $spk_no);
     }
 
     /**
@@ -1614,15 +1466,15 @@ class Request_list_model extends BF_Model
     {
         $header = $this->db->where('id', $request_id)->get('tr_warehouse_request_header')->row_array();
         if (!$header) {
-            return array('status' => false, 'message' => 'SPK Coil tidak ditemukan.');
+            return array('status' => false, 'message' => 'SPK Coil not found.');
         }
 
         if (in_array($header['status'], array('Material Confirmed', 'Confirmed', 'Released', 'Cancelled', 'Rejected'))) {
-            return array('status' => false, 'message' => 'Tidak dapat menambah coil ke SPK Coil dengan status: ' . $header['status']);
+            return array('status' => false, 'message' => 'Cannot add coils to an SPK Coil with status: ' . $header['status']);
         }
 
         if (empty($coils) || !is_array($coils)) {
-            return array('status' => false, 'message' => 'Minimal 1 coil harus dipilih.');
+            return array('status' => false, 'message' => 'At least 1 coil must be selected.');
         }
 
         $this->db->trans_start();
@@ -1657,10 +1509,10 @@ class Request_list_model extends BF_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
-            return array('status' => false, 'message' => 'Gagal menambah coil ke SPK Coil.');
+            return array('status' => false, 'message' => 'Failed to add coils to SPK Coil.');
         }
 
-        return array('status' => true, 'message' => count($detail_records ?? []) . ' coil berhasil ditambahkan ke ' . $header['spk_coil_no'] . '.', 'spk_no' => $header['spk_no']);
+        return array('status' => true, 'message' => count($detail_records ?? []) . ' coils added successfully to ' . $header['spk_coil_no'] . '.', 'spk_no' => $header['spk_no']);
     }
 
     /**

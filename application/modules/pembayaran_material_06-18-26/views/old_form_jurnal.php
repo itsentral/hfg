@@ -89,7 +89,7 @@ if(!empty($datarequest)){
 					echo form_dropdown('no_perkiraan[]',$datacoa, $record->no_perkiraan, array('id'=>'no_perkiraan'.$numb,'class'=>'form-control select2','required'=>'required','style'=>'width:100%'));
 				?>
 				</td>
-				<td><input type="text" class="form-control" id="keterangan<?=$numb?>" name="keterangan[]" value="<?=str_replace('"','`',$record->keterangan);?>"></td>
+				<td><input type="text" class="form-control" id="keterangan<?=$numb?>" name="keterangan[]" value="<?=str_replace('"','`',$record->keterangan ?? '');?>"></td>
 				<td><input type="text" class="form-control divide autodebet" id="debet<?=$numb?>" name="debet[]" value="<?=$record->debet;?>" required onblur="cektotaldebet(<?=$numb?>)"></td>
 				<td><input type="text" class="form-control divide autokredit" id="kredit<?=$numb?>" name="kredit[]" value="<?=$record->kredit;?>" required onblur="cektotalkredit(<?=$numb?>)"></td>
 			</tr>

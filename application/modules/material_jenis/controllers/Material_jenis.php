@@ -18,7 +18,7 @@ class Material_jenis extends Admin_Controller
     $this->load->model(array(
       'Material_jenis/Material_jenis_model'
     ));
-    $this->template->title('Manage Material Jenis');
+    $this->template->title('Manage Material Type');
     $this->template->page_icon('fa fa-building-o');
 
     date_default_timezone_set('Asia/Bangkok');

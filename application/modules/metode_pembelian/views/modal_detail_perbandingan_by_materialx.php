@@ -26,7 +26,7 @@ foreach($result AS $val => $valx){
                 <th class="text-center" width='15%' rowspan=2>Material Name</th>
                 <th class="text-center" width='6%' rowspan=2>Price Ref ($)</th>
                 <th class="text-center" width='7%' rowspan=2>Qty PR</th>
-                <th class="text-center" width='6%' colspan=<?=$jumlah_supp?>>Harga</th>
+                <th class="text-center" width='6%' colspan=<?=$jumlah_supp?>>Price</th>
                 <th class="text-center" width='6%' colspan=<?=$jumlah_supp?>>MOQ</th>
                 <th class="text-center" width='6%' colspan=<?=$jumlah_supp?>>Lead Time</th>
                 <th class="text-center" width='7%' rowspan=2>Tgl Dibutuhkan</th>

@@ -265,7 +265,7 @@
                 <td><strong><?php echo $spk['spk_no']; ?></strong></td>
             </tr>
             <tr>
-                <td class="info-label">Tanggal SPK</td>
+                <td class="info-label">SPK Date</td>
                 <td class="info-separator">:</td>
                 <td><?php echo date('d-m-Y', strtotime((string) $spk['tgl_spk'])); ?></td>
             </tr>
@@ -291,7 +291,7 @@
             </tr>
             <?php if (!empty($spk['catatan'])): ?>
                 <tr>
-                    <td class="info-label">Catatan</td>
+                    <td class="info-label">Notes</td>
                     <td class="info-separator">:</td>
                     <td><?php echo $spk['catatan']; ?></td>
                 </tr>
@@ -359,7 +359,7 @@
                 </td>
                 <td width="50%">
                     <div class="signature-box">
-                        <span class="signature-title">Dibuat oleh,</span>
+                        <span class="signature-title">Created by,</span>
                         <span class="signature-name"><?php echo $created_by_name; ?></span>
                         <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $spk['created_at'])); ?></span>
                     </div>

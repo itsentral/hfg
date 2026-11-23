@@ -15,7 +15,7 @@
                     <thead class="table-primary text-center">
                         <tr>
                             <th width="5%">#</th>
-                            <th>Nama Barang</th>
+                            <th>Item Name</th>
                             <th width="15%">Department</th>
                             <th width="15%">Costcenter</th>
                             <th width="8%">Qty</th>
@@ -59,7 +59,7 @@
             if (nil_pr == '' || nil_pr == '0') {
                 swal({
                     title: "Error Message!",
-                    text: 'Nilai PR is empty, please input first ...',
+                    text: 'PR Value is empty, please input first.',
                     type: "warning"
                 });
                 return false;

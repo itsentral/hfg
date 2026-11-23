@@ -64,7 +64,7 @@ class Menu_generator
 			foreach ($menu as $rw) {
 				$id        = $rw->id;
 				$title     = $rw->title;
-				$titleID   = strtolower(str_replace(' ', '', $rw->title)) . $id;
+				$titleID   = strtolower(str_replace(' ', '', $rw->title ?? '')) . $id;
 				$link      = $rw->link;
 				$icon      = $rw->icon ?: "fa fa-circle-o";
 				$target    = $rw->target;

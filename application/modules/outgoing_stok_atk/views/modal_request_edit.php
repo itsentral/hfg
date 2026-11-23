@@ -7,11 +7,11 @@
             <div class="row g-3">
                 <div class="col-md-6 col-12">
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">No Transaksi</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Transaction No.</span>
                         <span class="fw-bold text-primary font-monospace">: <?= $getData[0]['kode_trans']; ?></span>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Departemen</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Department</span>
                         <span class="fw-bold text-dark">: <?= $nm_dept; ?></span>
                     </div>
                     <div class="d-flex align-items-center">
@@ -22,15 +22,15 @@
 
                 <div class="col-md-6 col-12">
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Tanggal Outgoing</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Outgoing Date</span>
                         <span class="fw-semibold text-dark">: <?= tgl_indo($getData[0]['tanggal']); ?></span>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Gudang Asal</span>
-                        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">: <?= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_dari'])); ?></span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Source Warehouse</span>
+                        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">: <?= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_dari'])); ?></span>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Catatan</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Notes</span>
                         <span class="text-dark fst-italic">: <?= !empty($getData[0]['note']) ? $getData[0]['note'] : '-'; ?></span>
                     </div>
                 </div>
@@ -44,11 +44,11 @@
             <thead class="table-light">
                 <tr>
                     <th class="text-center" width="5%">#</th>
-                    <th width="15%">Kode Barang</th>
-                    <th>Nama Barang Stok</th>
-                    <th class="text-center" width="12%">Qty Keluar</th>
-                    <th class="text-center" width="10%">Satuan</th>
-                    <th width="28%">Catatan Barang</th>
+                    <th width="15%">Item Code</th>
+                    <th>Stock Item Name</th>
+                    <th class="text-center" width="12%">Qty Out</th>
+                    <th class="text-center" width="10%">Unit</th>
+                    <th width="28%">Item Notes</th>
                 </tr>
             </thead>
             <tbody>

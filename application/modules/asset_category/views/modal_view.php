@@ -12,13 +12,13 @@ $paths     = base_url() . '/assets/foto/' . $dataD[0]['foto'];
             <label class='label-control col-sm-2'><b>Asset Milik </b></label>
             <div class='col-sm-4'>
                 <?php
-                echo form_input(array('id' => 'kdcab', 'name' => 'kdcab', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nama Asset', 'readonly' => 'readonly'), strtoupper((string) $dataD[0]['kdcab']));
+                echo form_input(array('id' => 'kdcab', 'name' => 'kdcab', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Asset Name', 'readonly' => 'readonly'), strtoupper((string) $dataD[0]['kdcab']));
                 ?>
             </div>
-            <label class='label-control col-sm-2'><b>Kategori Pajak <span class='text-red'>*</span></b></label>
+            <label class='label-control col-sm-2'><b>Tax Category <span class='text-red'>*</span></b></label>
             <div class='col-sm-4'>
                 <select name='category_pajak' id='category_pajak' class='form-control input-md chosen-select' disabled>
-                    <option>Pilih Kategori Pajak</option>
+                    <option>Select Tax Category</option>
                     <?php
                     foreach ($list_pajak as $val => $valx) {
                         $sexd    = ($valx['id'] == $dataD[0]['category_pajak']) ? 'selected' : '';
@@ -29,13 +29,13 @@ $paths     = base_url() . '/assets/foto/' . $dataD[0]['foto'];
             </div>
         </div>
         <div class='form-group row'>
-            <label class='label-control col-sm-2'><b>Nama Asset</b></label>
+            <label class='label-control col-sm-2'><b>Asset Name</b></label>
             <div class='col-sm-4'>
                 <?php
-                echo form_input(array('id' => 'nm_asset', 'name' => 'nm_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nama Asset', 'readonly' => 'readonly'), strtoupper((string) $dataD[0]['nm_asset']));
+                echo form_input(array('id' => 'nm_asset', 'name' => 'nm_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Asset Name', 'readonly' => 'readonly'), strtoupper((string) $dataD[0]['nm_asset']));
                 ?>
             </div>
-            <label class='label-control col-sm-2'><b>Kategori</b></label>
+            <label class='label-control col-sm-2'><b>Category</b></label>
             <div class='col-sm-4'>
                 <select name='category' id='category' class='form-control input-md' disabled>
                     <?php
@@ -67,10 +67,10 @@ $paths     = base_url() . '/assets/foto/' . $dataD[0]['foto'];
             </div>
         </div>
         <div class='form-group row'>
-            <label class='label-control col-sm-2'><b>Nilai Asset</b></label>
+            <label class='label-control col-sm-2'><b>Asset Value</b></label>
             <div class='col-sm-4'>
                 <?php
-                echo form_input(array('id' => 'nilai_asset', 'name' => 'nilai_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nilai Asset', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false, 'readonly' => 'readonly'), number_format((float) $dataD[0]['nilai_asset']));
+                echo form_input(array('id' => 'nilai_asset', 'name' => 'nilai_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Asset Value', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false, 'readonly' => 'readonly'), number_format((float) $dataD[0]['nilai_asset']));
                 ?>
             </div>
 
@@ -86,7 +86,7 @@ $paths     = base_url() . '/assets/foto/' . $dataD[0]['foto'];
                 <label class='label-control col-sm-2'><b>Jangka Waktu</b></label>
                 <div class='col-sm-4'>
                     <?php
-                    echo form_input(array('id' => 'depresiasi', 'depresiasi' => 'value', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Jangka Waktu', 'readonly' => 'readonly'), $dataD[0]['depresiasi'] . " Tahun");
+                    echo form_input(array('id' => 'depresiasi', 'depresiasi' => 'value', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Jangka Waktu', 'readonly' => 'readonly'), $dataD[0]['depresiasi'] . " Year");
                     ?>
                 </div>
                 <label class='label-control col-sm-2'><b>Dipresiasi Perbulan</b></label>
@@ -98,14 +98,14 @@ $paths     = base_url() . '/assets/foto/' . $dataD[0]['foto'];
             </div>
         <?php } ?>
         <div class='form-group row'>
-            <label class='label-control col-sm-2'><b>Penyusutan</b></label>
+            <label class='label-control col-sm-2'><b>Depreciation</b></label>
             <div class='col-sm-4'>
                 <select name='penyusutan' id='penyusutan' class='form-control input-md chosen-select' disabled>
                     <option value='Y' <?= ($dataD[0]['penyusutan'] == 'Y') ? 'selected' : ''; ?>>Yes</option>
                     <option value='N' <?= ($dataD[0]['penyusutan'] == 'N') ? 'selected' : ''; ?>>No</option>
                 </select>
             </div>
-            <label class='label-control col-sm-2'><b>Kelompok Penyusutan</b></label>
+            <label class='label-control col-sm-2'><b>Depreciation Group</b></label>
             <div class='col-sm-4'>
                 <select name='id_coa' id='id_coa' class='form-control input-md' disabled>
                     <?php

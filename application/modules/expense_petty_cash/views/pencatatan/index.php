@@ -7,7 +7,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-money me-2"></i>Daftar Pencatatan Petty Cash
             </h5>
-            <small class="text-muted">Catat pengeluaran harian kas kecil dan kumpulkan untuk pelaporan mingguan</small>
+            <small class="text-muted">Record daily petty cash expenses and collect them for weekly reporting</small>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-2">
             <?php if ($has_add) : ?>
@@ -29,10 +29,10 @@
                         <th width="35" class="text-center"><input type="checkbox" id="check-all" class="form-check-input"></th>
                         <th width="40" class="text-center">No</th>
                         <th width="140">No Pencatatan</th>
-                        <th width="95" class="text-center">Tanggal</th>
+                        <th width="95" class="text-center">Date</th>
                         <th width="85" class="text-center">Company</th>
                         <th width="130">Request By</th>
-                        <th>Keterangan</th>
+                        <th>Description</th>
                         <th width="120" class="text-end">Nominal</th>
                         <th width="130" class="text-center">Status</th>
                         <th width="120" class="text-center">Aksi</th>
@@ -58,7 +58,7 @@
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted mb-3 small">
-                    <i class="fa fa-info-circle me-1"></i>Pilih petty cash yang akan digunakan untuk pencatatan pengeluaran:
+                    <i class="fa fa-info-circle me-1"></i>Select the petty cash to use for recording expenses:
                 </p>
                 <div id="petty-cash-list-container">
                     <div class="text-center py-4"><i class="fa fa-spinner fa-spin fa-2x text-primary"></i></div>
@@ -66,7 +66,7 @@
             </div>
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </button>
             </div>
         </div>
@@ -195,7 +195,7 @@
                         html += '  <div class="pc-icon"><i class="fa fa-wallet"></i></div>';
                         html += '  <div class="pc-info">';
                         html += '    <p class="pc-name">' + $('<div>').text(item.nama).html() + '</p>';
-                        html += '    <p class="pc-desc">' + $('<div>').text(item.keterangan || 'Tidak ada keterangan').html() + '</p>';
+                        html += '    <p class="pc-desc">' + $('<div>').text(item.keterangan || 'No description').html() + '</p>';
                         html += '    <span class="pc-budget"><i class="fa fa-money me-1"></i> Budget: Rp ' + item.total_budget + '</span>';
                         html += '  </div>';
                         html += '  <span class="pc-arrow"><i class="fa fa-chevron-right"></i></span>';
@@ -203,11 +203,11 @@
                     });
                     $('#petty-cash-list-container').html(html);
                 } else {
-                    $('#petty-cash-list-container').html('<div class="alert alert-warning mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Tidak ada data Master Petty Cash aktif. Silakan hubungi admin.</div>');
+                    $('#petty-cash-list-container').html('<div class="alert alert-warning mb-0"><i class="fa fa-exclamation-triangle me-1"></i> There is no active Petty Cash Master data. Please contact the admin.</div>');
                 }
             },
             error: function() {
-                $('#petty-cash-list-container').html('<div class="alert alert-danger mb-0"><i class="fa fa-times me-1"></i> Gagal memuat data dari server.</div>');
+                $('#petty-cash-list-container').html('<div class="alert alert-danger mb-0"><i class="fa fa-times me-1"></i> Failed to load data from the server.</div>');
             }
         });
     }
@@ -235,7 +235,7 @@
                         var isDraft = (row.status === 'draft');
                         var inPelaporan = row.in_pelaporan;
                         if (!isDraft || inPelaporan) {
-                            return '<input type="checkbox" class="form-check-input" disabled title="' + (inPelaporan ? 'Sudah masuk pelaporan' : 'Bukan status draft') + '">';
+                            return '<input type="checkbox" class="form-check-input" disabled title="' + (inPelaporan ? 'Already in a report' : 'Bukan status draft') + '">';
                         }
                         var isChecked = selectedIds.indexOf(row.id) !== -1;
                         var isLocked = selectedCompany && selectedCompany !== row.company;
@@ -314,7 +314,7 @@
 
                         var journalBadge = '';
                         if (row.journal_status === 'failed') {
-                            journalBadge = '<br><span class="badge bg-danger mt-1" title="Jurnal Gagal"><i class="fa fa-exclamation-circle me-1"></i>Jurnal Gagal</span>';
+                            journalBadge = '<br><span class="badge bg-danger mt-1" title="Journal Failed"><i class="fa fa-exclamation-circle me-1"></i>Journal Failed</span>';
                         }
 
                         return statusBadge + journalBadge;
@@ -334,7 +334,7 @@
                         }
 
                         if (row.status === 'draft' && !row.in_pelaporan && PERMISSIONS.has_delete) {
-                            btn += '<button type="button" class="btn btn-outline-danger btn-sm btn-delete" data-id="' + row.id + '" title="Hapus"><i class="fa fa-trash"></i></button>';
+                            btn += '<button type="button" class="btn btn-outline-danger btn-sm btn-delete" data-id="' + row.id + '" title="Delete"><i class="fa fa-trash"></i></button>';
                         }
 
                         if (row.journal_status === 'failed' && PERMISSIONS.has_manage) {
@@ -427,19 +427,19 @@
             if (selectedIds.length === 0) return;
 
             Swal.fire({
-                title: 'Konfirmasi Pelaporan',
-                text: 'Buat pelaporan mingguan untuk ' + selectedIds.length + ' pencatatan terpilih (' + selectedCompany + ')?',
+                title: 'Confirm Report',
+                text: 'Create weekly report for ' + selectedIds.length + ' pencatatan terpilih (' + selectedCompany + ')?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Buat Pelaporan',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Create Report',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Memproses...',
-                        text: 'Sedang membuat pelaporan petty cash',
+                        text: 'Creating petty cash report',
                         allowOutsideClick: false,
                         didOpen: function() {
                             Swal.showLoading();
@@ -456,7 +456,7 @@
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: resp.message,
                                     icon: 'success'
                                 }).then(function() {
@@ -467,11 +467,11 @@
                                     }
                                 });
                             } else {
-                                Swal.fire('Gagal!', resp.message || 'Terjadi kesalahan.', 'error');
+                                Swal.fire('Failed!', resp.message || 'An error occurred.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem.', 'error');
+                            Swal.fire('Error!', 'A system error occurred.', 'error');
                         }
                     });
                 }
@@ -482,14 +482,14 @@
         $('#table-pencatatan').on('click', '.btn-delete', function() {
             var id = $(this).data('id');
             Swal.fire({
-                title: 'Hapus Pencatatan?',
-                text: 'Data pencatatan yang dihapus tidak dapat dikembalikan!',
+                title: 'Delete Record?',
+                text: 'Deleted record data cannot be restored!',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-trash me-1"></i> Ya, Hapus',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-trash me-1"></i> Yes, Delete',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -498,14 +498,14 @@
                         dataType: 'json',
                         success: function(resp) {
                             if (resp.status == 1 || resp.status === true) {
-                                Swal.fire('Berhasil!', resp.msg || 'Data berhasil dihapus.', 'success');
+                                Swal.fire('Success!', resp.msg || 'Data deleted successfully.', 'success');
                                 table.ajax.reload(null, false);
                             } else {
-                                Swal.fire('Gagal!', resp.msg || 'Gagal menghapus data.', 'error');
+                                Swal.fire('Failed!', resp.msg || 'Failed to delete data.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan saat menghapus data.', 'error');
+                            Swal.fire('Error!', 'An error occurred while deleting data.', 'error');
                         }
                     });
                 }
@@ -517,13 +517,13 @@
             var id = $(this).data('id');
             Swal.fire({
                 title: 'Retry Sinkronisasi Jurnal?',
-                text: 'Sistem akan mencoba membuat ulang jurnal untuk pencatatan ini.',
+                text: 'The system will try to recreate the journal for this record.',
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Retry',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Retry',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -532,14 +532,14 @@
                         dataType: 'json',
                         success: function(resp) {
                             if (resp.status == '1' || resp.status === 1 || resp.status === true) {
-                                Swal.fire('Berhasil!', resp.message || 'Jurnal berhasil disinkronkan.', 'success');
+                                Swal.fire('Success!', resp.message || 'Journal synced successfully.', 'success');
                                 table.ajax.reload(null, false);
                             } else {
-                                Swal.fire('Gagal!', resp.message || 'Gagal menyinkronkan jurnal.', 'error');
+                                Swal.fire('Failed!', resp.message || 'Failed to sync the journal.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem.', 'error');
+                            Swal.fire('Error!', 'A system error occurred.', 'error');
                         }
                     });
                 }

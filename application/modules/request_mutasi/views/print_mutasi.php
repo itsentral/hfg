@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Bukti Mutasi <?= $data->kd_mutasi_aktual ?></title>
+    <title>Mutation Voucher <?= $data->kd_mutasi_aktual ?></title>
     <style>
         @page {
             size: A4;
@@ -218,8 +218,8 @@
 
     <!-- Tombol Print (tidak ikut tercetak) -->
     <div class="no-print" style="margin-bottom:12px;">
-        <button class="btn-print" onclick="window.print()">&#128438; Cetak</button>
-        <!-- <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Kembali</button> -->
+        <button class="btn-print" onclick="window.print()">&#128438; Print</button>
+        <!-- <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Back</button> -->
     </div>
 
     <!-- ===== HEADER ===== -->
@@ -239,7 +239,7 @@
             <?php endif; ?>
         </div>
         <div class="header-title">
-            <h2>Bukti Mutasi Bank</h2>
+            <h2>Bank Mutation Voucher</h2>
             <div class="doc-no">No: <strong><?= $data->kd_mutasi_aktual ?></strong></div>
         </div>
     </div>
@@ -248,7 +248,7 @@
     <!-- ===== INFO DOKUMEN ===== -->
     <table class="no-border info-table" style="margin-bottom:12px;">
         <tr>
-            <td>No. Mutasi Aktual</td>
+            <td>Actual Mutation No.</td>
             <td>:</td>
             <td><strong><?= $data->kd_mutasi_aktual ?></strong></td>
             <td style="width:30px;"></td>
@@ -257,16 +257,16 @@
             <td><?= $data->kd_mutasi_request ?></td>
         </tr>
         <tr>
-            <td>Tanggal Mutasi</td>
+            <td>Mutation Date</td>
             <td>:</td>
             <td><?= date('d F Y', strtotime((string) $data->tgl_mutasi)) ?></td>
             <td></td>
-            <td style="font-weight:bold;">Tanggal Request</td>
+            <td style="font-weight:bold;">Request Date</td>
             <td>:</td>
             <td><?= date('d F Y', strtotime((string) $data->tgl_request)) ?></td>
         </tr>
         <tr>
-            <td>Mata Uang</td>
+            <td>Currency</td>
             <td>:</td>
             <td><?= htmlspecialchars(!empty($data->nama_mata_uang) ? $data->nama_mata_uang : $data->mata_uang) ?></td>
             <td></td>
@@ -275,7 +275,7 @@
             <td><?= number_format((float) $data->kurs, 2) ?></td>
         </tr>
         <tr>
-            <td>Keterangan</td>
+            <td>Description</td>
             <td>:</td>
             <td colspan="5"><?= $data->keterangan ?></td>
         </tr>
@@ -286,11 +286,11 @@
         <thead>
             <tr>
                 <th class="text-center" width="5%">No</th>
-                <th width="30%">Keterangan</th>
+                <th width="30%">Description</th>
                 <th width="25%">Bank Asal</th>
-                <th width="25%">Bank Tujuan</th>
-                <th class="text-right" width="15%">Nilai Request</th>
-                <th class="text-right" width="15%">Nilai Aktual</th>
+                <th width="25%">Destination Bank</th>
+                <th class="text-right" width="15%">Request Value</th>
+                <th class="text-right" width="15%">Actual Value</th>
             </tr>
         </thead>
         <tbody>
@@ -305,7 +305,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" class="text-right bold">Total Mutasi</td>
+                <td colspan="5" class="text-right bold">Total Mutation</td>
                 <td class="text-right bold"><?= number_format((float) $data->nilai_aktual, 2) ?></td>
             </tr>
         </tfoot>
@@ -330,9 +330,9 @@
     <!-- ===== TANDA TANGAN ===== -->
     <table class="sign-table" style="margin-top:35px; width:100%;">
         <tr>
-            <td class="text-center">Dibuat Oleh</td>
-            <td class="text-center">Diperiksa Oleh</td>
-            <td class="text-center">Disetujui Oleh</td>
+            <td class="text-center">Created By</td>
+            <td class="text-center">Checked By</td>
+            <td class="text-center">Approved By</td>
         </tr>
         <tr>
             <td class="sign-line"></td>

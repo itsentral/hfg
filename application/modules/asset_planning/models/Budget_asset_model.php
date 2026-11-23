@@ -185,7 +185,7 @@ class Budget_asset_model extends BF_Model
 
 			if ($row['status'] == 'N') {
 				if (empty($tanda)) {
-					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/add_asset/' . $row['code_plan'] . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'><i class='fa fa-edit'></i></a>";
+					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/add_asset/' . $row['code_plan'] . "' class='btn btn-sm btn-primary' title=\'Edit\' data-role='qtip'><i class='fa fa-edit'></i></a>";
 					$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger hapus' data-id='" . $row['code_plan'] . "' title='Delete Data'><i class='fa fa-trash'></i></button>";
 				}
 				if (!empty($tanda)) {
@@ -193,7 +193,7 @@ class Budget_asset_model extends BF_Model
 				}
 			}
 			if ($row['status'] != 'N') {
-				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title='Detail Data' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title=\'View Details\' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			}
 			$nestedData[]	= "<div align='center'>" . $row['nm_lengkap'] . "</div>";
 			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
@@ -294,7 +294,7 @@ class Budget_asset_model extends BF_Model
 
 			if ($row['status'] == 'N') {
 				if (empty($tanda)) {
-					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/add_asset_manage/' . $row['code_plan'] . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'><i class='fa fa-edit'></i></a>";
+					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/add_asset_manage/' . $row['code_plan'] . "' class='btn btn-sm btn-primary' title=\'Edit\' data-role='qtip'><i class='fa fa-edit'></i></a>";
 					$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger hapus' data-id='" . $row['code_plan'] . "' title='Delete Data'><i class='fa fa-trash'></i></button>";
 				}
 				if (!empty($tanda)) {
@@ -302,7 +302,7 @@ class Budget_asset_model extends BF_Model
 				}
 			}
 			if ($row['status'] != 'N') {
-				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset_manage/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title='Detail Data' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset_manage/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title=\'View Details\' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			}
 			$nestedData[]	= "<div align='center'>" . $row['nm_lengkap'] . "</div>";
 			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";

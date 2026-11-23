@@ -26,11 +26,11 @@ width:90%;
 			</th>
 			<th>No PO</th>
 			<th>No PR</th>
-			<th>Tanggal PR</th>
-			<th>Tanggal PO</th>
-			<th>Tanggal PP</th> 
+			<th>PR Date</th>
+			<th>PO Date</th>
+			<th>PP Date</th> 
             <th>Total PO</th>			
-			<th>Nilai Pembayaran</th>
+			<th>Payment Value</th>
 			<th>Terbayar</th>
 			<th>Supplier</th>
 		</tr>
@@ -51,19 +51,19 @@ width:90%;
 			<?php if($ENABLE_MANAGE) : 
 			if ($record->sts_trm == 1){
 			?>
-			    <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Jurnal Penerimaan" data-id_material="<?=$record->no_po?>"><i class="fa fa-eye"></i>
+			    <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Receipt Journal" data-id_material="<?=$record->no_po?>"><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
 			if ($record->sts_apr == 1){
 			?>
-				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Jurnal Permintaan Bayar" data-id_material="<?=$record->no_po?>" data-id_total="<?=$record->request_payment + $record->ppn_request?>" data-id_vendor="<?=$record->vendor_id?>" data-nm_vendor="<?=$record->nama?>"><i class="fa fa-eye"></i>
+				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Payment Request Journal" data-id_material="<?=$record->no_po?>" data-id_total="<?=$record->request_payment + $record->ppn_request?>" data-id_vendor="<?=$record->vendor_id?>" data-nm_vendor="<?=$record->nama?>"><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
 			if ($record->sts_buk == 1){
 			?>
-				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Jurnal Pembayaran" data-id_material="<?=$record->no_po?>" data-id_total="<?=$record->terbayar + $record->nilai_ppn?>" data-id_vendor="<?=$record->vendor_id?>" data-nm_vendor="<?=$record->nama?>" ><i class="fa fa-eye"></i>
+				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Payment Journal" data-id_material="<?=$record->no_po?>" data-id_total="<?=$record->terbayar + $record->nilai_ppn?>" data-id_vendor="<?=$record->vendor_id?>" data-nm_vendor="<?=$record->nama?>" ><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
@@ -92,11 +92,11 @@ width:90%;
 			</th>
 			<th>No PO</th>
 			<th>No PR</th>
-			<th>Tanggal PR</th>
-			<th>Tanggal PO</th>
-			<th>Tanggal PP</th> 
+			<th>PR Date</th>
+			<th>PO Date</th>
+			<th>PP Date</th> 
             <th>Total PO</th>			
-			<th>Nilai Pembayaran</th>
+			<th>Payment Value</th>
 			<th>Terbayar</th>
 			<th>Supplier</th>
 		</tr>
@@ -145,7 +145,7 @@ width:90%;
 		var pp = 'pononstok';
 		var akses = 'approval_jurnal_po_nonstok';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_approval/'+id+'/'+pp+'/'+akses+'/'+total+'/'+id_vendor+'/'+nm_vendor,
@@ -166,7 +166,7 @@ width:90%;
 		var pp = 'pononstok';
 		var akses = 'approval_jurnal_po_nonstok';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_buk/'+id+'/'+pp+'/'+akses+'/'+total+'/'+id_vendor+'/'+nm_vendor,
@@ -184,7 +184,7 @@ width:90%;
 	    var pp = 'pononstok';
 		var akses = 'approval_jurnal_po_nonstok';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_penerimaan/'+id+'/'+pp+'/'+akses,

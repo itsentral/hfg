@@ -1,7 +1,7 @@
 <div class="row g-3">
     <input type="hidden" name="so_number" value="<?= htmlspecialchars($so_number ?? '') ?>">
     <div class="col-12">
-        <label class="form-label fw-bold text-dark mb-1">No. Dokumen PR</label>
+        <label class="form-label fw-bold text-dark mb-1">PR Document No.</label>
         <input type="text" class="form-control bg-light fw-bold text-danger" value="<?= htmlspecialchars($no_pr ?? '') ?>" readonly>
     </div>
     <div class="col-12">

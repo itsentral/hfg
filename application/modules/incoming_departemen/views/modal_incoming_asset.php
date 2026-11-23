@@ -19,12 +19,12 @@
 		<thead id='head_table'>
 			<tr class='bg-blue'>
 				<th class="text-center" style='vertical-align:middle;' width='3%'>#</th>
-                <th class="text-center" style='vertical-align:middle;' width='10%'>Departemen</th>
-				<th class="text-center" style='vertical-align:middle;'>Nama Barang/Jasa</th>
+                <th class="text-center" style='vertical-align:middle;' width='10%'>Department</th>
+				<th class="text-center" style='vertical-align:middle;'>Item/Service Name</th>
 				<th class="text-center" style='vertical-align:middle;' width='5%'>Qty</th>
-				<th class="text-center" style='vertical-align:middle;' width='5%'>Satuan</th>
+				<th class="text-center" style='vertical-align:middle;' width='5%'>Unit</th>
                 <th class="text-center" style='vertical-align:middle;' width='7%'>Status</th> 
-				<th class="text-center" style='vertical-align:middle;' width='12%'>Catatan</th> 
+				<th class="text-center" style='vertical-align:middle;' width='12%'>Notes</th> 
 				<th class="text-center" style='vertical-align:middle;' width='12%'>Pemeriksa</th> 
 				<!-- <th class="text-center" style='vertical-align:middle;' width='15%'>Upload Doc</th>  -->
 			</tr>
@@ -79,7 +79,7 @@
 			}
 			else{
 				echo "<tr>";
-					echo "<td colspan='3'>Data aktual belum di update, silahkan update data terlebih dahulu.</td>";
+					echo "<td colspan='3'>Actual data has not been updated, please update the data first.</td>";
 				echo "</tr>";
 			}
 			?>

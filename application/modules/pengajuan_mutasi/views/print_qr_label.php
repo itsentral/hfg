@@ -58,7 +58,7 @@
                 $imageData = ob_get_contents();
                 ob_end_clean();
 
-                $base64 = base64_encode($imageData);
+                $base64 = base64_encode($imageData ?? '');
                 ?>
                 <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px; display: block;">
 

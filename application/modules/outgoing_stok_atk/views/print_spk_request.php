@@ -16,7 +16,7 @@ $today = date('l, d F Y [H:i:s]');
         <td align='center'><b><?= html_escape(get_company_name(true, true)) ?></b></td>
     </tr>
     <tr>
-        <td align='center'><b><h2>OUTGOING BARANG STOK</h2></b></td>
+        <td align='center'><b><h2>STOCK ITEM OUTGOING</h2></b></td>
     </tr>
 </table>
 <br>
@@ -24,7 +24,7 @@ $today = date('l, d F Y [H:i:s]');
 <table class="gridtable2" width="100%" border='0'>
     <thead>
         <tr>
-            <td class="mid">No Transaksi</td>
+            <td class="mid">Transaction No.</td>
             <td class="mid">:</td>
             <td class="mid"><?=$getData[0]['kode_trans'];?></td>
             <td class="mid"></td>
@@ -32,18 +32,18 @@ $today = date('l, d F Y [H:i:s]');
             <td class="mid"></td>
         </tr>
         <tr>
-            <td class="mid" width='18%'>Gudang</td>
+            <td class="mid" width='18%'>Warehouse</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_dari']));?></td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_dari']));?></td>
             <td class="mid" width='18%'>Costcenter</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_ke']));?></td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_ke']));?></td>
         </tr>
         <tr>
             <td class="mid">Department</td>
             <td class="mid">:</td>
-            <td class="mid"><?=strtoupper(get_name('ms_department','nama','id',$getData[0]['id_dept']));?></td>
-            <td class="mid">Tanggal</td>
+            <td class="mid"><?=strtoupper((string) get_name('ms_department','nama','id',$getData[0]['id_dept']));?></td>
+            <td class="mid">Date</td>
             <td class="mid">:</td>
             <td class="mid"><?=tgl_indo($getData[0]['tanggal']);?></td>
         </tr>
@@ -61,14 +61,14 @@ $today = date('l, d F Y [H:i:s]');
     <thead align='center'>
         <tr>
             <th class="mid" width='5%'>No</th>
-            <th class="mid" style='vertical-align:middle;'>Stok Name</th>
+            <th class="mid" style='vertical-align:middle;'>Stock Name</th>
             <th class="mid" width='9%'>Qty</th>
             <!-- <th class="mid" width='6%'>Pack</th>
             <th class="mid" width='8%'>Konversi</th>
             <th class="mid" width='10%'>Req. Unit</th> -->
             <th class="mid" width='9%'>Unit</th>
-            <!-- <th class="mid" width='11%'>Pengeluaran</th> -->
-            <th class="mid" width='20%'>Keterangan</th> 
+            <!-- <th class="mid" width='11%'>Outgoing</th> -->
+            <th class="mid" width='20%'>Description</th> 
         </tr>
     </thead>
     <tbody>
@@ -107,7 +107,7 @@ $today = date('l, d F Y [H:i:s]');
         <td width='65%'></td>
         <td>Disiapkan,</td>
         <td></td>
-        <td>Penerima,</td>
+        <td>Received by,</td>
         <td></td>
     </tr>
     <tr>

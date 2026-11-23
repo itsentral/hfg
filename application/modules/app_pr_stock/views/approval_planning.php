@@ -16,7 +16,7 @@ $status1 = '';
 $tgl_appre_1 = '';
 $status2 = '';
 $tgl_appre_2 = '';
-$status3 = '<span class="badge bg-secondary px-2 py-1">Menunggu</span>';
+$status3 = '<span class="badge bg-secondary px-2 py-1">Waiting</span>';
 $tgl_appre_3 = '-';
 if (!empty($header)) {
     if ($header[0]['app_3'] == '1') {
@@ -37,11 +37,11 @@ if (!empty($header)) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-square-o me-2"></i>Form Approval PR Stock - Management
             </h5>
-            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
+            <small class="text-muted">Request / SO Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
         </div>
         <div>
             <a href="<?= site_url('app_pr_stock/approval_management') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </a>
         </div>
     </div>
@@ -76,13 +76,13 @@ if (!empty($header)) {
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="p-3 bg-light rounded-3 border h-100">
-                        <span class="text-muted small fw-semibold text-uppercase">Perbandingan Nilai</span>
+                        <span class="text-muted small fw-semibold text-uppercase">Value Comparison</span>
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <small class="text-muted">Budget:</small>
                             <span class="fw-bold text-dark">Rp <?= number_format((float) $header[0]['nilai_budget']) ?></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">Pengajuan:</small>
+                            <small class="text-muted">Request:</small>
                             <span class="fw-bold text-primary">Rp <?= number_format((float) $ttl_pengajuan_pr) ?></span>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ if (!empty($header)) {
                                     <th width="12%">Status</th>
                                     <th width="18%">Tgl Approve / Reject</th>
                                     <th width="25%">Alasan Reject</th>
-                                    <th>Keterangan</th>
+                                    <th>Description</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,7 +115,7 @@ if (!empty($header)) {
                                         <input type="text" name="reject_reason3" class="form-control form-control-sm" placeholder="Alasan reject..." value="<?= htmlspecialchars((string) $alasan_reject3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
                                     </td>
                                     <td>
-                                        <input type="text" name="keterangan_3" class="form-control form-control-sm" placeholder="Keterangan..." value="<?= htmlspecialchars((string) $keterangan_3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
+                                        <input type="text" name="keterangan_3" class="form-control form-control-sm" placeholder="Description..." value="<?= htmlspecialchars((string) $keterangan_3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
                                     </td>
                                 </tr>
                             </tbody>
@@ -125,7 +125,7 @@ if (!empty($header)) {
             </div>
 
             <!-- Detail Barang Table -->
-            <h6 class="fw-bold text-primary mb-2"><i class="fa fa-list me-1"></i>Rincian Barang yang Diajukan</h6>
+            <h6 class="fw-bold text-primary mb-2"><i class="fa fa-list me-1"></i>Requested Item Details</h6>
             <div class="table-responsive mb-4">
                 <table class="table table-striped table-bordered table-hover align-middle w-100">
                     <thead class="table-light text-center small">
@@ -133,7 +133,7 @@ if (!empty($header)) {
                             <th width="4%" class="text-center">
                                 <input type="checkbox" class="form-check-input" name="chk_all" id="chk_all">
                             </th>
-                            <th>Barang</th>
+                            <th>Item</th>
                             <th width="11%" class="text-end">Kebutuhan / Bln</th>
                             <th width="10%" class="text-end">Max</th>
                             <th width="10%" class="text-end">Stock</th>
@@ -185,7 +185,7 @@ if (!empty($header)) {
                     </tbody>
                     <tfoot class="table-light">
                         <tr>
-                            <th colspan="7" class="text-end fw-bold">Total Price Pengajuan:</th>
+                            <th colspan="7" class="text-end fw-bold">Total Request Price:</th>
                             <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format((float) $grand_total_price) ?></th>
                         </tr>
                     </tfoot>
@@ -195,7 +195,7 @@ if (!empty($header)) {
             <!-- Form Reject Reason -->
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
-                    <label for="reject_reason" class="form-label fw-semibold text-muted small">Alasan Reject (Diisi bila menolak pengajuan)</label>
+                    <label for="reject_reason" class="form-label fw-semibold text-muted small">Reject Reason (Fill in when rejecting the request)</label>
                     <textarea name="reject_reason" id="reject_reason" class="form-control" rows="3" placeholder="Tuliskan catatan / alasan bila pengajuan di-reject..."></textarea>
                 </div>
             </div>
@@ -205,7 +205,7 @@ if (!empty($header)) {
             <!-- Action Buttons -->
             <div class="d-flex align-items-center justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary px-3 shadow-sm" name="back" id="back">
-                    <i class="fa fa-arrow-left me-1"></i> Kembali
+                    <i class="fa fa-arrow-left me-1"></i> Back
                 </button>
                 <button type="button" class="btn btn-danger px-4 shadow-sm" name="reject" id="reject">
                     <i class="fa fa-times me-1"></i> Reject PR
@@ -246,27 +246,27 @@ if (!empty($header)) {
 
             if ($('.chk_personal:checked').length == 0) {
                 Swal.fire({
-                    title: "Peringatan!",
-                    text: 'Silakan checklist minimal satu item barang untuk diapprove!',
+                    title: "Warning!",
+                    text: 'Please check at least one item to approve!',
                     icon: "warning"
                 });
                 return false;
             }
 
             Swal.fire({
-                title: "Konfirmasi Approval",
-                text: "Apakah Anda yakin ingin menyetujui item PR yang dipilih?",
+                title: "Confirm Approval",
+                text: "Are you sure you want to approve the selected PR items?",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#198754",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Approve!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Approve!",
+                cancelButtonText: "Cancel"
             }).then((next) => {
                 if (next.isConfirmed) {
                     Swal.fire({
                         title: "Memproses...",
-                        text: "Sedang menyimpan persetujuan PR",
+                        text: "Saving PR approval",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -285,8 +285,8 @@ if (!empty($header)) {
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
-                                    text: data.pesan || "Data berhasil diapprove.",
+                                    title: "Success!",
+                                    text: data.pesan || "Data approved successfully.",
                                     icon: "success"
                                 }).then(() => {
                                     if (tingkat_approval == "1") {
@@ -299,8 +299,8 @@ if (!empty($header)) {
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
-                                    text: data.pesan || "Gagal memproses approval.",
+                                    title: "Failed!",
+                                    text: data.pesan || "Failed to process approval.",
                                     icon: "warning"
                                 });
                             }
@@ -308,7 +308,7 @@ if (!empty($header)) {
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: 'Terjadi kesalahan sistem saat menghubungi server.',
+                                text: 'A system error occurred while contacting the server.',
                                 icon: "error"
                             });
                         }
@@ -324,8 +324,8 @@ if (!empty($header)) {
             var reject_val = $("#reject_reason").val().trim();
             if (reject_val === "") {
                 Swal.fire({
-                    title: "Alasan Reject Wajib Diisi!",
-                    text: "Silakan isi alasan penolakan pada kolom yang tersedia sebelum menolak.",
+                    title: "Reject Reason is required!",
+                    text: "Please fill in the rejection reason in the field provided before rejecting.",
                     icon: "warning"
                 });
                 $("#reject_reason").focus();
@@ -333,19 +333,19 @@ if (!empty($header)) {
             }
 
             Swal.fire({
-                title: "Konfirmasi Reject PR",
-                text: "Apakah Anda yakin ingin menolak pengajuan PR ini?",
+                title: "Confirm PR Reject",
+                text: "Are you sure you want to reject this PR request?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#dc3545",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-times me-1'></i> Ya, Reject!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-times me-1'></i> Yes, Reject!",
+                cancelButtonText: "Cancel"
             }).then((next) => {
                 if (next.isConfirmed) {
                     Swal.fire({
                         title: "Memproses...",
-                        text: "Sedang memproses penolakan PR",
+                        text: "Processing PR rejection",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -364,8 +364,8 @@ if (!empty($header)) {
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
-                                    text: data.pesan || "Data berhasil direject.",
+                                    title: "Success!",
+                                    text: data.pesan || "Data rejected successfully.",
                                     icon: "success"
                                 }).then(() => {
                                     if (tingkat_approval == "1") {
@@ -378,8 +378,8 @@ if (!empty($header)) {
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
-                                    text: data.pesan || "Gagal memproses reject.",
+                                    title: "Failed!",
+                                    text: data.pesan || "Failed to process reject.",
                                     icon: "warning"
                                 });
                             }
@@ -387,7 +387,7 @@ if (!empty($header)) {
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: 'Terjadi kesalahan sistem saat memproses reject.',
+                                text: 'A system error occurred while processing the reject.',
                                 icon: "error"
                             });
                         }

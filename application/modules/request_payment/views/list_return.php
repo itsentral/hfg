@@ -51,9 +51,9 @@ if (!empty($row)) {
 		<div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 5px solid #2563eb !important;">
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
-					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Dokumen</span>
+					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Documents</span>
 					<h4 class="fw-bold mb-0 text-primary mt-1"><?= number_format((float) $total_dokumen) ?></h4>
-					<small class="text-muted" style="font-size: 11px;">Pengembalian expense</small>
+					<small class="text-muted" style="font-size: 11px;">Expense return</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 44px; height: 44px; font-size: 18px;">
 					<i class="fas fa-copy"></i>
@@ -65,9 +65,9 @@ if (!empty($row)) {
 		<div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-left: 5px solid #7c3aed !important;">
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
-					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Nilai Pengembalian</span>
+					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Return Value</span>
 					<h4 class="fw-bold mb-0 text-dark mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_pengembalian, 0, ',', '.') ?></h4>
-					<small class="text-muted" style="font-size: 11px;">Total nilai kembali</small>
+					<small class="text-muted" style="font-size: 11px;">Total returned value</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-purple" style="width: 44px; height: 44px; font-size: 18px; color: #7c3aed;">
 					<i class="fas fa-money-bill-alt"></i>
@@ -81,7 +81,7 @@ if (!empty($row)) {
 				<div>
 					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Terbayar</span>
 					<h4 class="fw-bold mb-0 text-success mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_terbayar, 0, ',', '.') ?></h4>
-					<small class="text-muted" style="font-size: 11px;">Realisasi transfer masuk</small>
+					<small class="text-muted" style="font-size: 11px;">Incoming transfer realization</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 44px; height: 44px; font-size: 18px;">
 					<i class="fa fa-check-circle"></i>
@@ -93,9 +93,9 @@ if (!empty($row)) {
 		<div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 5px solid #d97706 !important;">
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
-					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Belum Selesai</span>
+					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Remaining Unfinished</span>
 					<h4 class="fw-bold mb-0 text-warning mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_sisa, 0, ',', '.') ?></h4>
-					<small class="text-muted" style="font-size: 11px;">Outstanding pengembalian</small>
+					<small class="text-muted" style="font-size: 11px;">Outstanding return</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-warning" style="width: 44px; height: 44px; font-size: 18px;">
 					<i class="fa fa-hourglass-half"></i>
@@ -112,7 +112,7 @@ if (!empty($row)) {
 			<h5 class="card-title mb-0 fw-bold text-primary">
 				<i class="fa fa-undo me-2"></i>Daftar Pengembalian Expense
 			</h5>
-			<small class="text-muted">Monitoring dan review status pengembalian dana / realisasi expense karyawan</small>
+			<small class="text-muted">Monitor and review the status of employee fund returns / expense realization</small>
 		</div>
 	</div>
 
@@ -122,14 +122,14 @@ if (!empty($row)) {
 				<thead class="table-light text-center">
 					<tr>
 						<th width="4%" class="text-center">#</th>
-						<th width="14%">No Dokumen</th>
+						<th width="14%">Document No.</th>
 						<th width="13%">Request By</th>
-						<th width="9%" class="text-center">Tanggal</th>
+						<th width="9%" class="text-center">Date</th>
 						<th>Keperluan</th>
 						<th width="8%" class="text-center">Tipe</th>
-						<th width="11%" class="text-end">Nilai Pengembalian</th>
+						<th width="11%" class="text-end">Return Value</th>
 						<th width="11%" class="text-end">Terbayar</th>
-						<th width="11%" class="text-end">Sisa</th>
+						<th width="11%" class="text-end">Remaining</th>
 						<th width="10%" class="text-center">Status</th>
 						<th width="8%" class="text-center">Aksi</th>
 					</tr>
@@ -172,7 +172,7 @@ if (!empty($row)) {
 									<?= $rowItem['status_badge'] ?>
 								</td>
 								<td class="text-center text-nowrap">
-									<button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 shadow-sm" onclick="edit(<?= $rec->ids ?>)" title="Review Pengembalian Expense">
+									<button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 shadow-sm" onclick="edit(<?= $rec->ids ?>)" title="Expense Return Review">
 										<i class="fa fa-eye me-1"></i> Review
 									</button>
 								</td>
@@ -191,19 +191,19 @@ if (!empty($row)) {
 		<div class="modal-content border-0 shadow">
 			<div class="modal-header bg-primary text-white py-3">
 				<h5 class="modal-title fw-bold fs-6" id="modalViewExpenseLabel">
-					<i class="fa fa-file-text-o me-2"></i>Review Pengembalian Expense
+					<i class="fa fa-file-text-o me-2"></i>Expense Return Review
 				</h5>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body p-4" id="listexpense">
 				<div class="text-center py-5">
 					<i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i>
-					<p class="text-muted">Memuat data expense...</p>
+					<p class="text-muted">Loading expense data...</p>
 				</div>
 			</div>
 			<div class="modal-footer bg-light py-2">
 				<button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">
-					<i class="fa fa-times me-1"></i> Tutup
+					<i class="fa fa-times me-1"></i> Close
 				</button>
 			</div>
 		</div>
@@ -231,7 +231,7 @@ if (!empty($row)) {
 	});
 
 	function edit(id) {
-		$("#listexpense").html('<div class="text-center py-5"><i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i><p class="text-muted mb-0">Memuat data expense...</p></div>');
+		$("#listexpense").html('<div class="text-center py-5"><i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i><p class="text-muted mb-0">Loading expense data...</p></div>');
 
 		// Compatible modal show (Bootstrap 5 or Bootstrap 3/4 jQuery fallback)
 		var modalEl = document.getElementById('Mymodal');
@@ -244,7 +244,7 @@ if (!empty($row)) {
 
 		$("#listexpense").load(base_url + 'expense/review/' + id, function(response, status, xhr) {
 			if (status == "error") {
-				$("#listexpense").html('<div class="alert alert-danger mb-0"><i class="fa fa-times me-1"></i> Gagal memuat data expense: ' + xhr.status + " " + xhr.statusText + '</div>');
+				$("#listexpense").html('<div class="alert alert-danger mb-0"><i class="fa fa-times me-1"></i> Failed to load data expense: ' + xhr.status + " " + xhr.statusText + '</div>');
 			}
 		});
 	}

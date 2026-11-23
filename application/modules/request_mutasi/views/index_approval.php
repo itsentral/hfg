@@ -6,7 +6,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle me-2"></i>Daftar Approval Request Mutasi
             </h5>
-            <small class="text-muted">Antrian pengajuan mutasi bank yang memerlukan persetujuan</small>
+            <small class="text-muted">Queue of bank mutation requests that require approval</small>
         </div>
         <div>
             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
@@ -22,13 +22,13 @@
                     <tr>
                         <th width="4%" class="text-center">No</th>
                         <th width="9%" class="text-center">Tgl Request</th>
-                        <th width="13%">Kode Mutasi</th>
-                        <th>Keterangan</th>
+                        <th width="13%">Mutation Code</th>
+                        <th>Description</th>
                         <th width="12%">Bank Asal</th>
-                        <th width="12%">Bank Tujuan</th>
-                        <th width="7%" class="text-center">Mata Uang</th>
-                        <th width="12%" class="text-end">Nilai Transfer</th>
-                        <th width="10%">Dibuat Oleh</th>
+                        <th width="12%">Destination Bank</th>
+                        <th width="7%" class="text-center">Currency</th>
+                        <th width="12%" class="text-end">Transfer Value</th>
+                        <th width="10%">Created By</th>
                         <th width="8%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -46,7 +46,7 @@
                                 <td class="text-end fw-semibold">Rp <?= number_format((float) $record->nilai_request, 0, ',', '.') ?></td>
                                 <td><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars((string) $record->created_by) ?></td>
                                 <td class="text-center text-nowrap">
-                                    <a class="btn btn-primary btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/approval/' . $record->kd_mutasi) ?>" title="Proses Approval">
+                                    <a class="btn btn-primary btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/approval/' . $record->kd_mutasi) ?>" title="Approval Process">
                                         <i class="fa fa-check-square-o me-1"></i> Review
                                     </a>
                                 </td>

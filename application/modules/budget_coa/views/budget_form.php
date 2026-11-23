@@ -34,19 +34,19 @@ if (!empty($data)) {
                 </div>
                 <div>
                     <h5 class="card-title fw-bold text-dark mb-0">
-                        <?= ($is_edit ? 'Edit Data Budget COA' : 'Tambah Data Budget COA Baru') ?>
+                        <?= ($is_edit ? 'Edit COA Budget Data' : 'Add New COA Budget Data') ?>
                     </h5>
                     <small class="text-muted">
-                        <?= ($is_edit ? 'Perbarui alokasi budget dan parameter COA untuk tahun terpilih' : 'Alokasikan budget tahunan dan sesuaikan parameter per COA') ?>
+                        <?= ($is_edit ? 'Update the budget allocation and COA parameters for the selected year' : 'Allocate the annual budget and adjust parameters per COA') ?>
                     </small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge <?= ($is_edit ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-success-subtle text-success border border-success-subtle') ?> px-2 py-1">
                     <i class="fa <?= ($is_edit ? 'fa-pencil-alt' : 'fa-plus') ?> me-1"></i>
-                    Mode <?= ($is_edit ? 'Edit' : 'Tambah') ?>
+                    Mode <?= ($is_edit ? 'Edit' : 'Add') ?>
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Tutup Formulir">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Close Form">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -61,21 +61,21 @@ if (!empty($data)) {
         <div class="row g-3 mb-4 align-items-center bg-light p-3 rounded-3 border">
             <div class="col-md-4 col-sm-6">
                 <label class="form-label fw-bold text-dark small mb-1">
-                    Tahun Anggaran <span class="text-danger">*</span>
+                    Budget Year <span class="text-danger">*</span>
                 </label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted"><i class="fa fa-calendar-alt"></i></span>
                     <input type="number" class="form-control fw-bold font-monospace" id="tahunform" name="tahun" value="<?= $tahun_val ?>" placeholder="YYYY" required min="2000" max="2099" maxlength="4" <?= ($is_edit ? 'readonly' : '') ?>>
                 </div>
-                <small class="text-muted">Format: 4 digit tahun (contoh: <?= date('Y') ?>)</small>
+                <small class="text-muted">Format: 4-digit year (example: <?= date('Y') ?>)</small>
             </div>
             <div class="col-md-5 col-sm-6">
-                <label class="form-label fw-bold text-dark small mb-1">Cari Akun COA Cepat</label>
+                <label class="form-label fw-bold text-dark small mb-1">Quick COA Account Search</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted"><i class="fa fa-search"></i></span>
-                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Ketik kode / nama COA untuk memfilter...">
+                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Type a COA code / name to filter...">
                 </div>
-                <small class="text-muted">Menyaring baris COA pada tabel di bawah</small>
+                <small class="text-muted">Filters the COA rows in the table below</small>
             </div>
             <div class="col-md-3 col-sm-12 text-md-end">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle p-2">
@@ -91,10 +91,10 @@ if (!empty($data)) {
                     <tr class="small text-uppercase fw-semibold text-secondary">
                         <th width="240">Akun COA</th>
                         <th width="180">Penanggung Jawab</th>
-                        <th width="160">Kategori</th>
+                        <th width="160">Category</th>
                         <th width="180">Definisi</th>
                         <th width="180">Formulasi Budget</th>
-                        <th width="180" class="text-end">Referensi Budget/Tahun</th>
+                        <th width="180" class="text-end">Budget/Year Reference</th>
                     </tr>
                 </thead>
                 <tbody id="tbody_budget">
@@ -142,7 +142,7 @@ if (!empty($data)) {
                     ?>
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">
-                                <i class="fa fa-info-circle me-1"></i> Tidak ada data COA level 5 yang ditemukan.
+                                <i class="fa fa-info-circle me-1"></i> No level 5 COA data found.
                             </td>
                         </tr>
                     <?php } ?>
@@ -156,10 +156,10 @@ if (!empty($data)) {
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-outline-secondary px-3" onclick="cancel()">
-                    <i class="fa fa-arrow-left me-1"></i> Batal
+                    <i class="fa fa-arrow-left me-1"></i> Cancel
                 </button>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="btn_submit_budget">
-                    <i class="fa fa-save me-1"></i> Simpan Data Budget
+                    <i class="fa fa-save me-1"></i> Save Budget Data
                 </button>
             </div>
         </div>
@@ -194,22 +194,22 @@ if (!empty($data)) {
         if (!tahun || tahun.length < 4) {
             Swal.fire({
                 icon: "warning",
-                title: "Perhatian",
-                text: "Silakan masukkan tahun anggaran dengan benar (4 digit angka)!",
+                title: "Attention",
+                text: "Please enter a valid budget year (4 digits)!",
                 confirmButtonText: "OK"
             });
             return false;
         }
 
         Swal.fire({
-            title: "Simpan Data Budget?",
-            text: "Pastikan seluruh alokasi data budget tahun " + tahun + " sudah benar.",
+            title: "Save Budget Data?",
+            text: "Make sure all budget data allocations for year " + tahun + " sudah benar.",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#0d6efd",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 var $btn = $("#btn_submit_budget");
@@ -217,7 +217,7 @@ if (!empty($data)) {
 
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyimpan data budget...',
+                    text: 'Saving budget data...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -229,12 +229,12 @@ if (!empty($data)) {
                     type: 'POST',
                     data: formdata,
                     success: function(msg) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Data');
                         if (msg['save'] == true || msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data budget berhasil disimpan.",
+                                title: "Success!",
+                                text: "Budget data saved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -243,19 +243,19 @@ if (!empty($data)) {
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data budget gagal disimpan.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Budget data failed to save.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
                     error: function(xhr, status, error) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Data');
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

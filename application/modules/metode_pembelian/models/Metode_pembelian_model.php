@@ -115,8 +115,8 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData2[]	= "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>"; //$('.prtCh_".$nomor."').parent().parent().attr('height','200px');
 			$nestedData2[]	= "<div align='left'></div>";
 			$nestedData2[]	= "<div align='left'></div>";
-			$nestedData2[]	= "<div align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
-			$nestedData2[]	= "<div align='right'><b>NILAI PR</b></br>" . number_format((float) $row['nilai_pr']) . "</div>";
+			$nestedData2[]	= "<div align='right'><b>ITEM QTY</b><br>" . number_format((float) $row['qty']) . "</div>";
+			$nestedData2[]	= "<div align='right'><b>PR VALUE</b></br>" . number_format((float) $row['nilai_pr']) . "</div>";
 			$nestedData2[]	= "<div align='left'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . $jns_pm . "</div>";
 			$nestedData2[]	= "<div align='left'>" . $sts_by . "<br>" . $sts_app . "</div>";
 			$nestedData2[]	= "<div align='left'></div>";
@@ -1113,7 +1113,7 @@ class Metode_pembelian_model extends BF_Model
 				$category_pr = isset($data['category_' . $no_pr]) ? strtolower(trim($data['category_' . $no_pr])) : '';
 				if (($category_pr == 'material' || $category_pr == 'pr material') && $kode_jenis_pembelian != '1') {
 					$Arr_Kembali = [
-						'pesan'  => 'Khusus untuk PR Material, metode pembelian hanya boleh PO!',
+						'pesan'  => 'For PR Material, the purchase method can only be PO!',
 						'status' => 2
 					];
 					$this->output
@@ -1823,7 +1823,7 @@ class Metode_pembelian_model extends BF_Model
 		$data_Group			= $this->master_model->getArray('groups', array(), 'id', 'name');
 		$data_gudang		= $this->db->query("SELECT * FROM warehouse WHERE `status`='Y' ")->result_array();
 		$data = array(
-			'title'			=> 'Table Pengajuan',
+			'title'			=> 'Request Table',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'akses_menu'	=> $Arr_Akses,
@@ -2440,7 +2440,7 @@ class Metode_pembelian_model extends BF_Model
 
 
 			$nestedData[]	= "	<div align='left'>
-                                    <button type='button' class='btn btn-sm btn-default detailMat' title='Detail PO' data-no_po='" . $row['no_po'] . "'><i class='fa fa-eye'></i></button>
+                                    <button type='button' class='btn btn-sm btn-default detailMat' title='PO Detail' data-no_po='" . $row['no_po'] . "'><i class='fa fa-eye'></i></button>
 									" . $edit_po . "
 									" . $edit_print . "
 									" . $print_po . "
@@ -3096,7 +3096,7 @@ class Metode_pembelian_model extends BF_Model
 		} elseif ($tanda == 'non_po') {
 			$tandax = 'List';
 		} else {
-			$tandax = 'Pengajuan';
+			$tandax = 'Request';
 		}
 		$data = array(
 			'title'			=> 'Pembelian Non-Material & Jasa >> Non-PO >> ' . $tandax . ' Non PO',
@@ -3337,8 +3337,8 @@ class Metode_pembelian_model extends BF_Model
 				$ArrDetail = array();
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['price_unit']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['price_unit'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -3371,8 +3371,8 @@ class Metode_pembelian_model extends BF_Model
 				$ArrDetail = array();
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['price_unit']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['price_unit'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -3538,13 +3538,13 @@ class Metode_pembelian_model extends BF_Model
 			$check			= $data['check'];
 			$tgl_dibutuhkan	= date('Y-m-d', strtotime((string) $data['tanggal_dibutuhkan']));
 			$valid_date		= (!empty($data['valid_date'])) ? date('Y-m-d', strtotime((string) $data['valid_date'])) : NULL;
-			$total_po		= str_replace(',', '', $data['total_po']);
-			$discount		= str_replace(',', '', $data['discount']);
-			$net_price		= str_replace(',', '', $data['net_price']);
-			$tax			= str_replace(',', '', $data['tax']);
-			$net_plus_tax	= str_replace(',', '', $data['net_plus_tax']);
-			$delivery_cost	= str_replace(',', '', $data['delivery_cost']);
-			$grand_total	= str_replace(',', '', $data['grand_total']);
+			$total_po		= str_replace(',', '', $data['total_po'] ?? '');
+			$discount		= str_replace(',', '', $data['discount'] ?? '');
+			$net_price		= str_replace(',', '', $data['net_price'] ?? '');
+			$tax			= str_replace(',', '', $data['tax'] ?? '');
+			$net_plus_tax	= str_replace(',', '', $data['net_plus_tax'] ?? '');
+			$delivery_cost	= str_replace(',', '', $data['delivery_cost'] ?? '');
+			$grand_total	= str_replace(',', '', $data['grand_total'] ?? '');
 
 			$ArrList 		= array();
 			foreach ($check as $vaxl) {
@@ -3949,9 +3949,9 @@ class Metode_pembelian_model extends BF_Model
 					$ArrEditPO[$val]['category'] 	= 'pembelian material';
 					$ArrEditPO[$val]['term'] 		= $no;
 					$ArrEditPO[$val]['group_top'] 	= $valx['group_top'];
-					$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress']);
-					$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd']);
-					$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr']);
+					$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress'] ?? '');
+					$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd'] ?? '');
+					$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr'] ?? '');
 					$ArrEditPO[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 					$ArrEditPO[$val]['jatuh_tempo'] = $valx['jatuh_tempo'];
 					$ArrEditPO[$val]['syarat'] 		= strtolower((string) $valx['syarat']);
@@ -4139,13 +4139,13 @@ class Metode_pembelian_model extends BF_Model
 					$number = ($data->info2 + 1);
 					$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
 				}
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
-				$newcode = str_ireplace('YEAR', $years, $newcode);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
+				$newcode = str_ireplace('YEAR', $years, $newcode ?? '');
 				$newdata = array('info2' => $number, 'info3' => $years);
 			} else {
 				$number = ($data->info2 + 1);
 				$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
 				$newdata = array('info2' => $number);
 			}
 

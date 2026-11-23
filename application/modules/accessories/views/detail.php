@@ -41,7 +41,7 @@ $unit_fisik     = (!empty($header) && isset($header[0]->unit_fisik)) ? $header[0
                             <td><?= !empty($id_stock) ? $id_stock : '-' ?></td>
                         </tr>
                         <tr>
-                            <th class="bg-light">Stok Name</th>
+                            <th class="bg-light">Stock Name</th>
                             <td class="fw-bold"><?= !empty($stock_name) ? strtoupper((string) $stock_name) : '-' ?></td>
                         </tr>
                         <tr>

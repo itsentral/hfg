@@ -306,32 +306,8 @@ if (!function_exists('separator')) {
 if (!function_exists('ynz_terbilang_format')) {
   function ynz_terbilang_format($x)
   {
-    $x = abs($x);
-    $angka = array('', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas');
-    $temp = '';
-    if ($x < 12) {
-      $temp = ' ' . $angka[$x];
-    } elseif ($x < 20) {
-      $temp = ynz_terbilang_format($x - 10) . ' belas';
-    } elseif ($x < 100) {
-      $temp = ynz_terbilang_format($x / 10) . ' puluh' . ynz_terbilang_format($x % 10);
-    } elseif ($x < 200) {
-      $temp = ' seratus' . ynz_terbilang_format($x - 100);
-    } elseif ($x < 1000) {
-      $temp = ynz_terbilang_format($x / 100) . ' ratus' . ynz_terbilang_format($x % 100);
-    } elseif ($x < 2000) {
-      $temp = ' seribu' . ynz_terbilang_format($x - 1000);
-    } elseif ($x < 1000000) {
-      $temp = ynz_terbilang_format($x / 1000) . ' ribu' . ynz_terbilang_format($x % 1000);
-    } elseif ($x < 1000000000) {
-      $temp = ynz_terbilang_format($x / 1000000) . ' juta' . ynz_terbilang_format($x % 1000000);
-    } elseif ($x < 1000000000000) {
-      $temp = ynz_terbilang_format($x / 1000000000) . ' milyar' . ynz_terbilang_format(fmod($x, 1000000000));
-    } elseif ($x < 1000000000000000) {
-      $temp = ynz_terbilang_format($x / 1000000000000) . ' trilyun' . ynz_terbilang_format(fmod($x, 1000000000000));
-    }
-
-    return $temp;
+    require_once __DIR__ . '/english_ui_helper.php';
+    return hfg_number_to_words_english(abs((float)$x));
   }
 }
 
@@ -412,18 +388,18 @@ if (!function_exists('the_bulan')) {
   function the_bulan($time = false)
   {
     $a = array(
-      '1' => 'Januari',
-      '2' => 'Februari',
-      '3' => 'Maret',
+      '1' => 'January',
+      '2' => 'February',
+      '3' => 'March',
       '4' => 'April',
-      '5' => 'Mei',
-      '6' => 'Juni',
-      '7' => 'Juli',
-      '8' => 'Agustus',
+      '5' => 'May',
+      '6' => 'June',
+      '7' => 'July',
+      '8' => 'August',
       '9' => 'September',
-      '10' => 'Oktober',
+      '10' => 'October',
       '11' => 'November',
-      '12' => 'Desember',
+      '12' => 'December',
     );
 
     return $time == false ? $a : $a[$time];
@@ -434,18 +410,18 @@ if (!function_exists('bulan')) {
   function bulan($time = false)
   {
     $a = array(
-      '01' => 'Januari',
-      '02' => 'Februari',
-      '03' => 'Maret',
+      '01' => 'January',
+      '02' => 'February',
+      '03' => 'March',
       '04' => 'April',
-      '05' => 'Mei',
-      '06' => 'Juni',
-      '07' => 'Juli',
-      '08' => 'Agustus',
+      '05' => 'May',
+      '06' => 'June',
+      '07' => 'July',
+      '08' => 'August',
       '09' => 'September',
-      '10' => 'Oktober',
+      '10' => 'October',
       '11' => 'November',
-      '12' => 'Desember',
+      '12' => 'December',
     );
 
     return $time == false ? $a : $a[$time];
@@ -1364,18 +1340,18 @@ function get_dimensi($product)
 function tgl_indo($tanggal)
 {
   $bulan = array(
-    1 => 'Januari',
-    2 => 'Februari',
-    3 => 'Maret',
+    1 => 'January',
+    2 => 'February',
+    3 => 'March',
     4 => 'April',
-    5 => 'Mei',
-    6 => 'Juni',
-    7 => 'Juli',
-    8 => 'Agustus',
+    5 => 'May',
+    6 => 'June',
+    7 => 'July',
+    8 => 'August',
     9 => 'September',
-    10 => 'Oktober',
+    10 => 'October',
     11 => 'November',
-    12 => 'Desember'
+    12 => 'December'
   );
   $pecahkan = explode('-', (string) $tanggal);
 

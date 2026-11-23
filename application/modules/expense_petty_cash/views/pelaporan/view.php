@@ -28,9 +28,9 @@ function get_pelaporan_status_badge($status) {
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-file-text-o me-2"></i>Detail Pelaporan Petty Cash
+                <i class="fa fa-file-text-o me-2"></i>Petty Cash Report Detail
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
+            <small class="text-muted">Document Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash/pelaporan') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -38,7 +38,7 @@ function get_pelaporan_status_badge($status) {
             </a>
             <?php if ($header->status === 'approved') : ?>
                 <a href="<?= site_url('expense_petty_cash/print_pelaporan/' . $header->id) ?>" target="_blank" class="btn btn-outline-success btn-sm px-3 shadow-sm">
-                    <i class="fa fa-print me-1"></i> Cetak PDF
+                    <i class="fa fa-print me-1"></i> Print PDF
                 </a>
             <?php endif; ?>
         </div>
@@ -55,7 +55,7 @@ function get_pelaporan_status_badge($status) {
             </div>
             <div class="col-md-3">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Periode Transaksi</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Transaction Period</span>
                     <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= $periode_start_fmt ?> - <?= $periode_end_fmt ?></h6>
                 </div>
             </div>
@@ -73,7 +73,7 @@ function get_pelaporan_status_badge($status) {
             </div>
             <div class="col-md-2">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Jumlah Pencatatan</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Record Count</span>
                     <h5 class="fw-bold text-dark mb-0 mt-1"><?= $jumlah_item ?> Item</h5>
                 </div>
             </div>
@@ -85,19 +85,19 @@ function get_pelaporan_status_badge($status) {
             </div>
             <div class="col-md-4">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Status Dokumen</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Document Status</span>
                     <div class="mt-1"><?= get_pelaporan_status_badge($header->status) ?></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Dibuat Pada</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Created At</span>
                     <div class="fw-semibold text-dark mt-1"><i class="fa fa-clock-o me-1 text-muted"></i><?= !empty($header->created_on) ? date('d/m/Y H:i', strtotime((string) $header->created_on)) : '-' ?></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Disetujui / Ditolak Pada</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Approved / Rejected At</span>
                     <div class="fw-semibold text-dark mt-1"><i class="fa fa-check me-1 text-muted"></i><?= !empty($header->approved_on) ? date('d/m/Y H:i', strtotime((string) $header->approved_on)) : '-' ?></div>
                 </div>
             </div>
@@ -152,7 +152,7 @@ function get_pelaporan_status_badge($status) {
                     <div id="collapse_v_<?= $pItem->id ?>" class="accordion-collapse collapse <?= ($pIdx === 0) ? 'show' : '' ?>" data-bs-parent="#accordionPencatatanView">
                         <div class="accordion-body p-3 bg-white">
                             <?php if (!empty($pItem->keterangan)) : ?>
-                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
+                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Description:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
                             <?php endif; ?>
 
                             <div class="table-responsive">
@@ -161,7 +161,7 @@ function get_pelaporan_status_badge($status) {
                                         <tr>
                                             <th width="35" class="text-center">#</th>
                                             <th width="220">COA</th>
-                                            <th>Pengeluaran</th>
+                                            <th>Outgoing</th>
                                             <th>Spesifikasi</th>
                                             <th width="60" class="text-center">Qty</th>
                                             <th width="110" class="text-end">Nominal</th>
@@ -201,7 +201,7 @@ function get_pelaporan_status_badge($status) {
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else : ?>
-                                            <tr><td colspan="8" class="text-center text-muted py-2">Tidak ada detail</td></tr>
+                                            <tr><td colspan="8" class="text-center text-muted py-2">No details</td></tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
