@@ -37,7 +37,7 @@ class App_pr_material_model extends BF_Model
         foreach ($query->result_array() as $row) {
             $status = $this->_get_approval_status($row);
 
-            $nama_user = $GET_USER[$row['booking_by']]['nama'] ?? '-';
+            $nama_user = $GET_USER[(string) ($row['booking_by'] ?? '')]['nama'] ?? '-';
 
             // tombol view => trigger modal
             $view_btn = "<button type='button' class='btn-icon btn-icon-view detail'

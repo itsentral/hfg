@@ -43,8 +43,8 @@ class Flow_process extends Admin_Controller
 
 		$users = [];
 		foreach ($list as $row) {
-			if (!isset($users[$row['updated_by']])) {
-				$users[$row['updated_by']] = $this->Flow_process_model->get_username($row['updated_by']);
+			if (!isset($users[(string) ($row['updated_by'] ?? '')])) {
+				$users[(string) ($row['updated_by'] ?? '')] = $this->Flow_process_model->get_username($row['updated_by']);
 			}
 		}
 
@@ -78,7 +78,7 @@ class Flow_process extends Admin_Controller
 		// Kategori yang sudah punya flow tidak ditawarkan lagi saat tambah
 		$tersedia = $categories;
 		foreach ($this->Flow_process_model->get_list() as $row) {
-			unset($tersedia[$row['code_lv2']]);
+			unset($tersedia[(string) ($row['code_lv2'] ?? '')]);
 		}
 
 		$data = [
@@ -243,7 +243,7 @@ class Flow_process extends Admin_Controller
 		}
 		$details    = $this->Flow_process_model->get_details($id);
 		$categories = $this->Flow_process_model->get_categories();
-		$nama       = isset($categories[$header['code_lv2']]) ? $categories[$header['code_lv2']] : $header['code_lv2'];
+		$nama       = isset($categories[(string) ($header['code_lv2'] ?? '')]) ? $categories[(string) ($header['code_lv2'] ?? '')] : $header['code_lv2'];
 		$snapshot   = $header + ['detail' => $details]; // snapshot lengkap sebelum dihapus
 
 		if ($this->Flow_process_model->delete_flow($id)) {

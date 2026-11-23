@@ -8,7 +8,7 @@ $status_badges = [
     'Released'           => 'bg-success',
     'Cancelled'          => 'bg-danger',
 ];
-$badge_class = isset($status_badges[$spk['status']]) ? $status_badges[$spk['status']] : 'bg-secondary';
+$badge_class = isset($status_badges[(string) ($spk['status'] ?? '')]) ? $status_badges[(string) ($spk['status'] ?? '')] : 'bg-secondary';
 
 // Determine editability
 $editable_statuses = ['Material Requested', 'Material Confirmed'];

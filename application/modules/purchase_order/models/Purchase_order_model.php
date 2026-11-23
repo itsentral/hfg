@@ -120,7 +120,7 @@ class Purchase_order_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aCombo[$vals['pr_no']]	= $vals['pr_no'];
+				$aCombo[(string) ($vals['pr_no'] ?? '')]	= $vals['pr_no'];
 			}
 		}
 		return $aCombo;

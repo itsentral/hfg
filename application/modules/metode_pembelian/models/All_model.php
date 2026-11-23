@@ -96,7 +96,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -135,7 +135,7 @@ class All_model extends BF_Model
 		$results = $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -157,7 +157,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['id_type']]	= $vals['nama'];
+				$aMenu[(string) ($vals['id_type'] ?? '')]	= $vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -173,7 +173,7 @@ class All_model extends BF_Model
 		$aCombo[]	= '';
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_divisi']]	= $vals['nm_divisi'];
+				$aCombo[(string) ($vals['id_divisi'] ?? '')]	= $vals['nm_divisi'];
 			}
 		}
 		return $aCombo;
@@ -192,7 +192,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id']]	= $vals['nm_dept'];
+				$aCombo[(string) ($vals['id'] ?? '')]	= $vals['nm_dept'];
 			}
 		}
 		return $aCombo;
@@ -211,7 +211,7 @@ class All_model extends BF_Model
 		$aCombo[]	= '';
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id']]	= $vals['cost_center'];
+				$aCombo[(string) ($vals['id'] ?? '')]	= $vals['cost_center'];
 			}
 		}
 		return $aCombo;
@@ -242,7 +242,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['kode']]	= $vals['kode'] . ' - ' . $vals['mata_uang'];
+				$aCombo[(string) ($vals['kode'] ?? '')]	= $vals['kode'] . ' - ' . $vals['mata_uang'];
 			}
 		}
 		return $aCombo;
@@ -273,7 +273,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['loc_code']]	= $vals['loc_code'] . ' - ' . $vals['loc_name'];
+				$aCombo[(string) ($vals['loc_code'] ?? '')]	= $vals['loc_code'] . ' - ' . $vals['loc_name'];
 			}
 		}
 		return $aCombo;
@@ -289,7 +289,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['wh_code']]	= $vals['wh_code'] . ' - ' . $vals['wh_name'];
+				$aCombo[(string) ($vals['wh_code'] ?? '')]	= $vals['wh_code'] . ' - ' . $vals['wh_name'];
 			}
 		}
 		return $aCombo;
@@ -305,7 +305,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_material']]	= $vals['id_material'] . ' - ' . $vals['nama'];
+				$aCombo[(string) ($vals['id_material'] ?? '')]	= $vals['id_material'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aCombo;
@@ -325,7 +325,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_type']]	= $vals['nama'];
+				$aCombo[(string) ($vals['id_type'] ?? '')]	= $vals['nama'];
 			}
 		}
 		return $aCombo;
@@ -405,7 +405,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_supplier']]	= $vals['nm_supplier_office'];
+				$aCombo[(string) ($vals['id_supplier'] ?? '')]	= $vals['nm_supplier_office'];
 			}
 		}
 		return $aCombo;
@@ -517,7 +517,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -549,7 +549,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['coa']]	= $vals['coa'] . ' - ' . $vals['nama_perkiraan'];
+				$aMenu[(string) ($vals['coa'] ?? '')]	= $vals['coa'] . ' - ' . $vals['nama_perkiraan'];
 			}
 		}
 		return $aMenu;
@@ -618,7 +618,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_user']]	= $vals['nm_lengkap'];
+				$aCombo[(string) ($vals['id_user'] ?? '')]	= $vals['nm_lengkap'];
 			}
 		}
 		return $aCombo;
@@ -676,7 +676,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_customer']]	= $vals['name_customer'];
+				$aCombo[(string) ($vals['id_customer'] ?? '')]	= $vals['name_customer'];
 			}
 		}
 		return $aCombo;
@@ -716,7 +716,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['id_karyawan']]	= $vals['nama_karyawan'];
+				$aCombo[(string) ($vals['id_karyawan'] ?? '')]	= $vals['nama_karyawan'];
 			}
 		}
 		return $aCombo;
@@ -755,7 +755,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aCombo[$vals['info']]	= $vals['kode_1'];
+				$aCombo[(string) ($vals['info'] ?? '')]	= $vals['kode_1'];
 			}
 		}
 		return $aCombo;
@@ -832,7 +832,7 @@ class All_model extends BF_Model
 		$results	= $query->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$combos[$vals['nama']]	= $vals['nama'] . ' - ' . $vals['pengelola'];
+				$combos[(string) ($vals['nama'] ?? '')]	= $vals['nama'] . ' - ' . $vals['pengelola'];
 			}
 		}
 		return $combos;
@@ -846,7 +846,7 @@ class All_model extends BF_Model
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coa . "') order by no_perkiraan")->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -860,7 +860,7 @@ class All_model extends BF_Model
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coa . "') order by no_perkiraan")->result_array();
 		if ($results) {
 			foreach ($results as $key => $vals) {
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'] . ' - ' . $vals['nama'];
 			}
 		}
 		return $aMenu;

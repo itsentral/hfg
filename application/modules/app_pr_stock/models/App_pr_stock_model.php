@@ -86,7 +86,7 @@ class App_pr_stock_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['so_number']) . "</div>";
       $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['no_pr']) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['project']) . "</div>";
-      $nama_user = (!empty($GET_USER[$row['booking_by']]['nama'])) ? $GET_USER[$row['booking_by']]['nama'] : '';
+      $nama_user = (!empty($GET_USER[(string) ($row['booking_by'] ?? '')]['nama'])) ? $GET_USER[(string) ($row['booking_by'] ?? '')]['nama'] : '';
       $nestedData[]  = "<div class='text-left'>" . ucwords(strtolower((string) $nama_user)) . "</div>";
       $nestedData[]  = "<div class='text-left'>" . date('d-M-Y', strtotime((string) $row['booking_date'])) . "</div>";
 

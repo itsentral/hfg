@@ -717,7 +717,7 @@ class Ros extends Admin_Controller
         // Grouping data berdasarkan id_po_detail
         $groups = [];
         foreach ($data as $row) {
-            $groups[$row['id_po_detail']][] = $row;
+            $groups[(string) ($row['id_po_detail'] ?? '')][] = $row;
         }
 
         $html = '<div class="table-responsive">

@@ -2,8 +2,8 @@
 $id_dept = [];
 if (!empty($result)) {
     foreach ($result as $val => $valx) {
-        if (!empty($valx['id_dept']) && isset($list_departments[$valx['id_dept']]['id_dept'])) {
-            $id_dept[] = $list_departments[$valx['id_dept']]['id_dept'];
+        if (!empty($valx['id_dept']) && isset($list_departments[(string) ($valx['id_dept'] ?? '')]['id_dept'])) {
+            $id_dept[] = $list_departments[(string) ($valx['id_dept'] ?? '')]['id_dept'];
         }
     }
 }
@@ -59,8 +59,8 @@ $id_dept = implode(',', $id_dept ?? []);
                                 $incoming_qty = $get_incoming_qty['qty_incoming'];
                             }
 
-                            $nm_dept = (!empty($valx['id_dept']) && !empty($list_departments[$valx['id_dept']]['nm_dept']))
-                                ? strtoupper($list_departments[$valx['id_dept']]['nm_dept'])
+                            $nm_dept = (!empty($valx['id_dept']) && !empty($list_departments[(string) ($valx['id_dept'] ?? '')]['nm_dept']))
+                                ? strtoupper($list_departments[(string) ($valx['id_dept'] ?? '')]['nm_dept'])
                                 : '-';
 
                             $Qty_kurang = ($valx['qty'] - $incoming_qty);

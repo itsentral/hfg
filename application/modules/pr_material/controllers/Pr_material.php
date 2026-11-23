@@ -212,7 +212,7 @@ class Pr_material extends Admin_Controller
             ->result_array();
 
         foreach ($get_materials as $key => $value) {
-            $outanding_pr   = (!empty($GET_OUTANDING_PR[$value['code_lv4']]) and $GET_OUTANDING_PR[$value['code_lv4']] > 0) ? $GET_OUTANDING_PR[$value['code_lv4']] : 0;
+            $outanding_pr   = (!empty($GET_OUTANDING_PR[(string) ($value['code_lv4'] ?? '')]) and $GET_OUTANDING_PR[(string) ($value['code_lv4'] ?? '')] > 0) ? $GET_OUTANDING_PR[(string) ($value['code_lv4'] ?? '')] : 0;
 
             $QTY_PR = NULL;
             if ($value['qty_stock'] < $value['min_stok']) {
@@ -304,7 +304,7 @@ class Pr_material extends Admin_Controller
             ->get()
             ->result_array();
         foreach ($query as $row) {
-            $GET_LEVEL4[$row['code_lv4']] = ['nama' => $row['nama']];
+            $GET_LEVEL4[(string) ($row['code_lv4'] ?? '')] = ['nama' => $row['nama']];
         }
 
         // Ambil stok pusat (dulunya dari getStokMaterial)
@@ -320,7 +320,7 @@ class Pr_material extends Admin_Controller
             if ($s['qty_stock'] > 0 && $s['konversi'] > 0) {
                 $stok_packing = $s['qty_stock'] / $s['konversi'];
             }
-            $get_stok_pusat[$s['code_lv4']] = [
+            $get_stok_pusat[(string) ($s['code_lv4'] ?? '')] = [
                 'stok'          => $s['qty_stock'],
                 'booking'       => $s['qty_booking'],
                 'stok_packing'  => $stok_packing,
@@ -368,8 +368,8 @@ class Pr_material extends Admin_Controller
             ->get()
             ->result_array();
         foreach ($query as $row) {
-            $GET_LEVEL4[$row['code_lv4']] = ['nama' => $row['nama']];
-            $GET_LEVEL4[$row['code_lv4']] = ['trade_name' => $row['trade_name']];
+            $GET_LEVEL4[(string) ($row['code_lv4'] ?? '')] = ['nama' => $row['nama']];
+            $GET_LEVEL4[(string) ($row['code_lv4'] ?? '')] = ['trade_name' => $row['trade_name']];
         }
 
         // Ambil stok pusat (dulunya dari getStokMaterial)
@@ -385,7 +385,7 @@ class Pr_material extends Admin_Controller
             if ($s['qty_stock'] > 0 && $s['konversi'] > 0) {
                 $stok_packing = $s['qty_stock'] / $s['konversi'];
             }
-            $get_stok_pusat[$s['code_lv4']] = [
+            $get_stok_pusat[(string) ($s['code_lv4'] ?? '')] = [
                 'stok'          => $s['qty_stock'],
                 'booking'       => $s['qty_booking'],
                 'stok_packing'  => $stok_packing,
@@ -518,7 +518,7 @@ class Pr_material extends Admin_Controller
         $detail_changes = [];
         $oldMap = [];
         foreach ($oldDetails as $od) {
-            $oldMap[$od['id']] = $od;
+            $oldMap[(string) ($od['id'] ?? '')] = $od;
         }
 
         foreach ($ArrUpdate as $upItem) {
@@ -701,7 +701,7 @@ class Pr_material extends Admin_Controller
         $GET_STOK_PUSAT = getStokMaterial(1);
         foreach ($detail as $key => $value) {
             $key++;
-            $nm_material   = (!empty($GET_LEVEL4[$value['id_material']]['nama'])) ? $GET_LEVEL4[$value['id_material']]['nama'] : '';
+            $nm_material   = (!empty($GET_LEVEL4[(string) ($value['id_material'] ?? '')]['nama'])) ? $GET_LEVEL4[(string) ($value['id_material'] ?? '')]['nama'] : '';
             $stock_free   = $value['stock_free'];
             $use_stock     = $value['use_stock'];
             $sisa_free     = $stock_free - $use_stock;

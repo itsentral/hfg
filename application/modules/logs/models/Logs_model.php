@@ -109,7 +109,7 @@ class Logs_model extends CI_Model
                 'action'     => 'methode',
                 'status'     => 'status'
             ];
-            $col = isset($sortColMap[$sort['colId']]) ? $sortColMap[$sort['colId']] : 'id';
+            $col = isset($sortColMap[(string) ($sort['colId'] ?? '')]) ? $sortColMap[(string) ($sort['colId'] ?? '')] : 'id';
             $dir = strtolower($sort['sort']) === 'asc' ? 'asc' : 'desc';
             $this->db->order_by($col, $dir);
         } else {

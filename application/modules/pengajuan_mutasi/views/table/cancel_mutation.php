@@ -25,7 +25,7 @@ $status_label = [
         <tbody>
             <?php if (!empty($list)): ?>
                 <?php foreach ($list as $i => $row): ?>
-                    <?php $s = $status_label[$row['status']] ?? ['label' => '-', 'class' => 'bg-secondary']; ?>
+                    <?php $s = $status_label[(string) ($row['status'] ?? '')] ?? ['label' => '-', 'class' => 'bg-secondary']; ?>
                     <tr>
                         <td><?= $i + 1 ?></td>
                         <td><strong><?= ($row['mutation_number']) ?></strong></td>

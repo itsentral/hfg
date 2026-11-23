@@ -216,7 +216,7 @@ class Production_report_model extends CI_Model
             'scrap_pct'       => 0.0200,
         ];
         foreach ($rates as $r) {
-            $map[$r['rate_key']] = (float)$r['rate_value'];
+            $map[(string) ($r['rate_key'] ?? '')] = (float)$r['rate_value'];
         }
         return $map;
     }
@@ -574,11 +574,11 @@ class Production_report_model extends CI_Model
             }
             $this->source_costbooks[(int)$cd['id']] = $cb;
             if (!empty($cd['no_coil'])) {
-                $coil_cb_map[$cd['no_coil']]       = $cb;
+                $coil_cb_map[(string) ($cd['no_coil'] ?? '')]       = $cb;
                 $coil_cb_map[trim((string) $cd['no_coil'])] = $cb;
             }
             if (!empty($cd['kode_internal'])) {
-                $coil_cb_map[$cd['kode_internal']] = $cb;
+                $coil_cb_map[(string) ($cd['kode_internal'] ?? '')] = $cb;
             }
             $coil_cb_map[(string)$cd['id']] = $cb;
         }
@@ -1093,10 +1093,10 @@ class Production_report_model extends CI_Model
                 return $this->_stock_out_failed('Coil material not found: ' . ($coil_id ?: $coil_code));
             }
 
-            if (isset($seen_coils[$coil['id']])) {
+            if (isset($seen_coils[(string) ($coil['id'] ?? '')])) {
                 return $this->_stock_out_failed('Coil ' . $coil['no_coil'] . ' is listed more than once.');
             }
-            $seen_coils[$coil['id']] = true;
+            $seen_coils[(string) ($coil['id'] ?? '')] = true;
 
             $already = $this->db->query(
                 "SELECT d.id FROM warehouse_stock_transaction_detail d
@@ -1260,7 +1260,7 @@ class Production_report_model extends CI_Model
                 ->get('product_lvl_4')
                 ->result_array();
             foreach ($prods as $p) {
-                $prod_map[$p['id']] = $p;
+                $prod_map[(string) ($p['id'] ?? '')] = $p;
             }
         }
 
@@ -2006,7 +2006,7 @@ class Production_report_model extends CI_Model
                 }
                 $src_key = isset($it['source_material_coil']) ? strtoupper(trim((string) $it['source_material_coil'])) : '';
                 if ($src_key !== '' && isset($alias_map[$src_key])) {
-                    $buckets[$alias_map[$src_key]]['consume'] += $berat;
+                    $buckets[(string) ($alias_map[$src_key] ?? '')]['consume'] += $berat;
                 } else {
                     $unassigned_consume += $berat;
                 }
@@ -2032,13 +2032,13 @@ class Production_report_model extends CI_Model
 
                 if ($scrap_type === 'sisa_coil') {
                     if ($target_key !== '' && isset($alias_map[$target_key])) {
-                        $buckets[$alias_map[$target_key]]['WIP'] += $berat;
+                        $buckets[(string) ($alias_map[$target_key] ?? '')]['WIP'] += $berat;
                     } else {
                         $unassigned_wip += $berat;
                     }
                 } elseif ($scrap_type === 'hold_coil') {
                     if ($target_key !== '' && isset($alias_map[$target_key])) {
-                        $buckets[$alias_map[$target_key]]['hold'] += $berat;
+                        $buckets[(string) ($alias_map[$target_key] ?? '')]['hold'] += $berat;
                     } else {
                         $unassigned_hold += $berat;
                     }
@@ -2655,7 +2655,7 @@ class Production_report_model extends CI_Model
                 'bom_std_default' => 0.0,
             ];
             if (!empty($p['code_lv4'])) {
-                $code_to_pid[$p['code_lv4']] = $pid;
+                $code_to_pid[(string) ($p['code_lv4'] ?? '')] = $pid;
             }
         }
 
@@ -2669,13 +2669,13 @@ class Production_report_model extends CI_Model
                 ->get()
                 ->result_array();
             foreach ($boms as $b) {
-                $pid = isset($code_to_pid[$b['id_produk']]) ? $code_to_pid[$b['id_produk']] : 0;
+                $pid = isset($code_to_pid[(string) ($b['id_produk'] ?? '')]) ? $code_to_pid[(string) ($b['id_produk'] ?? '')] : 0;
                 if (!$pid) {
                     continue;
                 }
                 $val = (float) ($b['berat_per_meter'] ?? 0);
                 if (!empty($b['no_uniq_id'])) {
-                    $meta[$pid]['bom_std_map'][$b['no_uniq_id']] = $val;
+                    $meta[$pid]['bom_std_map'][(string) ($b['no_uniq_id'] ?? '')] = $val;
                 }
                 if ($meta[$pid]['bom_std_default'] <= 0 && $val > 0) {
                     $meta[$pid]['bom_std_default'] = $val;

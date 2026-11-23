@@ -269,8 +269,8 @@ class Stok_gudang_barang extends Admin_Controller
         $sheet->setCellValue($Cols . $awal_row, $nm_gudang);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
-        $unit_packing = (!empty($GET_UNIT[$row['id_unit_packing']]['code'])) ? $GET_UNIT[$row['id_unit_packing']]['code'] : '';
-        $unit_satuan  = (!empty($GET_UNIT[$row['id_unit']]['code'])) ? $GET_UNIT[$row['id_unit']]['code'] : '';
+        $unit_packing = (!empty($GET_UNIT[(string) ($row['id_unit_packing'] ?? '')]['code'])) ? $GET_UNIT[(string) ($row['id_unit_packing'] ?? '')]['code'] : '';
+        $unit_satuan  = (!empty($GET_UNIT[(string) ($row['id_unit'] ?? '')]['code'])) ? $GET_UNIT[(string) ($row['id_unit'] ?? '')]['code'] : '';
         $id_material  = $row['id_accessories'];
         $stock_pack   = (!empty($GET_STOK[$id_material]['stok_packing'])) ? $GET_STOK[$id_material]['stok_packing'] : '';
         $stock        = (!empty($GET_STOK[$id_material]['stok'])) ? $GET_STOK[$id_material]['stok'] : '';

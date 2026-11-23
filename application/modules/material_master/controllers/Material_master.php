@@ -586,19 +586,19 @@ class Material_master extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $code_lv1   = (!empty($GET_LEVEL1[$vals['code_lv1']]['nama'])) ? $GET_LEVEL1[$vals['code_lv1']]['nama'] : '';
+        $code_lv1   = $GET_LEVEL1[(string) ($vals['code_lv1'] ?? '')]['nama'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $code_lv1);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $code_lv2   = (!empty($GET_LEVEL2[$vals['code_lv2']]['nama'])) ? $GET_LEVEL2[$vals['code_lv2']]['nama'] : '';
+        $code_lv2   = $GET_LEVEL2[(string) ($vals['code_lv2'] ?? '')]['nama'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $code_lv2);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $code_lv3   = (!empty($GET_LEVEL3[$vals['code_lv3']]['nama'])) ? $GET_LEVEL3[$vals['code_lv3']]['nama'] : '';
+        $code_lv3   = $GET_LEVEL3[(string) ($vals['code_lv3'] ?? '')]['nama'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $code_lv3);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
@@ -628,7 +628,7 @@ class Material_master extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $id_unit_packing   = (!empty($GET_UNIT[$vals['id_unit_packing']]['code'])) ? $GET_UNIT[$vals['id_unit_packing']]['code'] : '';
+        $id_unit_packing   = $GET_UNIT[(string) ($vals['id_unit_packing'] ?? '')]['code'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $id_unit_packing);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
@@ -640,7 +640,7 @@ class Material_master extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $id_unit   = (!empty($GET_UNIT[$vals['id_unit']]['code'])) ? $GET_UNIT[$vals['id_unit']]['code'] : '';
+        $id_unit   = $GET_UNIT[(string) ($vals['id_unit'] ?? '')]['code'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $id_unit);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
@@ -658,7 +658,7 @@ class Material_master extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $id_unit_other   = (!empty($GET_UNIT[$vals['id_unit_other']]['code'])) ? $GET_UNIT[$vals['id_unit_other']]['code'] : '';
+        $id_unit_other   = $GET_UNIT[(string) ($vals['id_unit_other'] ?? '')]['code'] ?? '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $id_unit_other);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);

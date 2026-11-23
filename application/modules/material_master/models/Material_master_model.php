@@ -87,9 +87,9 @@ class Material_master_model extends CI_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $material_type     = (!empty($get_level_1[$row['code_lv1']]['nama'])) ? $get_level_1[$row['code_lv1']]['nama'] : '';
-            $material_category = (!empty($get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'])) ? $get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'] : '';
-            $material_jenis    = (!empty($get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'])) ? $get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'] : '';
+            $material_type     = (!empty($get_level_1[(string) ($row['code_lv1'] ?? '')]['nama'])) ? $get_level_1[(string) ($row['code_lv1'] ?? '')]['nama'] : '';
+            $material_category = (!empty($get_level_2[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')]['nama'])) ? $get_level_2[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')]['nama'] : '';
+            $material_jenis    = (!empty($get_level_3[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')][(string) ($row['code_lv3'] ?? '')]['nama'])) ? $get_level_3[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')][(string) ($row['code_lv3'] ?? '')]['nama'] : '';
 
             $nestedData = array();
             $nestedData[] = $nomor;

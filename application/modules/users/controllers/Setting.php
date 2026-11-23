@@ -221,12 +221,12 @@ class Setting extends Admin_Controller
 
         $ArrPermissionDetail = [];
         foreach ($permissions_detail as $key => $value) {
-            $ArrPermissionDetail[$value['parent_id']][] = $value;
+            $ArrPermissionDetail[(string) ($value['parent_id'] ?? '')][] = $value;
         }
 
         $ArrActionPers = [];
         foreach ($permissopn_action as $key => $value) {
-            $ArrActionPers[$value['id_menu']][] = $value;
+            $ArrActionPers[(string) ($value['id_menu'] ?? '')][] = $value;
         }
 
         // echo "<pre>";

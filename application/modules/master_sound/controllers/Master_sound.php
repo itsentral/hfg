@@ -301,7 +301,7 @@ class Master_sound extends Admin_Controller
 
         foreach ($sounds as $s) {
             if ($s['status'] == 1) {
-                $config[$s['sound_code']] = [
+                $config[(string) ($s['sound_code'] ?? '')] = [
                     'sound_name'         => $s['sound_name'],
                     'vibrate_level'      => (int) $s['vibrate_level'],
                     'file_original_name' => $s['file_original_name'],
