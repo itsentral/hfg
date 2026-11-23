@@ -288,7 +288,7 @@ class Request_pr_stok_model extends BF_Model
         $qty_pack = $qty_stock / $konversi;
       }
 
-      $satuan = (!empty($GET_SATUAN[$row['id_unit_gudang']]['code'])) ? $GET_SATUAN[$row['id_unit_gudang']]['code'] : '';
+      $satuan = (!empty($GET_SATUAN[(string) ($row['id_unit_gudang'] ?? '')]['code'])) ? $GET_SATUAN[(string) ($row['id_unit_gudang'] ?? '')]['code'] : '';
 
       $nestedData[]  = "<div align='right'>" . number_format((float) $qty_pack, 2) . "</div>";
       $nestedData[]  = "<div align='center'>" . $satuan . "</div>";
@@ -446,7 +446,7 @@ class Request_pr_stok_model extends BF_Model
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['stock_name'] . " - <b>(" . $row['no_coa'] . " - " . strtoupper((string) $row['nm_coa']) . ") </b></div>";
 
-      $STOCK_WRH    = (!empty($GET_WAREHOUSE_STOCK[$row['id']]['stok'])) ? $GET_WAREHOUSE_STOCK[$row['id']]['stok'] : 0;
+      $STOCK_WRH    = (!empty($GET_WAREHOUSE_STOCK[(string) ($row['id'] ?? '')]['stok'])) ? $GET_WAREHOUSE_STOCK[(string) ($row['id'] ?? '')]['stok'] : 0;
       $stock_oke     = (!empty($STOCK_WRH)) ? $STOCK_WRH : 0;
       $stock_oke2   = (!empty($STOCK_WRH)) ? $STOCK_WRH : 0;
 
@@ -460,7 +460,7 @@ class Request_pr_stok_model extends BF_Model
 
       $price_ref = $get_price_ref->price_reference ?? $row['price_ref_use'];
 
-      $kebutuhnMonth   = (!empty($GET_KEBUTUHAN_PER_MONTH[$row['id']]['kebutuhan'])) ? $GET_KEBUTUHAN_PER_MONTH[$row['id']]['kebutuhan'] : 0;
+      $kebutuhnMonth   = (!empty($GET_KEBUTUHAN_PER_MONTH[(string) ($row['id'] ?? '')]['kebutuhan'])) ? $GET_KEBUTUHAN_PER_MONTH[(string) ($row['id'] ?? '')]['kebutuhan'] : 0;
       $nestedData[]  = "<div align='right'>" . number_format((float) $kebutuhnMonth) . "</div>";
       $nestedData[]  = "<div align='right'>" . number_format((float) $stock_oke) . "</div>";
       $nestedData[]  = "<div align='right'>" . number_format(($kebutuhnMonth * 1.5)) . "</div>";

@@ -61,7 +61,7 @@ if ($tanda != 'request') { ?>
                 // 1. Grouping data berdasarkan id_po_detail atau code_product
                 $grouped_data = [];
                 foreach ($detail_ros as $item) {
-                    $grouped_data[$item['id_po_detail']][] = $item;
+                    $grouped_data[(string) ($item['id_po_detail'] ?? '')][] = $item;
                 }
 
                 $no = 1;

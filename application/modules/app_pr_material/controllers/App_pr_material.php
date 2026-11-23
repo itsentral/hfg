@@ -117,7 +117,7 @@ class App_pr_material extends Admin_Controller
                 ->get()
                 ->result_array();
             foreach ($query as $row) {
-                $GET_LEVEL4[$row['code_lv4']] = ['nama' => $row['nama']];
+                $GET_LEVEL4[(string) ($row['code_lv4'] ?? '')] = ['nama' => $row['nama']];
             }
 
             // Ambil stok pusat (dulunya dari getStokMaterial)
@@ -133,7 +133,7 @@ class App_pr_material extends Admin_Controller
                 if ($s['qty_stock'] > 0 && $s['konversi'] > 0) {
                     $stok_packing = $s['qty_stock'] / $s['konversi'];
                 }
-                $get_stok_pusat[$s['code_lv4']] = [
+                $get_stok_pusat[(string) ($s['code_lv4'] ?? '')] = [
                     'stok'          => $s['qty_stock'],
                     'booking'       => $s['qty_booking'],
                     'stok_packing'  => $stok_packing,
@@ -182,7 +182,7 @@ class App_pr_material extends Admin_Controller
             ->get()
             ->result_array();
         foreach ($query as $row) {
-            $GET_LEVEL4[$row['code_lv4']] = ['nama' => $row['nama']];
+            $GET_LEVEL4[(string) ($row['code_lv4'] ?? '')] = ['nama' => $row['nama']];
         }
 
         // Ambil stok pusat (dulunya dari getStokMaterial)
@@ -198,7 +198,7 @@ class App_pr_material extends Admin_Controller
             if ($s['qty_stock'] > 0 && $s['konversi'] > 0) {
                 $stok_packing = $s['qty_stock'] / $s['konversi'];
             }
-            $get_stok_pusat[$s['code_lv4']] = [
+            $get_stok_pusat[(string) ($s['code_lv4'] ?? '')] = [
                 'stok'          => $s['qty_stock'],
                 'booking'       => $s['qty_booking'],
                 'stok_packing'  => $stok_packing,

@@ -408,7 +408,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                     $grouped_data = [];
                                     $counter_kode_internal = [];
                                     foreach ($detail_ros as $item) {
-                                        $grouped_data[$item['id_po_detail']][] = $item;
+                                        $grouped_data[(string) ($item['id_po_detail'] ?? '')][] = $item;
                                     }
 
                                     $no = 1;

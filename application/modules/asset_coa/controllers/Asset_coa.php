@@ -95,7 +95,7 @@ class Asset_coa extends Admin_Controller
             $coalist = array('' => '-- Select COA --');
             if (!empty($datacoa)) {
                 foreach ($datacoa as $val) {
-                    $coalist[$val['no_perkiraan']] = $val['no_perkiraan'] . ' - ' . $val['nama'];
+                    $coalist[(string) ($val['no_perkiraan'] ?? '')] = $val['no_perkiraan'] . ' - ' . $val['nama'];
                 }
             }
 

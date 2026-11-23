@@ -129,7 +129,7 @@ class Incoming_stok_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['nm_gudang']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format((float) $row['qty_unit'], 2) . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['pic'] . "</div>";
-      $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
+      $username = (!empty($GET_USER[(string) ($row['created_by'] ?? '')]['nama'])) ? $GET_USER[(string) ($row['created_by'] ?? '')]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
       $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 

@@ -158,10 +158,10 @@ class Simulasi_costing_model extends CI_Model
                 $val = (float)$r->max_usd;
                 $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
                 if (isset($id_to_code[$mat])) {
-                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
+                    $po_prices[(string) ($id_to_code[$mat] ?? '')] = max($val, isset($po_prices[(string) ($id_to_code[$mat] ?? '')]) ? $po_prices[(string) ($id_to_code[$mat] ?? '')] : 0);
                 }
                 if (isset($code_to_id[$mat])) {
-                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
+                    $po_prices[(string) ($code_to_id[$mat] ?? '')] = max($val, isset($po_prices[(string) ($code_to_id[$mat] ?? '')]) ? $po_prices[(string) ($code_to_id[$mat] ?? '')] : 0);
                 }
             }
         }
@@ -180,10 +180,10 @@ class Simulasi_costing_model extends CI_Model
                 $val = (float)$r->max_usd;
                 $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
                 if (isset($id_to_code[$mat])) {
-                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
+                    $po_prices[(string) ($id_to_code[$mat] ?? '')] = max($val, isset($po_prices[(string) ($id_to_code[$mat] ?? '')]) ? $po_prices[(string) ($id_to_code[$mat] ?? '')] : 0);
                 }
                 if (isset($code_to_id[$mat])) {
-                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
+                    $po_prices[(string) ($code_to_id[$mat] ?? '')] = max($val, isset($po_prices[(string) ($code_to_id[$mat] ?? '')]) ? $po_prices[(string) ($code_to_id[$mat] ?? '')] : 0);
                 }
             }
         }

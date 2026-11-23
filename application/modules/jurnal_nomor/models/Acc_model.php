@@ -30,9 +30,9 @@ class Acc_model extends CI_Model
 		if($results){
 			foreach($results as $key=>$vals){
 				if($name!=''){
-					$aMenu[$vals['coa']]	= $vals['coa'].' - '.$vals['nama_perkiraan'];
+					$aMenu[(string) ($vals['coa'] ?? '')]	= $vals['coa'].' - '.$vals['nama_perkiraan'];
 				}else{
-					$aMenu[$vals['coa']]	= $vals['coa'].' - '.$vals['nama_perkiraan'];
+					$aMenu[(string) ($vals['coa'] ?? '')]	= $vals['coa'].' - '.$vals['nama_perkiraan'];
 //					$aMenu[$vals['coa']]	= $vals['coa'].' - '.$vals['nama'];
 				}
 			}
@@ -50,7 +50,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'].' - '.$vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'].' - '.$vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -83,7 +83,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id_divisi']]	= $vals['nm_divisi'];
+				$aMenu[(string) ($vals['id_divisi'] ?? '')]	= $vals['nm_divisi'];
 			}
 		}
 		return $aMenu;
@@ -101,7 +101,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id_divisi']]	= $vals['nm_divisi'];
+				$aMenu[(string) ($vals['id_divisi'] ?? '')]	= $vals['nm_divisi'];
 			}
 		}
 		return $aMenu;
@@ -115,7 +115,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['kode_master_jurnal']]	= $vals['kode_master_jurnal'].' - '.$vals['nama_jurnal'];
+				$aMenu[(string) ($vals['kode_master_jurnal'] ?? '')]	= $vals['kode_master_jurnal'].' - '.$vals['nama_jurnal'];
 			}
 		}
 		return $aMenu;
@@ -157,7 +157,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id_vendor']]	= $vals['id_vendor'].' - '.$vals['nama'];
+				$aMenu[(string) ($vals['id_vendor'] ?? '')]	= $vals['id_vendor'].' - '.$vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -172,7 +172,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id']]	= $vals['bank_nama'].' - '.$vals['bank_ac'].' - '.$vals['bank_cabang'];
+				$aMenu[(string) ($vals['id'] ?? '')]	= $vals['bank_nama'].' - '.$vals['bank_ac'].' - '.$vals['bank_cabang'];
 			}
 		}
 		return $aMenu;
@@ -189,7 +189,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'].' - '.$vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'].' - '.$vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -206,7 +206,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'].' - '.$vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'].' - '.$vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -228,7 +228,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['no_perkiraan']]	= $vals['no_perkiraan'].' - '.$vals['nama'];
+				$aMenu[(string) ($vals['no_perkiraan'] ?? '')]	= $vals['no_perkiraan'].' - '.$vals['nama'];
 			}
 		}
 		return $aMenu;
@@ -289,7 +289,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['kode_master_jurnal']]	= $vals['kode_master_jurnal'].' - '.$vals['keterangan_header'];
+				$aMenu[(string) ($vals['kode_master_jurnal'] ?? '')]	= $vals['kode_master_jurnal'].' - '.$vals['keterangan_header'];
 			}
 		}
 		return $aMenu;
@@ -307,7 +307,7 @@ class Acc_model extends CI_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id']]	= $vals['nm_costcenter'];
+				$aMenu[(string) ($vals['id'] ?? '')]	= $vals['nm_costcenter'];
 			}
 		}
 		return $aMenu;

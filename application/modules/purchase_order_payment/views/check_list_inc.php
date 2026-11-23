@@ -132,7 +132,7 @@
                                 echo '<td style="text-align: center;">' . $check_box . '</td>';
                                 echo '<td style="text-align: center;">' . $no . '</td>';
                                 echo '<td style="text-align: center;">' . $item['kode_trans'] . '</td>';
-                                echo '<td style="text-align: center;">' . $no_po[$item['kode_trans']] . '</td>';
+                                echo '<td style="text-align: center;">' . $no_po[(string) ($item['kode_trans'] ?? '')] . '</td>';
                                 echo '<td style="text-align: right">' . number_format((float) $total_invoice) . '</td>';
                                 echo '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item['tanggal'])) . '</td>';
                                 echo '<td style="text-align: center;">' . $nm_supplier . '</td>';

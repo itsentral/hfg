@@ -1,5 +1,5 @@
 <?php
-$dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']] : $dataset['divisi'];
+$dept_name = isset($datadept[(string) ($dataset['divisi'] ?? '')]) ? $datadept[(string) ($dataset['divisi'] ?? '')] : $dataset['divisi'];
 ?>
 <style>
     .table-umum-container {

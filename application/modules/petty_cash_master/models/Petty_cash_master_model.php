@@ -284,7 +284,7 @@ class Petty_cash_master_model extends BF_Model
 
         if ($results) {
             foreach ($results as $vals) {
-                $aMenu[$vals['no_perkiraan']] = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+                $aMenu[(string) ($vals['no_perkiraan'] ?? '')] = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
             }
         }
 

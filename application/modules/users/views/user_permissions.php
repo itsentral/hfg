@@ -81,8 +81,8 @@
 									<input type="checkbox" class="form-check-input all_baris" data-id="<?= $pr['id']; ?>">
 								</div>
 							</td>
-							<?php if (!empty($ArrActionPers[$pr['id']])) : ?>
-								<?php foreach ($ArrActionPers[$pr['id']] as $value6) : ?>
+							<?php if (!empty($ArrActionPers[(string) ($pr['id'] ?? '')])) : ?>
+								<?php foreach ($ArrActionPers[(string) ($pr['id'] ?? '')] as $value6) : ?>
 									<?php
 									$id_permission   = $value6['id_permission'];
 									$x               = explode(".", (string) $value6['nm_permission']);
@@ -104,8 +104,8 @@
 						</tr>
 
 						<!-- LEVEL 2 -->
-						<?php if (!empty($ArrPermissionDetail[$pr['id']])) : ?>
-							<?php foreach ($ArrPermissionDetail[$pr['id']] as $value) : ?>
+						<?php if (!empty($ArrPermissionDetail[(string) ($pr['id'] ?? '')])) : ?>
+							<?php foreach ($ArrPermissionDetail[(string) ($pr['id'] ?? '')] as $value) : ?>
 								<tr>
 									<td class="ps-4">
 										<i class="ti ti-subtask me-2 text-muted"></i><?= $value['nama_menu'] ?>
@@ -115,12 +115,12 @@
 											<input type="checkbox" class="form-check-input all_baris" data-id="<?= $value['id']; ?>">
 										</div>
 									</td>
-									<?php if (!empty($ArrActionPers[$value['id']])) : ?>
-										<?php foreach ($ArrActionPers[$value['id']] as $value3) : ?>
+									<?php if (!empty($ArrActionPers[(string) ($value['id'] ?? '')])) : ?>
+										<?php foreach ($ArrActionPers[(string) ($value['id'] ?? '')] as $value3) : ?>
 											<?php
 											$x = explode(".", (string) $value3['nm_permission']);
-											$id_roll_permission = (isset($auth_permissions[$value3['id_permission']]->is_role_permission) && $auth_permissions[$value3['id_permission']]->is_role_permission == 1) ? 1 : '';
-											$action_value = isset($auth_permissions[$value3['id_permission']]) ? 1 : 0;
+											$id_roll_permission = (isset($auth_permissions[(string) ($value3['id_permission'] ?? '')]->is_role_permission) && $auth_permissions[(string) ($value3['id_permission'] ?? '')]->is_role_permission == 1) ? 1 : '';
+											$action_value = isset($auth_permissions[(string) ($value3['id_permission'] ?? '')]) ? 1 : 0;
 											?>
 											<td class="text-center">
 												<div class="form-check d-flex justify-content-center">
@@ -137,8 +137,8 @@
 								</tr>
 
 								<!-- LEVEL 3 -->
-								<?php if (!empty($ArrPermissionDetail[$value['id']])) : ?>
-									<?php foreach ($ArrPermissionDetail[$value['id']] as $value_lv3) : ?>
+								<?php if (!empty($ArrPermissionDetail[(string) ($value['id'] ?? '')])) : ?>
+									<?php foreach ($ArrPermissionDetail[(string) ($value['id'] ?? '')] as $value_lv3) : ?>
 										<tr>
 											<td class="ps-5">
 												<i class="ti ti-corner-down-right me-2 text-muted"></i><?= $value_lv3['nama_menu'] ?>
@@ -148,12 +148,12 @@
 													<input type="checkbox" class="form-check-input all_baris" data-id="<?= $value_lv3['id']; ?>">
 												</div>
 											</td>
-											<?php if (!empty($ArrActionPers[$value_lv3['id']])) : ?>
-												<?php foreach ($ArrActionPers[$value_lv3['id']] as $value_act) : ?>
+											<?php if (!empty($ArrActionPers[(string) ($value_lv3['id'] ?? '')])) : ?>
+												<?php foreach ($ArrActionPers[(string) ($value_lv3['id'] ?? '')] as $value_act) : ?>
 													<?php
 													$x = explode(".", (string) $value_act['nm_permission']);
-													$id_roll_permission = (isset($auth_permissions[$value_act['id_permission']]->is_role_permission) && $auth_permissions[$value_act['id_permission']]->is_role_permission == 1) ? 1 : '';
-													$action_value = isset($auth_permissions[$value_act['id_permission']]) ? 1 : 0;
+													$id_roll_permission = (isset($auth_permissions[(string) ($value_act['id_permission'] ?? '')]->is_role_permission) && $auth_permissions[(string) ($value_act['id_permission'] ?? '')]->is_role_permission == 1) ? 1 : '';
+													$action_value = isset($auth_permissions[(string) ($value_act['id_permission'] ?? '')]) ? 1 : 0;
 													?>
 													<td class="text-center">
 														<div class="form-check d-flex justify-content-center">

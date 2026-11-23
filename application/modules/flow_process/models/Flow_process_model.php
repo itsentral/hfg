@@ -31,10 +31,10 @@ class Flow_process_model extends CI_Model
 			->group_by('id_flow_process_header')
 			->get(self::DETAIL)->result_array();
 		foreach ($rows as $r) {
-			$counts[$r['id_flow_process_header']] = (int) $r['jumlah'];
+			$counts[(string) ($r['id_flow_process_header'] ?? '')] = (int) $r['jumlah'];
 		}
 		foreach ($headers as $i => $h) {
-			$headers[$i]['jumlah_proses'] = isset($counts[$h['id']]) ? $counts[$h['id']] : 0;
+			$headers[$i]['jumlah_proses'] = isset($counts[(string) ($h['id'] ?? '')]) ? $counts[(string) ($h['id'] ?? '')] : 0;
 		}
 		return $headers;
 	}
@@ -63,7 +63,7 @@ class Flow_process_model extends CI_Model
 			->get_where('product_lvl_2', ['deleted_date' => null, 'category' => 'product'])->result_array();
 		$out = [];
 		foreach ($rows as $r) {
-			$out[$r['code_lv2']] = $r['nama'];
+			$out[(string) ($r['code_lv2'] ?? '')] = $r['nama'];
 		}
 		return $out;
 	}

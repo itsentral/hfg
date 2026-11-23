@@ -2486,12 +2486,12 @@ class Purchase_order_payment extends Admin_Controller
 				if (!empty($list_no_po)) {
 					$list_no_po = implode(', ', $list_no_po ?? []);
 
-					$no_po[$item['kode_trans']] = $list_no_po;
+					$no_po[(string) ($item['kode_trans'] ?? '')] = $list_no_po;
 				} else {
-					$no_po[$item['kode_trans']] = '';
+					$no_po[(string) ($item['kode_trans'] ?? '')] = '';
 				}
 			} else {
-				$no_po[$item['kode_trans']] = '';
+				$no_po[(string) ($item['kode_trans'] ?? '')] = '';
 			}
 		}
 
@@ -2499,9 +2499,9 @@ class Purchase_order_payment extends Admin_Controller
 		foreach ($get_list_inc as $item) {
 			$get_total_invoice = $this->db->select('total_invoice')->get_where('tr_invoice_po', ['no_po' => $item['kode_trans']])->row();
 			if (!empty($get_total_invoice)) {
-				$total_invoice[$item['kode_trans']] = $get_total_invoice->total_invoice;
+				$total_invoice[(string) ($item['kode_trans'] ?? '')] = $get_total_invoice->total_invoice;
 			} else {
-				$total_invoice[$item['kode_trans']] = 0;
+				$total_invoice[(string) ($item['kode_trans'] ?? '')] = 0;
 			}
 		}
 
@@ -3155,12 +3155,12 @@ class Purchase_order_payment extends Admin_Controller
 				if (!empty($list_no_po)) {
 					$list_no_po = implode(', ', $list_no_po ?? []);
 
-					$no_po[$item['kode_trans']] = $list_no_po;
+					$no_po[(string) ($item['kode_trans'] ?? '')] = $list_no_po;
 				} else {
-					$no_po[$item['kode_trans']] = '';
+					$no_po[(string) ($item['kode_trans'] ?? '')] = '';
 				}
 			} else {
-				$no_po[$item['kode_trans']] = '';
+				$no_po[(string) ($item['kode_trans'] ?? '')] = '';
 			}
 		}
 
@@ -3168,7 +3168,7 @@ class Purchase_order_payment extends Admin_Controller
 		foreach ($get_list_inc as $item) {
 			$get_total_invoice = $this->db->select('total_invoice')->get_where('tr_invoice_po', ['no_po' => $item['kode_trans']])->row();
 			if (!empty($get_total_invoice)) {
-				$total_invoice[$item['kode_trans']] = $get_total_invoice->total_invoice;
+				$total_invoice[(string) ($item['kode_trans'] ?? '')] = $get_total_invoice->total_invoice;
 			} else {
 				if ($item['tipe_incoming'] == 'incoming non rutin') {
 					$this->db->select('SUM(a.total_harga) as ttl_harga');
@@ -3176,7 +3176,7 @@ class Purchase_order_payment extends Admin_Controller
 					$this->db->where('a.id_kasbon', $item['no_ipp']);
 					$get_total = $this->db->get()->row();
 
-					$total_invoice[$item['kode_trans']] = $get_total->ttl_harga;
+					$total_invoice[(string) ($item['kode_trans'] ?? '')] = $get_total->ttl_harga;
 				} else if ($item['tipe_incoming'] == 'incoming asset') {
 					$this->db->select('SUM(a.harga_total) as ttl_harga');
 					$this->db->from('dt_trans_po a');
@@ -3184,9 +3184,9 @@ class Purchase_order_payment extends Admin_Controller
 					$this->db->where('b.no_surat', $item['no_ipp']);
 					$get_total = $this->db->get()->row();
 
-					$total_invoice[$item['kode_trans']] = $get_total->ttl_harga;
+					$total_invoice[(string) ($item['kode_trans'] ?? '')] = $get_total->ttl_harga;
 				} else {
-					$total_invoice[$item['kode_trans']] = 0;
+					$total_invoice[(string) ($item['kode_trans'] ?? '')] = 0;
 				}
 			}
 		}

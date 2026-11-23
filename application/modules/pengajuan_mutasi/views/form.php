@@ -38,7 +38,7 @@ $details = $m['details'] ?? [];
                                 <small class="text-muted d-block text-uppercase font-size-xs fw-bold">Status</small>
                                 <?php
                                 $status_map = [0 => ['Open','primary'], 1 => ['Waiting Approval','warning'], 2 => ['Approved','success'], 3 => ['Rejected','danger'], 4 => ['Done','dark'], 5 => ['Cancelled','secondary'], 6 => ['Revision','danger']];
-                                $st = $status_map[$m['status']] ?? ['-','secondary'];
+                                $st = $status_map[(string) ($m['status'] ?? '')] ?? ['-','secondary'];
                                 ?>
                                 <span class="badge bg-<?= $st[1] ?> px-2 py-1"><?= $st[0] ?></span>
                             </div>

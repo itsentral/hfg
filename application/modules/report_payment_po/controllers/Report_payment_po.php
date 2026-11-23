@@ -242,7 +242,7 @@ class Report_payment_po extends Admin_Controller
         $row2 = 3;
         $grouped_data = [];
         foreach ($details as $item) {
-            $grouped_data[$item['no_po']][] = $item;
+            $grouped_data[(string) ($item['no_po'] ?? '')][] = $item;
         }
 
         foreach ($grouped_data as $po_no => $items) {

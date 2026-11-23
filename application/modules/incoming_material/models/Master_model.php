@@ -100,7 +100,7 @@ class Master_model extends BF_Model
         $results    = $query->result_array();
         if ($results) {
             foreach ($results as $key => $vals) {
-                $aMenu[$vals['id']]    = $vals['name'];
+                $aMenu[(string) ($vals['id'] ?? '')]    = $vals['name'];
             }
         }
         return $aMenu;
@@ -303,7 +303,7 @@ class Master_model extends BF_Model
         $results    = $query->result_array();
         if ($results) {
             foreach ($results as $key => $vals) {
-                $aCombo[$vals['id']]    = $vals['nm_dept'];
+                $aCombo[(string) ($vals['id'] ?? '')]    = $vals['nm_dept'];
             }
         }
         return $aCombo;
@@ -345,7 +345,7 @@ class Master_model extends BF_Model
         $results    = $query->result_array();
         if ($results) {
             foreach ($results as $key => $vals) {
-                $aMenu[$vals['no_perkiraan']]    = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+                $aMenu[(string) ($vals['no_perkiraan'] ?? '')]    = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
             }
         }
         return $aMenu;
@@ -367,7 +367,7 @@ class Master_model extends BF_Model
         $results    = $query->result_array();
         if ($results) {
             foreach ($results as $key => $vals) {
-                $aMenu[$vals['coa']]    = $vals['coa'] . ' - ' . $vals['nama_perkiraan'];
+                $aMenu[(string) ($vals['coa'] ?? '')]    = $vals['coa'] . ' - ' . $vals['nama_perkiraan'];
             }
         }
         return $aMenu;
@@ -389,7 +389,7 @@ class Master_model extends BF_Model
         $results    = $query->result_array();
         if ($results) {
             foreach ($results as $key => $vals) {
-                $aMenu[$vals['no_perkiraan']]    = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
+                $aMenu[(string) ($vals['no_perkiraan'] ?? '')]    = $vals['no_perkiraan'] . ' - ' . $vals['nama'];
             }
         }
         return $aMenu;

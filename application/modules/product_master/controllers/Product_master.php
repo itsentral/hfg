@@ -93,9 +93,9 @@ class Product_master extends Admin_Controller
         $nomor = ($total_data - $start_dari) - $urut2;
       }
 
-      $product_type       = (!empty($get_level_1[$row['code_lv1']]['nama'])) ? $get_level_1[$row['code_lv1']]['nama'] : '';
-      $product_category   = (!empty($get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'])) ? $get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'] : '';
-      $product_jenis       = (!empty($get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'])) ? $get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'] : '';
+      $product_type       = (!empty($get_level_1[(string) ($row['code_lv1'] ?? '')]['nama'])) ? $get_level_1[(string) ($row['code_lv1'] ?? '')]['nama'] : '';
+      $product_category   = (!empty($get_level_2[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')]['nama'])) ? $get_level_2[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')]['nama'] : '';
+      $product_jenis       = (!empty($get_level_3[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')][(string) ($row['code_lv3'] ?? '')]['nama'])) ? $get_level_3[(string) ($row['code_lv1'] ?? '')][(string) ($row['code_lv2'] ?? '')][(string) ($row['code_lv3'] ?? '')]['nama'] : '';
 
       $nestedData   = array();
       $nestedData[]  = "<div align='left'>" . $nomor . "</div>";
@@ -585,11 +585,11 @@ class Product_master extends Admin_Controller
         $no++;
         $awal_row++;
 
-        $code_lv1 = $s(!empty($GET_LEVEL1[$vals['code_lv1']]['nama']) ? $GET_LEVEL1[$vals['code_lv1']]['nama'] : '');
-        $code_lv2 = $s(!empty($GET_LEVEL2[$vals['code_lv2']]['nama']) ? $GET_LEVEL2[$vals['code_lv2']]['nama'] : '');
-        $code_lv3 = $s(!empty($GET_LEVEL3[$vals['code_lv3']]['nama']) ? $GET_LEVEL3[$vals['code_lv3']]['nama'] : '');
-        $unit_packing = $s(!empty($GET_UNIT[$vals['id_unit_packing']]['code']) ? $GET_UNIT[$vals['id_unit_packing']]['code'] : '');
-        $unit         = $s(!empty($GET_UNIT[$vals['id_unit']]['code'])          ? $GET_UNIT[$vals['id_unit']]['code']          : '');
+        $code_lv1 = $s(!empty($GET_LEVEL1[(string) ($vals['code_lv1'] ?? '')]['nama']) ? $GET_LEVEL1[(string) ($vals['code_lv1'] ?? '')]['nama'] : '');
+        $code_lv2 = $s(!empty($GET_LEVEL2[(string) ($vals['code_lv2'] ?? '')]['nama']) ? $GET_LEVEL2[(string) ($vals['code_lv2'] ?? '')]['nama'] : '');
+        $code_lv3 = $s(!empty($GET_LEVEL3[(string) ($vals['code_lv3'] ?? '')]['nama']) ? $GET_LEVEL3[(string) ($vals['code_lv3'] ?? '')]['nama'] : '');
+        $unit_packing = $s(!empty($GET_UNIT[(string) ($vals['id_unit_packing'] ?? '')]['code']) ? $GET_UNIT[(string) ($vals['id_unit_packing'] ?? '')]['code'] : '');
+        $unit         = $s(!empty($GET_UNIT[(string) ($vals['id_unit'] ?? '')]['code'])          ? $GET_UNIT[(string) ($vals['id_unit'] ?? '')]['code']          : '');
 
         $row_data = [
           'A' => $s($no),

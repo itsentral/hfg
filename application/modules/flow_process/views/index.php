@@ -42,9 +42,9 @@ $fmt = function ($v, $dec = 6) {
 					<?php if (!empty($list)) : ?>
 						<?php $numb = 0;
 						foreach ($list as $row) : $numb++;
-							$nama = (isset($categories[$row['code_lv2']])) ? $categories[$row['code_lv2']] : $row['code_lv2'];
+							$nama = (isset($categories[(string) ($row['code_lv2'] ?? '')])) ? $categories[(string) ($row['code_lv2'] ?? '')] : $row['code_lv2'];
 							$last = (!empty($row['latest_update'])) ? date('d-m-Y H:i', strtotime((string) $row['latest_update'])) : '-';
-							$oleh = (isset($users[$row['updated_by']])) ? $users[$row['updated_by']] : '-';
+							$oleh = (isset($users[(string) ($row['updated_by'] ?? '')])) ? $users[(string) ($row['updated_by'] ?? '')] : '-';
 						?>
 							<tr>
 								<td><?= $numb; ?></td>

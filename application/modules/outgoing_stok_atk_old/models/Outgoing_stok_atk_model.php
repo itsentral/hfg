@@ -52,7 +52,7 @@ class Outgoing_stok_atk_model extends BF_Model
         $nomor = ($total_data - $start_dari) - $urut2;
       }
 
-      $stock = (!empty($GET_STOCK[$row['id']]['stok'])) ? $GET_STOCK[$row['id']]['stok'] : 0;
+      $stock = (!empty($GET_STOCK[(string) ($row['id'] ?? '')]['stok'])) ? $GET_STOCK[(string) ($row['id'] ?? '')]['stok'] : 0;
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "
@@ -153,11 +153,11 @@ class Outgoing_stok_atk_model extends BF_Model
     $dept_map = [];
     $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
     foreach ($get_dept_old as $item) {
-      $dept_map[$item['id']] = strtoupper((string) $item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
     }
     $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
     foreach ($get_departments as $item) {
-      $dept_map[$item['id']] = strtoupper((string) $item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
     }
 
     $data  = array();
@@ -176,7 +176,7 @@ class Outgoing_stok_atk_model extends BF_Model
         $nomor = $urut1 + $start_dari;
       }
 
-      $nm_department = isset($dept_map[$row['id_dept']]) ? $dept_map[$row['id_dept']] : '-';
+      $nm_department = isset($dept_map[(string) ($row['id_dept'] ?? '')]) ? $dept_map[(string) ($row['id_dept'] ?? '')] : '-';
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
@@ -185,7 +185,7 @@ class Outgoing_stok_atk_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . $nm_department . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format((float) $row['qty_unit']) . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['pic'] . "</div>";
-      $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
+      $username = (!empty($GET_USER[(string) ($row['created_by'] ?? '')]['nama'])) ? $GET_USER[(string) ($row['created_by'] ?? '')]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
       $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 

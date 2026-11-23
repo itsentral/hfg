@@ -80,7 +80,7 @@ class Adjustment_stock_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['pic']) . "</div>";
       $nestedData[]  = "<div align='left' class='font-monospace'>" . strtoupper((string) $row['no_ba']) . "</div>";
       $nestedData[]  = "<div align='left' class='text-muted'>" . strtoupper((string) $row['note']) . "</div>";
-      $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
+      $username = (!empty($GET_USER[(string) ($row['created_by'] ?? '')]['nama'])) ? $GET_USER[(string) ($row['created_by'] ?? '')]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
       $nestedData[]  = "<div align='center' class='text-muted font-monospace' style='font-size:0.85rem;'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
       // $detail	= "<button type='button' class='btn btn-sm btn-primary detailAjust' title='View Incoming' data-kode_trans='".$row['kode_trans']."' ><i class='fa fa-eye'></i></button>";

@@ -49,7 +49,7 @@ class Incoming_departemen extends Admin_Controller
 		$get_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result_array();
 		$list_supplier = [];
 		foreach ($get_supplier as $item_supp) {
-			$list_supplier[$item_supp['kode_supplier']] = ['nama' => $item_supp['nama']];
+			$list_supplier[(string) ($item_supp['kode_supplier'] ?? '')] = ['nama' => $item_supp['nama']];
 		}
 
 		$this->db->select('
@@ -260,14 +260,14 @@ class Incoming_departemen extends Admin_Controller
 		$companyLabel  = get_company_name(true, true);
 		$get_dept_old  = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
 		foreach ($get_dept_old as $item) {
-			$arr_list_dept[$item['id']] = [
+			$arr_list_dept[(string) ($item['id'] ?? '')] = [
 				'id_dept' => $item['id'],
 				'nm_dept' => strtoupper((string) $item['nm_dept']) . ' - ' . $companyLabel
 			];
 		}
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
-			$arr_list_dept[$item['id']] = [
+			$arr_list_dept[(string) ($item['id'] ?? '')] = [
 				'id_dept' => $item['id'],
 				'nm_dept' => strtoupper((string) $item['nama']) . ' - ' . $companyLabel
 			];

@@ -48,20 +48,20 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 					foreach ($detail as $i => $valx) {
 						$no = $i + 1;
 
-						$nm_material = (!empty($GET_LEVEL4[$valx['code_material']]['nama']))
-							? $GET_LEVEL4[$valx['code_material']]['nama']
+						$nm_material = (!empty($GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['nama']))
+							? $GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['nama']
 							: '-';
 
-						$code_lv1 = (!empty($GET_LEVEL4[$valx['code_material']]['code_lv1']))
-							? $GET_LEVEL4[$valx['code_material']]['code_lv1']
+						$code_lv1 = (!empty($GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv1']))
+							? $GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv1']
 							: '-';
 
-						$code_lv2 = (!empty($GET_LEVEL4[$valx['code_material']]['code_lv2']))
-							? $GET_LEVEL4[$valx['code_material']]['code_lv2']
+						$code_lv2 = (!empty($GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv2']))
+							? $GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv2']
 							: '-';
 
-						$code_lv3 = (!empty($GET_LEVEL4[$valx['code_material']]['code_lv3']))
-							? $GET_LEVEL4[$valx['code_material']]['code_lv3']
+						$code_lv3 = (!empty($GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv3']))
+							? $GET_LEVEL4[(string) ($valx['code_material'] ?? '')]['code_lv3']
 							: '-';
 
 						$nm_category = strtolower((string) get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));

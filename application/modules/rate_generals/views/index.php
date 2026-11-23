@@ -2,7 +2,7 @@
 $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
 $el_map = [];
 foreach ($elements as $el) {
-    $el_map[$el['key']] = $el['label'];
+    $el_map[(string) ($el['key'] ?? '')] = $el['label'];
 }
 ?>
 

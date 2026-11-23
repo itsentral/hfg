@@ -61,7 +61,7 @@ if ($tanda != 'request') { ?>
                 $grouped_data = [];
                 foreach ($detail_ros as $item) {
                     // group by id_po_detail supaya rowspan per material tetap benar
-                    $grouped_data[$item['id_po_detail']][] = $item;
+                    $grouped_data[(string) ($item['id_po_detail'] ?? '')][] = $item;
                 }
 
                 $no = 1;
