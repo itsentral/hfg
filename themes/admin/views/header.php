@@ -292,9 +292,15 @@ if (!function_exists('get_company_logo')) {
     <div class="navbar-wrapper">
       <div class="m-header">
         <a href="<?= site_url(); ?>" class="b-brand text-decoration-none">
+<<<<<<< HEAD
+          <img src="<?= get_company_logo('logo'); ?>" alt="logo" style="height:52px; width:auto; max-width:100%; object-fit:contain;">
+
+          <span class="b-title d-none"><?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang'); ?></span>
+=======
           <img src="<?= get_company_logo('logo'); ?>" alt="logo" style="height:48px; width:auto; max-width:100%; object-fit:contain;">
 
           <span class="b-title d-none"><?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Sukses Jaya'); ?></span>
+>>>>>>> refs/remotes/origin/migrate85
         </a>
       </div>
 

@@ -308,7 +308,11 @@ if (!function_exists('get_company_logo')) {
         </div>
 
         <h4 class="company-title mb-3">
+<<<<<<< HEAD
+          <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang') ?>
+=======
           <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Sukses Jaya') ?>
+>>>>>>> refs/remotes/origin/migrate85
         </h4>
         <div class="company-subtitle">
           Please sign in to continue
@@ -364,7 +368,11 @@ if (!function_exists('get_company_logo')) {
       </div>
     </div>
     <div class="auth-footer">
+<<<<<<< HEAD
+      Copyright &copy; <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang') ?> <?= date('Y'); ?>
+=======
       Copyright &copy; <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Sukses Jaya') ?> <?= date('Y'); ?>
+>>>>>>> refs/remotes/origin/migrate85
     </div>
   </div>
 
