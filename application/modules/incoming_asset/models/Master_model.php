@@ -482,8 +482,14 @@ class Master_model extends CI_Model
 		$tanggalNow = date('Y-m-d H:i:s');
 		$TanggalFirst = date('Y-m-d H:i:s', strtotime('-10 month', strtotime((string) $tanggalNow)));
 
-		$result		= $this->db->get_where($table1, array('no_so' => $no_so, 'no_spk' => $no_spk, 'kode_trans' => $kode_trans, 'product' => $product))->result_array();
-		$material	= $this->db->get_where($table2, array('no_so' => $no_so, 'kode_trans' => $kode_trans, 'product' => $product))->result_array();
+		$result   = [];
+		$material = [];
+		if (!empty($table1) && $this->db->table_exists($table1)) {
+			$result		= $this->db->get_where($table1, array('no_so' => $no_so, 'no_spk' => $no_spk, 'kode_trans' => $kode_trans, 'product' => $product))->result_array();
+		}
+		if (!empty($table2) && $this->db->table_exists($table2)) {
+			$material	= $this->db->get_where($table2, array('no_so' => $no_so, 'kode_trans' => $kode_trans, 'product' => $product))->result_array();
+		}
 
 		$data = array(
 			'result' => $result,

@@ -152,7 +152,7 @@
         <nav class="pc-sidebar" id="berrySidebar">
           <div class="navbar-wrapper">
             <div class="m-header">
-              <a href="beranda.html" class="b-brand text-decoration-none"><img src="${A}images/iconhfg.png" alt="logo"><span class="b-title">${esc(BRAND)}</span></a>
+              <a href="beranda.html" class="b-brand text-decoration-none"><img src="${A}images/logohsj.png" alt="logo"><span class="b-title d-none">${esc(BRAND)}</span></a>
             </div>
             <div class="navbar-content">
               <div class="pc-sidebar-search"><div class="position-relative">

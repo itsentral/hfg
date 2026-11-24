@@ -25,20 +25,26 @@ class Product_catalog extends Admin_Controller
         $category   = $this->input->get('category');
         $catalog_id = $this->input->get('catalog_id');
         $status     = $this->input->get('status') !== null ? $this->input->get('status') : 'Active';
+        $date_from  = $this->input->get('date_from');
+        $date_to    = $this->input->get('date_to');
 
-        $items      = $this->pc_model->get_catalog_items($category, $catalog_id, $status);
-        $headers    = $this->pc_model->get_catalog_headers();
-        $categories = $this->pc_model->get_categories();
+        $items        = $this->pc_model->get_catalog_items($category, $catalog_id, $status, $date_from, $date_to);
+        $headers      = $this->pc_model->get_catalog_headers();
+        $categories   = $this->pc_model->get_categories();
         $approved_pls = $this->pc_model->get_approved_pricelists();
+        $stats        = $this->pc_model->get_summary_stats();
 
         $this->template->set([
-            'items'        => $items,
-            'headers'      => $headers,
-            'categories'   => $categories,
-            'approved_pls' => $approved_pls,
-            'filter_cat'   => $category,
-            'filter_cid'   => $catalog_id,
-            'filter_stat'  => $status,
+            'items'            => $items,
+            'headers'          => $headers,
+            'categories'       => $categories,
+            'approved_pls'     => $approved_pls,
+            'stats'            => $stats,
+            'filter_cat'       => $category,
+            'filter_cid'       => $catalog_id,
+            'filter_stat'      => $status,
+            'filter_date_from' => $date_from,
+            'filter_date_to'   => $date_to,
         ]);
         $this->template->render('index');
     }
@@ -99,8 +105,10 @@ class Product_catalog extends Admin_Controller
         $category   = $this->input->get('category');
         $catalog_id = $this->input->get('catalog_id');
         $status     = $this->input->get('status') !== null ? $this->input->get('status') : 'Active';
+        $date_from  = $this->input->get('date_from');
+        $date_to    = $this->input->get('date_to');
 
-        $items = $this->pc_model->get_catalog_items($category, $catalog_id, $status);
+        $items = $this->pc_model->get_catalog_items($category, $catalog_id, $status, $date_from, $date_to);
 
         $company_code = preg_replace('/[^A-Za-z0-9_-]/', '_', get_company_code());
         $filename = 'Product_Catalog_' . $company_code . '_' . date('Ymd_His') . '.csv';
@@ -161,10 +169,12 @@ class Product_catalog extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
 
-        $category = $this->input->get('category');
-        $status   = $this->input->get('status') !== null ? $this->input->get('status') : 'Active';
+        $category  = $this->input->get('category');
+        $status    = $this->input->get('status') !== null ? $this->input->get('status') : 'Active';
+        $date_from = $this->input->get('date_from');
+        $date_to   = $this->input->get('date_to');
 
-        $items   = $this->pc_model->get_catalog_items($category, $catalog_id, $status);
+        $items   = $this->pc_model->get_catalog_items($category, $catalog_id, $status, $date_from, $date_to);
         $catalog = $catalog_id ? $this->pc_model->get_catalog_by_id($catalog_id) : null;
 
         $data = [
