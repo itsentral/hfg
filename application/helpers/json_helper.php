@@ -2014,7 +2014,9 @@ function history_product($ArrUpdateStock = null, $operator = null, $no_dokumen =
 		}
 
 		if (!empty($ArrStock)) {
-			$CI->db->insert('stock_product_histroy', $ArrStock);
+			if ($CI->db->table_exists('stock_product_histroy')) {
+				$CI->db->insert('stock_product_histroy', $ArrStock);
+			}
 		}
 
 		if (!empty($ArrUpdate)) {

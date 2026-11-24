@@ -18,7 +18,7 @@ if (!function_exists('get_identitas')) {
 
         $default = (object) [
             'ididentitas'   => 1,
-            'nm_perusahaan' => 'Harapan Fajar Gemilang',
+            'nm_perusahaan' => 'Harapan Sukses Jaya',
             'kode'          => 'HFG',
             'alamat'        => null,
             'kota'          => null,
@@ -68,7 +68,7 @@ if (!function_exists('get_company_name')) {
         $idt  = get_identitas();
         $name = isset($idt->nm_perusahaan) ? trim((string) $idt->nm_perusahaan) : '';
         if ($name === '') {
-            $name = 'Harapan Fajar Gemilang';
+            $name = 'Harapan Sukses Jaya';
         }
 
         if ($with_pt && !preg_match('/^pt\.?\s+/i', $name ?? '')) {
@@ -134,7 +134,7 @@ if (!function_exists('get_company_logo')) {
     /**
      * Ambil URL logo/icon perusahaan dari tabel identitas (kolom icon & logo) dengan fallback default.
      *
-     * @param string $type 'icon' (favicon/sidebar/kop kecil) atau 'doc' (logo dokumen memanjang)
+     * @param string $type 'logo'/'doc' (sidebar/dokumen memanjang) atau 'icon' (favicon/kop kecil/sisanya)
      * @return string
      */
     function get_company_logo($type = 'icon')
@@ -143,12 +143,12 @@ if (!function_exists('get_company_logo')) {
         $logo = isset($idt->logo) ? trim((string) $idt->logo) : '';
         $icon = isset($idt->icon) ? trim((string) $idt->icon) : '';
 
-        if ($type === 'doc') {
+        if ($type === 'doc' || $type === 'logo') {
             $val      = ($logo !== '') ? $logo : $icon;
-            $fallback = 'assets/images/logohfg.png';
+            $fallback = 'assets/images/logohsj.png';
         } else {
             $val      = ($icon !== '') ? $icon : $logo;
-            $fallback = 'assets/images/iconhfg.png';
+            $fallback = 'assets/images/iconhsj.png';
         }
 
         return _resolve_identitas_asset_url(

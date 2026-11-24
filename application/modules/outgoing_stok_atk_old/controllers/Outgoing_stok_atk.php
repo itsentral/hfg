@@ -364,7 +364,7 @@ class Outgoing_stok_atk extends Admin_Controller
         $listDepartment[(string) ($item['id'] ?? '')] = [
           'id' => $item['id'],
           'nama' => $item['nm_dept'],
-          'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+          'nm_comp' => 'PT HARAPAN SUKSES JAYA'
         ];
       }
       $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
@@ -372,7 +372,7 @@ class Outgoing_stok_atk extends Admin_Controller
         $listDepartment[(string) ($item['id'] ?? '')] = [
           'id' => $item['id'],
           'nama' => $item['nama'],
-          'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+          'nm_comp' => 'PT HARAPAN SUKSES JAYA'
         ];
       }
       $listDepartment = array_values($listDepartment ?? []);
@@ -480,11 +480,11 @@ class Outgoing_stok_atk extends Admin_Controller
         $dept_id = $getData[0]['id_dept'];
         $get_dept = $this->db->get_where('ms_department', ['id' => $dept_id])->row_array();
         if (!empty($get_dept)) {
-          $nm_dept = strtoupper((string) $get_dept['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+          $nm_dept = strtoupper((string) $get_dept['nama']) . ' - PT HARAPAN SUKSES JAYA';
         } else {
           $get_dept2 = $this->db->get_where('department', ['id' => $dept_id])->row_array();
           if (!empty($get_dept2)) {
-            $nm_dept = strtoupper((string) $get_dept2['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+            $nm_dept = strtoupper((string) $get_dept2['nm_dept']) . ' - PT HARAPAN SUKSES JAYA';
           }
         }
       }

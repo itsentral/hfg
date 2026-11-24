@@ -6,8 +6,8 @@ ALTER TABLE `identitas`
 
 UPDATE `identitas`
 SET
-    `logo`   = COALESCE(NULLIF(TRIM(`logo`), ''), 'assets/images/logohfg.png'),
-    `icon`   = COALESCE(NULLIF(TRIM(`icon`), ''), 'assets/images/iconhfg.png'),
+    `logo`   = COALESCE(NULLIF(TRIM(`logo`), ''), 'assets/images/logohsj.png'),
+    `icon`   = COALESCE(NULLIF(TRIM(`icon`), ''), 'assets/images/iconhsj.png'),
     `gambar` = COALESCE(NULLIF(TRIM(`gambar`), ''), 'assets/img/wallpaper_harapan.jpg')
 WHERE `ididentitas` = 1;
 

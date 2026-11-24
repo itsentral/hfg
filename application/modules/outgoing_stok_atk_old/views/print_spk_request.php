@@ -15,7 +15,7 @@ $today = date('l, d F Y [H:i:s]');
 
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
     <tr>
-        <td align='center'><b>PT HARAPAN FAJAR GEMILANG</b></td>
+        <td align='center'><b>PT HARAPAN SUKSES JAYA</b></td>
     </tr>
     <tr>
         <td align='center'><b><h2>OUTGOING BARANG STOK</h2></b></td>

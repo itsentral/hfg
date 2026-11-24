@@ -292,9 +292,9 @@ if (!function_exists('get_company_logo')) {
     <div class="navbar-wrapper">
       <div class="m-header">
         <a href="<?= site_url(); ?>" class="b-brand text-decoration-none">
-          <img src="<?= get_company_logo('icon'); ?>" alt="logo" style="height:50px; width:auto;">
+          <img src="<?= get_company_logo('logo'); ?>" alt="logo" style="height:48px; width:auto; max-width:100%; object-fit:contain;">
 
-          <span class="b-title"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></span>
+          <span class="b-title d-none"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></span>
         </a>
       </div>
 
