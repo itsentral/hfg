@@ -19,7 +19,7 @@ if (!function_exists('get_identitas')) {
         $default = (object) [
             'ididentitas'   => 1,
             'nm_perusahaan' => 'Harapan Sukses Jaya',
-            'kode'          => 'HFG',
+            'kode'          => 'HSJ',
             'alamat'        => null,
             'kota'          => null,
             'no_telp'       => null,
@@ -36,18 +36,30 @@ if (!function_exists('get_identitas')) {
         }
 
         $CI = &get_instance();
-        if (!isset($CI->db)) {
+        if (!isset($CI->db) || !is_object($CI->db)) {
             return $default;
         }
 
-        $row = $CI->db->get_where('identitas', ['ididentitas' => 1])->row();
-        if (!$row) {
-            $row = $CI->db->order_by('ididentitas', 'ASC')->limit(1)->get('identitas')->row();
-        }
+        try {
+            if (!$CI->db->table_exists('identitas')) {
+                $cached = $default;
+                return $cached;
+            }
 
-        if ($row) {
-            $cached = $row;
-            return $cached;
+            $query = $CI->db->get_where('identitas', ['ididentitas' => 1]);
+            $row   = ($query && is_object($query)) ? $query->row() : null;
+
+            if (!$row) {
+                $query = $CI->db->order_by('ididentitas', 'ASC')->limit(1)->get('identitas');
+                $row   = ($query && is_object($query)) ? $query->row() : null;
+            }
+
+            if ($row) {
+                $cached = $row;
+                return $cached;
+            }
+        } catch (\Throwable $e) {
+            // Abaikan kegagalan query DB dan fallback ke default
         }
 
         $cached = $default;
@@ -89,7 +101,7 @@ if (!function_exists('get_company_code')) {
     {
         $idt  = get_identitas();
         $code = isset($idt->kode) ? trim((string) $idt->kode) : '';
-        return $code !== '' ? $code : 'HFG';
+        return $code !== '' ? $code : 'HSJ';
     }
 }
 

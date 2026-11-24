@@ -358,13 +358,14 @@ class Outgoing_stok_atk extends Admin_Controller
       $listGudangKe   = $this->db->order_by('urut', 'ASC')->get_where('warehouse', array('desc' => 'costcenter'))->result_array();
       // $listDepartment = $this->db->order_by('nama', 'ASC')->get_where('ms_department', array('deleted_date' => NULL))->result_array();
 
+      $companyLabel = function_exists('get_company_name') ? get_company_name(true, true) : 'PT HARAPAN SUKSES JAYA';
       $listDepartment = [];
       $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
       foreach ($get_dept_old as $item) {
         $listDepartment[(string) ($item['id'] ?? '')] = [
           'id' => $item['id'],
           'nama' => $item['nm_dept'],
-          'nm_comp' => 'PT HARAPAN SUKSES JAYA'
+          'nm_comp' => $companyLabel
         ];
       }
       $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
@@ -372,7 +373,7 @@ class Outgoing_stok_atk extends Admin_Controller
         $listDepartment[(string) ($item['id'] ?? '')] = [
           'id' => $item['id'],
           'nama' => $item['nama'],
-          'nm_comp' => 'PT HARAPAN SUKSES JAYA'
+          'nm_comp' => $companyLabel
         ];
       }
       $listDepartment = array_values($listDepartment ?? []);
@@ -477,14 +478,15 @@ class Outgoing_stok_atk extends Admin_Controller
 
       $nm_dept = '-';
       if (!empty($getData[0]['id_dept'])) {
+        $companyLabel = function_exists('get_company_name') ? get_company_name(true, true) : 'PT HARAPAN SUKSES JAYA';
         $dept_id = $getData[0]['id_dept'];
         $get_dept = $this->db->get_where('ms_department', ['id' => $dept_id])->row_array();
         if (!empty($get_dept)) {
-          $nm_dept = strtoupper((string) $get_dept['nama']) . ' - PT HARAPAN SUKSES JAYA';
+          $nm_dept = strtoupper((string) $get_dept['nama']) . ' - ' . $companyLabel;
         } else {
           $get_dept2 = $this->db->get_where('department', ['id' => $dept_id])->row_array();
           if (!empty($get_dept2)) {
-            $nm_dept = strtoupper((string) $get_dept2['nm_dept']) . ' - PT HARAPAN SUKSES JAYA';
+            $nm_dept = strtoupper((string) $get_dept2['nm_dept']) . ' - ' . $companyLabel;
           }
         }
       }

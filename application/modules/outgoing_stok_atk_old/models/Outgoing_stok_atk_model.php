@@ -150,14 +150,15 @@ class Outgoing_stok_atk_model extends BF_Model
     $totalFiltered  = $fetch['totalFiltered'];
     $query          = $fetch['query'];
 
+    $companyLabel = function_exists('get_company_name') ? get_company_name(true, true) : 'PT HARAPAN SUKSES JAYA';
     $dept_map = [];
     $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
     foreach ($get_dept_old as $item) {
-      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nm_dept']) . ' - PT HARAPAN SUKSES JAYA';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nm_dept']) . ' - ' . $companyLabel;
     }
     $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
     foreach ($get_departments as $item) {
-      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nama']) . ' - PT HARAPAN SUKSES JAYA';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nama']) . ' - ' . $companyLabel;
     }
 
     $data  = array();
