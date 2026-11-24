@@ -19,7 +19,7 @@ if (!function_exists('get_identitas')) {
         $default = (object) [
             'ididentitas'   => 1,
             'nm_perusahaan' => 'Harapan Sukses Jaya',
-            'kode'          => 'HFG',
+            'kode'          => 'HSJ',
             'alamat'        => null,
             'kota'          => null,
             'no_telp'       => null,
@@ -89,7 +89,7 @@ if (!function_exists('get_company_code')) {
     {
         $idt  = get_identitas();
         $code = isset($idt->kode) ? trim((string) $idt->kode) : '';
-        return $code !== '' ? $code : 'HFG';
+        return $code !== '' ? $code : 'HSJ';
     }
 }
 

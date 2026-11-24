@@ -308,6 +308,9 @@ class BF_Model extends CI_Model
         $this->where("{$this->table_name}.{$this->key}", $id);
 
         $query = $this->db->get($this->table_name);
+        if ( ! $query) {
+            return false;
+        }
         $return = $query->{$this->_return_type()}();
         if (empty($return)) {
             return false;
@@ -337,6 +340,9 @@ class BF_Model extends CI_Model
         $this->where("{$tabel}.{$key}", $id);
 
         $query = $this->db->get($tabel);
+        if ( ! $query) {
+            return false;
+        }
         $return = $query->{$this->_return_type()}();
         if (empty($return)) {
             return false;
@@ -368,6 +374,9 @@ class BF_Model extends CI_Model
         $this->trigger('before_find');
 
         $query = $this->db->get($this->table_name);
+        if ( ! $query) {
+            return false;
+        }
         $return = $query->{$this->_return_type(true)}();
         if (empty($return)) {
             return false;
@@ -449,6 +458,9 @@ class BF_Model extends CI_Model
         }
 
         $query = $this->db->get($this->table_name);
+        if ( ! $query) {
+            return false;
+        }
         $return = $query->{$this->_return_type()}();
         if (empty($return)) {
             return false;
