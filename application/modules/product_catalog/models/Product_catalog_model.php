@@ -9,10 +9,10 @@ class Product_catalog_model extends CI_Model
     }
 
     /**
-     * Ambil daftar item katalog produk dengan filter kategori, ID katalog rilis, atau status
+     * Ambil daftar item katalog produk dengan filter kategori, ID katalog rilis, status, atau rentang tanggal
      * Menampilkan nama produk di awal query (FR-73)
      */
-    public function get_catalog_items($category = null, $catalog_id = null, $status = 'Active')
+    public function get_catalog_items($category = null, $catalog_id = null, $status = 'Active', $date_from = null, $date_to = null)
     {
         $sql = "
             SELECT 
@@ -47,9 +47,39 @@ class Product_catalog_model extends CI_Model
             $sql .= " AND (d.code_lv2 = " . $this->db->escape($category) . " OR cat.nama = " . $this->db->escape($category) . ")";
         }
 
+        if (!empty($date_from)) {
+            $sql .= " AND DATE(h.released_at) >= " . $this->db->escape($date_from);
+        }
+
+        if (!empty($date_to)) {
+            $sql .= " AND DATE(h.released_at) <= " . $this->db->escape($date_to);
+        }
+
         $sql .= " ORDER BY cat.nama ASC, p.nama ASC, d.no_uniq_id ASC";
 
         return $this->db->query($sql)->result();
+    }
+
+    /**
+     * Ambil ringkasan statistik Product Catalog untuk dashboard cards
+     */
+    public function get_summary_stats()
+    {
+        $active_cat = $this->db->where('status', 'Active')->order_by('id', 'DESC')->get('product_catalog_header')->row();
+        $total_active_items = 0;
+        if ($active_cat) {
+            $total_active_items = $this->db->where('id_product_catalog_header', $active_cat->id)->count_all_results('product_catalog_detail');
+        }
+        $total_releases = $this->db->count_all_results('product_catalog_header');
+        $total_categories = $this->db->where('deleted_date', null)->where('category', 'product')->count_all_results('product_lvl_2');
+
+        return (object)[
+            'active_catalog_no'   => $active_cat ? $active_cat->no_catalog : '-',
+            'active_release_date' => $active_cat ? $active_cat->released_at : null,
+            'total_active_items'  => $total_active_items,
+            'total_releases'      => $total_releases,
+            'total_categories'    => $total_categories,
+        ];
     }
 
     /**

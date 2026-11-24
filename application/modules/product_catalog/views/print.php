@@ -32,8 +32,9 @@
     <div class="header">
         <table style="border:none; width:100%; margin:0;">
             <tr style="border:none;">
-                <td style="border:none; padding:0;">
-                    <h2><?= html_escape(get_company_name(true, true)) ?> (<?= html_escape(get_company_code()) ?>)</h2>
+                <td style="border:none; padding:0; vertical-align:top;">
+                    <img src="<?= get_company_logo('doc') ?>" alt="Logo" style="height:45px; max-width:200px; margin-bottom:6px;"><br>
+                    <h2 style="margin:2px 0;"><?= html_escape(get_company_name(true, true)) ?> (<?= html_escape(get_company_code()) ?>)</h2>
                     <p><strong>OFFICIAL PRODUCT PRICE LIST (PRODUCT CATALOG)</strong></p>
                     <p>Status: OFFICIALLY ACTIVE | Print Date: <?= html_escape($date) ?></p>
                 </td>

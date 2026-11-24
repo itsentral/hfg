@@ -153,11 +153,11 @@ class Outgoing_stok_atk_model extends BF_Model
     $dept_map = [];
     $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
     foreach ($get_dept_old as $item) {
-      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nm_dept']) . ' - PT HARAPAN SUKSES JAYA';
     }
     $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
     foreach ($get_departments as $item) {
-      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+      $dept_map[(string) ($item['id'] ?? '')] = strtoupper((string) $item['nama']) . ' - PT HARAPAN SUKSES JAYA';
     }
 
     $data  = array();

@@ -2,6 +2,28 @@
 $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
 ?>
 
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 38px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 0.375rem !important;
+        padding: 5px 12px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px !important;
+        font-size: 14px;
+        color: #212529;
+        padding-left: 0 !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 8px !important;
+    }
+    .select2-container {
+        z-index: 1060 !important;
+    }
+</style>
+
 <?php if ($this->session->flashdata('success')): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fa fa-check-circle me-1"></i> <?= $this->session->flashdata('success') ?>
@@ -100,7 +122,7 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
                 <div class="modal-body p-4">
                     <div class="mb-3" id="group-select-cat">
                         <label class="form-label fw-bold">Product Category <span class="text-danger">*</span></label>
-                        <select name="code_lv2" id="rate_code_lv2" class="form-select">
+                        <select name="code_lv2" id="rate_code_lv2" class="form-select select2" data-placeholder="-- Pilih Product Category --" style="width:100%;">
                             <option value="">-- Pilih Product Category --</option>
                             <?php foreach ($available as $cat): ?>
                                 <option value="<?= htmlspecialchars((string) $cat->code_lv2) ?>"><?= htmlspecialchars(strtoupper((string) $cat->nama)) ?></option>
@@ -138,12 +160,29 @@ $(document).ready(function() {
         columnDefs: [{ targets: 'no-sort', orderable: false }]
     });
 
+    // Inisialisasi Select2 pada modal
+    function initSelect2() {
+        if ($.fn.select2) {
+            $('#rate_code_lv2').select2({
+                dropdownParent: $('#modal-rate'),
+                width: '100%',
+                placeholder: '-- Pilih Product Category --',
+                allowClear: true
+            });
+        }
+    }
+    initSelect2();
+
+    $('#modal-rate').on('shown.bs.modal', function() {
+        initSelect2();
+    });
+
     // Add Rate
     $('.btn-add-rate').on('click', function() {
         $('#rate_id').val('');
         $('#group-select-cat').removeClass('d-none');
         $('#group-ro-cat').addClass('d-none');
-        $('#rate_code_lv2').val('').prop('required', true);
+        $('#rate_code_lv2').val('').trigger('change').prop('required', true);
         $('#rate_val').val('');
         $('#modalRateLabel').text('Add Rate Borongan Helper');
         $('#modal-rate').modal('show');
@@ -158,7 +197,7 @@ $(document).ready(function() {
         $('#rate_id').val(id);
         $('#group-select-cat').addClass('d-none');
         $('#group-ro-cat').removeClass('d-none');
-        $('#rate_code_lv2').prop('required', false);
+        $('#rate_code_lv2').val('').trigger('change').prop('required', false);
         $('#ro_cat_name').val(nama);
         $('#rate_val').val(rate);
         $('#modalRateLabel').text('Edit Rate Borongan — ' + nama);
