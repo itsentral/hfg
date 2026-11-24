@@ -388,11 +388,9 @@ $config['encryption_key'] = '';
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
-$app_name = basename(rtrim(FCPATH, '/\\'));
-$config['sess_cookie_name'] = 'ci_' . strtolower($app_name);
-$config['sess_expiration']        = 7200;
+$app_name = defined('FCPATH') ? basename(rtrim(FCPATH, '/\\')) : 'app';
 $config['sess_driver']             = 'database';
-$config['sess_cookie_name']        = 'ci_ynz';
+$config['sess_cookie_name']        = 'ci_' . strtolower($app_name);
 $config['sess_expiration']         = 7200;
 $config['sess_save_path']          = 'ci_sessions';
 $config['sess_match_ip']           = FALSE;
