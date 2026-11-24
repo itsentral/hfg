@@ -396,7 +396,8 @@ $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
 */
-$config['sess_cookie_name']        = 'ci_ynz';
+$app_name = basename(rtrim(FCPATH, '/\\'));
+$config['sess_cookie_name'] = 'ci_' . strtolower($app_name);
 $config['sess_expiration']        = 7200;
 $config['sess_expire_on_close']    = FALSE;
 $config['sess_encrypt_cookie']    = FALSE;

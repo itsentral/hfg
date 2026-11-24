@@ -11,7 +11,7 @@
          <div class="col my-1">
            <p class="m-0">
              Copyright © <?= date('Y'); ?>
-             <a href="<?= site_url(); ?>"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></a>
+             <a href="<?= site_url(); ?>"><?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang'); ?></a>
            </p>
          </div>
          <div class="col-auto my-1">

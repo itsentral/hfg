@@ -12,7 +12,7 @@ if (!function_exists('get_company_logo')) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 
-  <title><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?> | Login</title>
+  <title><?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang') ?> | Login</title>
   <link rel="shortcut icon" href="<?= get_company_logo('icon'); ?>" />
 
   <!-- Berry CSS -->
@@ -308,7 +308,7 @@ if (!function_exists('get_company_logo')) {
         </div>
 
         <h4 class="company-title mb-3">
-          <?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?>
+          <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang') ?>
         </h4>
         <div class="company-subtitle">
           Please sign in to continue
@@ -364,7 +364,7 @@ if (!function_exists('get_company_logo')) {
       </div>
     </div>
     <div class="auth-footer">
-      Copyright &copy; <?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?> <?= date('Y'); ?>
+      Copyright &copy; <?= function_exists('get_company_name') ? get_company_name() : (isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'Harapan Fajar Gemilang') ?> <?= date('Y'); ?>
     </div>
   </div>
 

@@ -36,18 +36,30 @@ if (!function_exists('get_identitas')) {
         }
 
         $CI = &get_instance();
-        if (!isset($CI->db)) {
+        if (!isset($CI->db) || !is_object($CI->db)) {
             return $default;
         }
 
-        $row = $CI->db->get_where('identitas', ['ididentitas' => 1])->row();
-        if (!$row) {
-            $row = $CI->db->order_by('ididentitas', 'ASC')->limit(1)->get('identitas')->row();
-        }
+        try {
+            if (!$CI->db->table_exists('identitas')) {
+                $cached = $default;
+                return $cached;
+            }
 
-        if ($row) {
-            $cached = $row;
-            return $cached;
+            $query = $CI->db->get_where('identitas', ['ididentitas' => 1]);
+            $row   = ($query && is_object($query)) ? $query->row() : null;
+
+            if (!$row) {
+                $query = $CI->db->order_by('ididentitas', 'ASC')->limit(1)->get('identitas');
+                $row   = ($query && is_object($query)) ? $query->row() : null;
+            }
+
+            if ($row) {
+                $cached = $row;
+                return $cached;
+            }
+        } catch (\Throwable $e) {
+            // Abaikan kegagalan query DB dan fallback ke default
         }
 
         $cached = $default;
@@ -134,7 +146,7 @@ if (!function_exists('get_company_logo')) {
     /**
      * Ambil URL logo/icon perusahaan dari tabel identitas (kolom icon & logo) dengan fallback default.
      *
-     * @param string $type 'icon' (favicon/sidebar/kop kecil) atau 'doc' (logo dokumen memanjang)
+     * @param string $type 'logo'/'doc' (sidebar/dokumen memanjang) atau 'icon' (favicon/kop kecil/sisanya)
      * @return string
      */
     function get_company_logo($type = 'icon')
@@ -143,7 +155,7 @@ if (!function_exists('get_company_logo')) {
         $logo = isset($idt->logo) ? trim((string) $idt->logo) : '';
         $icon = isset($idt->icon) ? trim((string) $idt->icon) : '';
 
-        if ($type === 'doc') {
+        if ($type === 'doc' || $type === 'logo') {
             $val      = ($logo !== '') ? $logo : $icon;
             $fallback = 'assets/images/logohfg.png';
         } else {
