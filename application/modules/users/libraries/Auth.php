@@ -147,6 +147,9 @@ class Auth
     public function is_admin()
     {
         $id = $this->user_id();
+        if (empty($id)) {
+            return FALSE;
+        }
 
         $data = $this->ci->users_model->join('user_groups', 'users.id_user = user_groups.id_user')
             ->find_by(array('users.id_user' => $id, 'id_group' => 1));
@@ -161,6 +164,9 @@ class Auth
     public function get_user_groups()
     {
         $id = $this->user_id();
+        if (empty($id)) {
+            return "";
+        }
 
         $groups = $this->ci->user_groups_model->select("user_groups.id_group, groups.nm_group")
             ->join('groups', 'user_groups.id_group = groups.id_group')
@@ -191,6 +197,9 @@ class Auth
         }
 
         $id = $this->user_id();
+        if (empty($id)) {
+            return FALSE;
+        }
 
         $group_permissions = $this->ci->users_model->join('user_groups', 'users.id_user = user_groups.id_user')
             ->join('group_permissions', 'user_groups.id_group = group_permissions.id_group')
