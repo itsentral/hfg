@@ -18,8 +18,8 @@ if (!function_exists('get_identitas')) {
 
         $default = (object) [
             'ididentitas'   => 1,
-            'nm_perusahaan' => 'Harapan Fajar Gemilang',
-            'kode'          => 'HFG',
+            'nm_perusahaan' => 'Harapan Sukses Jaya',
+            'kode'          => 'HSJ',
             'alamat'        => null,
             'kota'          => null,
             'no_telp'       => null,
@@ -80,7 +80,7 @@ if (!function_exists('get_company_name')) {
         $idt  = get_identitas();
         $name = isset($idt->nm_perusahaan) ? trim((string) $idt->nm_perusahaan) : '';
         if ($name === '') {
-            $name = 'Harapan Fajar Gemilang';
+            $name = 'Harapan Sukses Jaya';
         }
 
         if ($with_pt && !preg_match('/^pt\.?\s+/i', $name ?? '')) {
@@ -101,7 +101,7 @@ if (!function_exists('get_company_code')) {
     {
         $idt  = get_identitas();
         $code = isset($idt->kode) ? trim((string) $idt->kode) : '';
-        return $code !== '' ? $code : 'HFG';
+        return $code !== '' ? $code : 'HSJ';
     }
 }
 
@@ -157,10 +157,10 @@ if (!function_exists('get_company_logo')) {
 
         if ($type === 'doc' || $type === 'logo') {
             $val      = ($logo !== '') ? $logo : $icon;
-            $fallback = 'assets/images/logohfg.png';
+            $fallback = 'assets/images/logohsj.png';
         } else {
             $val      = ($icon !== '') ? $icon : $logo;
-            $fallback = 'assets/images/iconhfg.png';
+            $fallback = 'assets/images/iconhsj.png';
         }
 
         return _resolve_identitas_asset_url(

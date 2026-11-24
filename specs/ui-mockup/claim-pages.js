@@ -52,7 +52,7 @@
     }
   }
   /* ---- dokumen cetak (SPK Re-Pack, Surat Jalan, Debit Note): pratinjau layar + tombol Cetak ---- */
-  const LOGO = "../../assets/images/iconhfg.png";
+  const LOGO = "../../assets/images/iconhsj.png";
   function printDoc(title, inner) {
     const h = $("#pcPrint"); h.hidden = false;
     h.innerHTML = `<div class="pp-bar"><span>Pratinjau Cetak — ${esc(title)}</span><span><button type="button" class="ap-btn ap-btn--primary" id="ppDo">Cetak</button> <button type="button" class="ap-btn ap-btn--dark" id="ppX">Tutup</button></span></div><div class="pp-sheet">${inner}</div>`;
