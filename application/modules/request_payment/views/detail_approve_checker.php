@@ -78,6 +78,13 @@ if ($type == 'expense') {
     $bank_id    = $data_req_payment['bank_id'] ?? '';
     $accnumber  = $data_req_payment['accnumber'] ?? '';
     $accname    = $data_req_payment['accname'] ?? '';
+} elseif ($type == 'refill_pettycash') {
+    $keterangan = $data_req_payment['keperluan'] ?? ('Refill Petty Cash - ' . ($header->no_pelaporan ?? ''));
+    $no_doc     = $header->no_pelaporan ?? ($data_req_payment['no_doc'] ?? '');
+    $tgl_doc    = $data_req_payment['tgl_doc'] ?? date('Y-m-d');
+    $bank_id    = $data_req_payment['bank_id'] ?? '';
+    $accnumber  = $data_req_payment['accnumber'] ?? '';
+    $accname    = $data_req_payment['accname'] ?? '';
 }
 ?>
 
@@ -628,6 +635,23 @@ if ($type == 'expense') {
                                             </tr>
                                         </table>
                                     </td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-center">
+                                        <input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
+                                    </td>
+                                </tr>
+                    <?php
+                            elseif ($type == 'refill_pettycash') :
+                                $nilai_rpc = (float) ($dtl->grand_total ?? 0);
+                                $gTotal += $nilai_rpc;
+                            ?>
+                                <tr>
+                                    <td class="text-center"><?= $n; ?></td>
+                                    <td><?= htmlspecialchars(($dtl->no_pencatatan ?? '') . ' - ' . ($dtl->keterangan ?? '')); ?></td>
+                                    <td class="text-center"><?= $dtl->tanggal ?? $tgl_doc; ?></td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center fw-bold text-primary">IDR</td>
+                                    <td class="text-end fw-bold text-success"><?= number_format($nilai_rpc, 2); ?></td>
                                     <td class="text-center">-</td>
                                     <td class="text-center">
                                         <input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">

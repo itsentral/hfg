@@ -229,7 +229,8 @@ function get_journal_badge($status)
 
         <!-- Jurnal Section -->
         <?php
-        $jurnal_company = $header->company;
+        $active_company = function_exists('get_identitas') ? strtoupper((string) (get_identitas()->kode ?? 'HFG')) : 'HFG';
+        $jurnal_company = !empty($header->company) ? strtoupper((string) $header->company) : $active_company;
         $jurnal_tanggal = date('d/m/Y', strtotime((string) $header->tanggal));
         $jurnal_grand_total = (float)$header->grand_total;
         ?>
@@ -239,152 +240,51 @@ function get_journal_badge($status)
                     <i class="fa fa-book text-primary me-2"></i>Ayat Jurnal Pencatatan (Tersimpan)
                 </h6>
 
-                <?php if ($jurnal_company === 'STM') : ?>
-                    <div class="table-responsive bg-white rounded border">
-                        <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="100" class="text-center">Date</th>
-                                    <th width="120">COA</th>
-                                    <th>Account Name</th>
-                                    <th width="80" class="text-center">Company</th>
-                                    <th width="130" class="text-end">Debit</th>
-                                    <th width="130" class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($details)) : ?>
-                                    <?php foreach ($details as $d) :
-                                        $coa_nama = isset($coa_map[$d->coa_code]) ? $coa_map[$d->coa_code] : $d->coa_code;
-                                    ?>
-                                        <tr>
-                                            <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                            <td><?= htmlspecialchars((string) $d->coa_code) ?></td>
-                                            <td><?= htmlspecialchars((string) $coa_nama) ?></td>
-                                            <td class="text-center">STM</td>
-                                            <td class="text-end">Rp <?= number_format((float) $d->total, 0, ',', '.') ?></td>
-                                            <td class="text-end text-muted">-</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    <tr class="table-warning">
+                <div class="table-responsive bg-white rounded border">
+                    <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="100" class="text-center">Date</th>
+                                <th width="120">COA</th>
+                                <th>Account Name</th>
+                                <th width="80" class="text-center">Company</th>
+                                <th width="130" class="text-end">Debit</th>
+                                <th width="130" class="text-end">Kredit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($details)) : ?>
+                                <?php foreach ($details as $d) :
+                                    $coa_nama = isset($coa_map[$d->coa_code]) ? $coa_map[$d->coa_code] : $d->coa_code;
+                                ?>
+                                    <tr>
                                         <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                        <td>1101-01-02</td>
-                                        <td>Kas Kecil</td>
-                                        <td class="text-center">STM</td>
+                                        <td><?= htmlspecialchars((string) $d->coa_code) ?></td>
+                                        <td><?= htmlspecialchars((string) $coa_nama) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars((string) $jurnal_company) ?></td>
+                                        <td class="text-end">Rp <?= number_format((float) $d->total, 0, ',', '.') ?></td>
                                         <td class="text-end text-muted">-</td>
-                                        <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                     </tr>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                <?php elseif ($jurnal_company === 'VUCA' || $jurnal_company === 'SUSTAIN') : ?>
-                    <?php
-                    $coa_hutang = ($jurnal_company === 'VUCA') ? '2103-01-01' : '2103-01-02';
-                    $coa_piutang = ($jurnal_company === 'VUCA') ? '1103-01-01' : '1103-01-02';
-                    ?>
-                    <!-- Sisi Company -->
-                    <div class="mb-2">
-                        <span class="badge bg-warning text-dark px-2 py-1"><i class="fa fa-building me-1"></i> Sisi <?= $jurnal_company ?></span>
-                    </div>
-                    <div class="table-responsive bg-white rounded border mb-3">
-                        <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="100" class="text-center">Date</th>
-                                    <th width="120">COA</th>
-                                    <th>Account Name</th>
-                                    <th width="80" class="text-center">Company</th>
-                                    <th width="130" class="text-end">Debit</th>
-                                    <th width="130" class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($details)) : ?>
-                                    <?php foreach ($details as $d) :
-                                        $coa_nama = isset($coa_map[$d->coa_code]) ? $coa_map[$d->coa_code] : $d->coa_code;
-                                    ?>
-                                        <tr>
-                                            <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                            <td><?= htmlspecialchars((string) $d->coa_code) ?></td>
-                                            <td><?= htmlspecialchars((string) $coa_nama) ?></td>
-                                            <td class="text-center"><?= $jurnal_company ?></td>
-                                            <td class="text-end">Rp <?= number_format((float) $d->total, 0, ',', '.') ?></td>
-                                            <td class="text-end text-muted">-</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    <tr class="table-warning">
-                                        <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                        <td><?= $coa_hutang ?></td>
-                                        <td>Payable to STM</td>
-                                        <td class="text-center"><?= $jurnal_company ?></td>
-                                        <td class="text-end text-muted">-</td>
-                                        <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                    <!-- Sisi STM -->
-                    <div class="mb-2">
-                        <span class="badge bg-info text-dark px-2 py-1"><i class="fa fa-building me-1"></i> Sisi STM (Inter-Company)</span>
-                    </div>
-                    <div class="table-responsive bg-white rounded border">
-                        <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="100" class="text-center">Date</th>
-                                    <th width="120">COA</th>
-                                    <th>Account Name</th>
-                                    <th width="80" class="text-center">Company</th>
-                                    <th width="130" class="text-end">Debit</th>
-                                    <th width="130" class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                    <td><?= $coa_piutang ?></td>
-                                    <td>Piutang <?= $jurnal_company ?></td>
-                                    <td class="text-center">STM</td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end text-muted">-</td>
-                                </tr>
+                                <?php endforeach; ?>
                                 <tr class="table-warning">
                                     <td class="text-center"><?= $jurnal_tanggal ?></td>
                                     <td>1101-01-02</td>
                                     <td>Kas Kecil</td>
-                                    <td class="text-center">STM</td>
+                                    <td class="text-center"><?= htmlspecialchars((string) $jurnal_company) ?></td>
                                     <td class="text-end text-muted">-</td>
                                     <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                 </tr>
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                <?php endif; ?>
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="4" class="text-end">Balancing:</td>
+                                <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -16,6 +16,7 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 						<th class="text-center">PR Category</th>
 						<th class="text-center">Request By</th>
 						<th class="text-center">Request Date</th>
+						<th class="text-center">Close Reason</th>
 						<?php
 						if ($ENABLE_VIEW) {
 							echo '<th class="text-center">Action</th>';
@@ -30,21 +31,22 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 
 						echo '<tr>';
 						echo '<td class="text-center">' . $no . '</td>';
-						echo '<td class="text-center">' . $item->no_pr . '</td>';
-						echo '<td class="text-center">' . $item->kategori_pr . '</td>';
-						echo '<td class="text-center">' . $item->request_by . '</td>';
-						echo '<td class="text-center">' . $item->request_date . '</td>';
+						echo '<td class="text-center">' . htmlspecialchars((string) $item->no_pr) . '</td>';
+						echo '<td class="text-center">' . htmlspecialchars((string) $item->kategori_pr) . '</td>';
+						echo '<td class="text-center">' . htmlspecialchars((string) ($item->request_by ?? '-')) . '</td>';
+						echo '<td class="text-center">' . htmlspecialchars((string) ($item->request_date ?? '-')) . '</td>';
+						echo '<td>' . (!empty($item->close_pr_desc) ? htmlspecialchars((string) $item->close_pr_desc) : '<span class="text-muted">-</span>') . '</td>';
 						if ($ENABLE_VIEW) {
 							if ($item->kategori_pr == 'PR Department') {
-								$view_detail = '<a href="' . base_url("/non_rutin/add/" . $item->id_pr . "/view") . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
+								$view_detail = '<a href="' . base_url("non_rutin/add/" . $item->id_pr . "/view") . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
+							} elseif ($item->kategori_pr == 'PR Material') {
+								$view_detail = '<a href="' . base_url("pr_material/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
+							} elseif ($item->kategori_pr == 'PR Asset') {
+								$view_detail = '<a href="' . base_url("pr_asset/print_pr_asset/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Asset"><i class="ti ti-eye"></i></a>';
 							} else {
-								if ($item->kategori_pr == 'PR Material') {
-									$view_detail = '<a href="' . base_url("request_pr_material/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
-								} else {
-									$view_detail = '<a href="' . base_url("request_pr_stok/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
-								}
+								$view_detail = '<a href="' . base_url("request_pr_stok/detail_planning/" . $item->id_pr) . '" class="btn btn-sm btn-info" target="_blank" title="View PR Detail"><i class="ti ti-eye"></i></a>';
 							}
-							$view_barang = '<button type="button" class="btn btn-sm btn-success view_barang_pr" title="View Barang PR" data-id_pr="' . $item->id_pr . '" data-no_pr="' . $item->no_pr . '" data-kategori_pr="' . $item->kategori_pr . '"><i class="ti ti-list"></i></button>';
+							$view_barang = '<button type="button" class="btn btn-sm btn-success view_barang_pr" title="View Barang PR" data-id_pr="' . htmlspecialchars((string) $item->id_pr) . '" data-no_pr="' . htmlspecialchars((string) $item->no_pr) . '" data-kategori_pr="' . htmlspecialchars((string) $item->kategori_pr) . '"><i class="ti ti-list"></i></button>';
 
 							echo '<td class="text-center">' . $view_detail . ' ' . $view_barang . '</td>';
 						}
@@ -76,31 +78,6 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 					<i class="ti ti-x me-1"></i> Close
 				</button>
 			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Modal: Closing PO -->
-<div class="modal fade" id="dialog-popupCP" tabindex="-1" aria-labelledby="modalClosingPOLabel" aria-hidden="true">
-	<div class="modal-dialog modal-md">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modalClosingPOLabel">Closing PO</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form action="" method="post" id="CP-frm-data">
-				<div class="modal-body" id="ModalViewCP">
-					...
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-dark" data-bs-dismiss="modal">
-						<i class="ti ti-x me-1"></i> Cancel
-					</button>
-					<button type="submit" class="btn btn-danger">
-						<i class="ti ti-lock me-1"></i> Close It!
-					</button>
-				</div>
-			</form>
 		</div>
 	</div>
 </div>

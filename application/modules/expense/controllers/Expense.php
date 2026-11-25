@@ -35,17 +35,17 @@ class Expense extends Admin_Controller
 	protected $managePermissionKasbonApp = 'Kasbon_Approval.Manage';
 	protected $deletePermissionKasbonApp = 'Kasbon_Approval.Delete';
 
-	protected $viewPermissionKasbonAppMan 	= 'Approval Kasbon Management.View';
-	protected $addPermissionKasbonAppMan  	= 'Approval Kasbon Management.Add';
-	protected $managePermissionKasbonAppMan = 'Approval Kasbon Management.Manage';
-	protected $deletePermissionKasbonAppMan = 'Approval Kasbon Management.Delete';
+	protected $viewPermissionKasbonAppMan 	= 'Approval_Kasbon_Management.View';
+	protected $addPermissionKasbonAppMan  	= 'Approval_Kasbon_Management.Add';
+	protected $managePermissionKasbonAppMan = 'Approval_Kasbon_Management.Manage';
+	protected $deletePermissionKasbonAppMan = 'Approval_Kasbon_Management.Delete';
 
 	protected $status;
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('all/All_model', 'Expense/Expense_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model', 'Coa_expense/Expense_model'));
+		$this->load->model(array('all/All_model', 'Expense/Expense_model', 'Jurnal_nomor/Jurnal_model'));
 		$this->template->title('Expense Report');
 		$this->template->page_icon('fa fa-cubes');
 		date_default_timezone_set('Asia/Bangkok');
@@ -991,7 +991,9 @@ class Expense extends Admin_Controller
 				$data['nm_coa'] = $this->input->post('nm_coa');
 			}
 
+			$old_kasbon = $this->db->get_where('tr_kasbon', ['id' => $id])->row_array();
 			$result 		= $this->All_model->dataUpdate('tr_kasbon', $data, array('id' => $id));
+
 			$keterangan     = "SUKSES, Update data " . $id;
 			$status         = 1;
 			$nm_hak_akses   = $this->managePermission;
@@ -999,6 +1001,8 @@ class Expense extends Admin_Controller
 			$jumlah 		= 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = $old_kasbon ? ['old' => $old_kasbon, 'new' => array_merge($old_kasbon, $data)] : $data;
+			write_log('Expense', 'Edit', 'Approve kasbon finance ID: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save'   => $result ? 1 : 0,
@@ -1028,7 +1032,34 @@ class Expense extends Admin_Controller
 			// 	'reject_reason_finance' => null
 			// ];
 
+			$old_kasbon = $this->db->get_where('tr_kasbon', ['id' => $id])->row_array();
 			$result 		= $this->All_model->dataUpdate('tr_kasbon', $data, array('id' => $id));
+
+			if ($result) {
+				$kasbon = $this->db->get_where('tr_kasbon', ['id' => $id])->row();
+				if ($kasbon && (empty($kasbon->metode_pembayaran) || (string) $kasbon->metode_pembayaran === '1')) {
+					$this->load->model('request_payment/Request_payment_model');
+					$nilai_kasbon = ($kasbon->kurang_bayar !== null && (float) $kasbon->kurang_bayar > 0)
+						? (float) $kasbon->kurang_bayar
+						: (float) $kasbon->jumlah_kasbon;
+					$this->Request_payment_model->enqueue_request_payment([
+						'no_doc'     => $kasbon->no_doc,
+						'no_surat'   => $kasbon->no_doc,
+						'ids'        => $kasbon->id,
+						'nama'       => $kasbon->nama,
+						'tgl_doc'    => $kasbon->tgl_doc,
+						'keperluan'  => $kasbon->keperluan,
+						'tipe'       => 'kasbon',
+						'jumlah'     => $nilai_kasbon,
+						'bank_id'    => $kasbon->bank_id,
+						'accnumber'  => $kasbon->accnumber,
+						'accname'    => $kasbon->accname,
+						'doc_file'   => $kasbon->doc_file,
+						'currency'   => 'IDR',
+						'created_by' => $this->auth->user_name(),
+					]);
+				}
+			}
 			$keterangan     = "SUKSES, Update data " . $id;
 			$status         = 1;
 			$nm_hak_akses   = $this->managePermission;
@@ -1036,6 +1067,8 @@ class Expense extends Admin_Controller
 			$jumlah 		= 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = $old_kasbon ? ['old' => $old_kasbon, 'new' => array_merge($old_kasbon, $data)] : $data;
+			write_log('Expense', 'Edit', 'Approve kasbon management ID: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save'   => $result ? 1 : 0,
@@ -1058,6 +1091,8 @@ class Expense extends Admin_Controller
 		foreach ($get_detail_kasbon as $detail_kasbon) :
 			if ($detail_kasbon['tipe_pr'] == 'pr departemen') {
 				$this->db->update('rutin_non_planning_detail', ['kasbon_created' => null], ['id' => $detail_kasbon['id_detail']]);
+			} else if ($detail_kasbon['tipe_pr'] == 'pr asset') {
+				$this->db->update('tran_pr_header', ['kasbon_created' => null], ['id' => $detail_kasbon['id_detail']]);
 			} else {
 				$this->db->update('material_planning_base_on_produksi_detail', ['kasbon_created' => null], ['id' => $detail_kasbon['id_detail']]);
 			}
@@ -1066,8 +1101,10 @@ class Expense extends Admin_Controller
 		$result = $this->All_model->dataDelete('tr_kasbon', array('id' => $id));
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
+			write_log('Expense', 'Delete', 'Delete kasbon failed ID: ' . $id, ['id' => $id, 'no_doc' => $no_doc], null, 0);
 		} else {
 			$this->db->trans_commit();
+			write_log('Expense', 'Delete', 'Delete kasbon success: ' . $no_doc, (array) $get_kasbon, null, 1);
 		}
 		$param = array('delete' => $result);
 		echo json_encode($param);
@@ -1486,6 +1523,30 @@ class Expense extends Admin_Controller
 					$this->db->update('tr_expense_detail', $detail, ['id' => $item->id]);
 				}
 
+				if (!empty($data[0]['status']) && (int) $data[0]['status'] === 1 && $result) {
+					$nilai_req = (!empty($get_expense->id_kasbon) && (float) $get_expense->kurang_bayar > 0)
+						? (float) $get_expense->kurang_bayar
+						: (float) $get_expense->jumlah;
+					if ($nilai_req > 0) {
+						$this->load->model('request_payment/Request_payment_model');
+						$this->Request_payment_model->enqueue_request_payment([
+							'no_doc'     => $get_expense->no_doc,
+							'no_surat'   => $get_expense->no_doc,
+							'ids'        => $get_expense->id,
+							'nama'       => $get_expense->nama,
+							'tgl_doc'    => $get_expense->tgl_doc,
+							'keperluan'  => $get_expense->informasi,
+							'tipe'       => 'expense',
+							'jumlah'     => $nilai_req,
+							'bank_id'    => $get_expense->bank_id,
+							'accnumber'  => $get_expense->accnumber,
+							'accname'    => $get_expense->accname,
+							'currency'   => 'IDR',
+							'created_by' => $this->auth->user_name(),
+						]);
+					}
+				}
+
 				// if ($get_expense->pettycash !== '' && $get_expense->pettycash !== null) {
 				// 	$get_pettycash = $this->db->get_where('ms_petty_cash', ['nama' => $get_expense->pettycash])->row();
 
@@ -1508,6 +1569,8 @@ class Expense extends Admin_Controller
 				$jumlah 		= 1;
 				$sql            = $this->db->last_query();
 				simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+				$old_exp_arr = (array) $get_expense;
+				write_log('Expense', 'Edit', 'Approve expense ID: ' . $id, ['old' => $old_exp_arr, 'new' => array_merge($old_exp_arr, $data[0])], null, $result ? 1 : 0);
 			}
 		}
 		$param = array(
@@ -2533,7 +2596,39 @@ class Expense extends Admin_Controller
 				$data['management_by'] = $this->auth->user_name();
 				$data['management_on'] = date("Y-m-d h:i:s");
 			}
+			$old_tr_row = $this->db->get_where('tr_transport_req', ['id' => $id])->row_array();
 			$result = $this->All_model->dataUpdate('tr_transport_req', $data, array('id' => $id));
+			if ($result && (int) $status === 1) {
+				$tr = $this->db->get_where('tr_transport_req', ['id' => $id])->row();
+				if ($tr) {
+					$sum_row = $this->db->select('COALESCE(SUM(jumlah_kasbon), 0) AS total_kasbon', false)
+						->from('tr_transport')
+						->where('no_req', $tr->no_doc)
+						->get()
+						->row();
+					$nilai_tr = ($sum_row && (float) $sum_row->total_kasbon > 0)
+						? (float) $sum_row->total_kasbon
+						: (float) ($tr->jumlah_expense ?? 0);
+					if ($nilai_tr > 0) {
+						$this->load->model('request_payment/Request_payment_model');
+						$this->Request_payment_model->enqueue_request_payment([
+							'no_doc'     => $tr->no_doc,
+							'no_surat'   => $tr->no_doc,
+							'ids'        => $tr->id,
+							'nama'       => $tr->nama,
+							'tgl_doc'    => $tr->tgl_doc,
+							'keperluan'  => 'Transportasi',
+							'tipe'       => 'transportasi',
+							'jumlah'     => $nilai_tr,
+							'bank_id'    => $tr->bank_id,
+							'accnumber'  => $tr->accnumber,
+							'accname'    => $tr->accname,
+							'currency'   => 'IDR',
+							'created_by' => $this->auth->user_name(),
+						]);
+					}
+				}
+			}
 			$keterangan     = "SUKSES, Update data " . $id;
 			$status         = 1;
 			$nm_hak_akses   = $this->managePermission;
@@ -2541,6 +2636,8 @@ class Expense extends Admin_Controller
 			$jumlah = 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = $old_tr_row ? ['old' => $old_tr_row, 'new' => array_merge($old_tr_row, $data)] : $data;
+			write_log('Expense', 'Edit', 'Approve transport req ID: ' . $id, $log_payload, null, $result ? 1 : 0);
 		} else {
 			$result = false;
 			$id = 0;
@@ -2561,6 +2658,7 @@ class Expense extends Admin_Controller
 				'id' => $id,
 				'status' => 1,
 			);
+			$old_t_row = $this->db->get_where('tr_transport', ['id' => $id])->row_array();
 			$result = $this->All_model->dataUpdate('tr_transport', $data, array('id' => $id));
 			$keterangan     = "SUKSES, Update data " . $id;
 			$status         = 1;
@@ -2569,6 +2667,8 @@ class Expense extends Admin_Controller
 			$jumlah = 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = $old_t_row ? ['old' => $old_t_row, 'new' => array_merge($old_t_row, $data)] : $data;
+			write_log('Expense', 'Edit', 'Approve transport item ID: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save' => $result,
@@ -2803,6 +2903,7 @@ class Expense extends Admin_Controller
 				'sts_reject_manage' => '1',
 				'reject_reason' => $reason
 			);
+			$old_rej_row = $this->db->get_where($table, ['id' => $id])->row_array();
 			$result = $this->All_model->dataUpdate($table, $data, array('id' => $id));
 			$keterangan     = "SUKSES, Reject data " . $id;
 			$status         = 1;
@@ -2811,6 +2912,8 @@ class Expense extends Admin_Controller
 			$jumlah = 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = $old_rej_row ? ['old' => $old_rej_row, 'new' => array_merge($old_rej_row, $data)] : $data;
+			write_log('Expense', 'Edit', 'Reject manage ' . $table . ' ID: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save' => $result,

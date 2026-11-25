@@ -21,11 +21,10 @@
         <div class="row g-2 align-items-end">
             <div class="col-md-3">
                 <label for="filter-company" class="form-label small fw-semibold text-muted mb-1">Company</label>
+                <?php $active_company = function_exists('get_identitas') ? strtoupper((string) (get_identitas()->kode ?? 'HFG')) : 'HFG'; ?>
                 <select id="filter-company" class="form-select form-select-sm">
                     <option value="">-- Semua Company --</option>
-                    <option value="STM">STM</option>
-                    <option value="VUCA">VUCA</option>
-                    <option value="SUSTAIN">SUSTAIN</option>
+                    <option value="<?= htmlspecialchars((string) $active_company) ?>"><?= htmlspecialchars((string) $active_company) ?></option>
                 </select>
             </div>
             <div class="col-md-3">

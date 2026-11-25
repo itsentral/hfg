@@ -12,13 +12,9 @@
 class Expense_petty_cash_model extends BF_Model
 {
     // =========================================================================
-    // Inter-Company COA Constants
+    // Petty Cash COA Constant (Single Database)
     // =========================================================================
-    const COA_KAS_KECIL          = '1101-01-02';
-    const COA_HUTANG_STM_VUCA    = '2103-01-01';  // Hutang VUCA ke STM
-    const COA_HUTANG_STM_SUSTAIN = '2103-01-02';  // Hutang SUSTAIN ke STM
-    const COA_PIUTANG_VUCA       = '1103-01-01';  // Piutang STM ke VUCA
-    const COA_PIUTANG_SUSTAIN    = '1103-01-02';  // Piutang STM ke SUSTAIN
+    const COA_KAS_KECIL = '1101-01-02';
 
     /**
      * @var string Table Name
@@ -467,17 +463,27 @@ class Expense_petty_cash_model extends BF_Model
     // =========================================================================
 
     /**
-     * Create journal entries for STM company pencatatan
-     * Debit: COA items, Credit: COA 1101-01-02 (Kas Kecil)
+     * Resolve active company id & code from identitas helper (single-database mode).
      *
-     * Logic:
-     * 1. Calculate grand_total = SUM of all detail totals
-     * 2. Prepare N debit entries (one per detail item)
-     * 3. Prepare 1 credit entry on COA 1101-01-02
-     * 4. Validate SUM(debit) = SUM(kredit) = grand_total
-     * 5. Generate nomor jurnal from pastibisa_tb_cabang sequence
-     * 6. Insert all entries into jurnal table in DBACC
-     * 7. Update journal_status on pencatatan record
+     * @param string|null $company_override
+     * @return array{id_company: string, nm_company: string}
+     */
+    private function _get_company_identity($company_override = null)
+    {
+        $identitas = function_exists('get_identitas') ? get_identitas() : null;
+        $id_company = ($identitas && !empty($identitas->ididentitas)) ? (string) $identitas->ididentitas : '1';
+        $default_code = ($identitas && !empty($identitas->kode)) ? strtoupper((string) $identitas->kode) : 'HFG';
+        $nm_company = !empty($company_override) ? strtoupper(trim((string) $company_override)) : $default_code;
+
+        return [
+            'id_company' => $id_company,
+            'nm_company' => $nm_company,
+        ];
+    }
+
+    /**
+     * Create journal entries for petty cash pencatatan (Single Database / DBACC)
+     * Debit: COA items, Credit: COA 1101-01-02 (Kas Kecil)
      *
      * @param int $pencatatan_id
      * @param array $header Pencatatan header data (no_pencatatan, tanggal, company, keterangan)
@@ -486,10 +492,15 @@ class Expense_petty_cash_model extends BF_Model
      */
     public function create_journal_stm($pencatatan_id, $header, $details)
     {
+        $no_pencatatan = is_array($header) ? $header['no_pencatatan'] : $header->no_pencatatan;
+        $tanggal       = is_array($header) ? $header['tanggal'] : $header->tanggal;
+        $company       = is_array($header) ? ($header['company'] ?? null) : ($header->company ?? null);
+        $keterangan    = is_array($header) ? ($header['keterangan'] ?? '') : ($header->keterangan ?? '');
+
         // Step 1: Calculate grand_total from detail items
         $grand_total = 0;
         foreach ($details as $item) {
-            $grand_total += (int) $item['total'];
+            $grand_total += (int) (is_array($item) ? $item['total'] : $item->total);
         }
 
         // Guard: no entries to create if grand_total is zero
@@ -500,14 +511,13 @@ class Expense_petty_cash_model extends BF_Model
         // Step 2: Validate balance
         $sum_debit = 0;
         foreach ($details as $item) {
-            $sum_debit += (int) $item['total'];
+            $sum_debit += (int) (is_array($item) ? $item['total'] : $item->total);
         }
         if ($sum_debit !== $grand_total) {
             return false;
         }
 
         // Step 3: Generate no_jurnal (format: NNNNN-AJV-{MM}-{YY})
-        $tanggal = $header['tanggal'];
         $month_roman = $this->_get_roman_month(date('n', strtotime((string) $tanggal)));
         $year_short = date('y', strtotime((string) $tanggal));
 
@@ -527,65 +537,70 @@ class Expense_petty_cash_model extends BF_Model
         }
         $no_jurnal = str_pad((string) $next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
 
-        // Step 4: Determine company info
-        $id_company = '5'; // STM
-        $nm_company = 'STM';
+        // Step 4: Determine company info from active identitas (single DB)
+        $comp_info  = $this->_get_company_identity($company);
+        $id_company = $comp_info['id_company'];
+        $nm_company = $comp_info['nm_company'];
 
-        // Step 5: Get COA names from coa_master
+        // Step 5: Get COA names from DBACC.coa_master
         $coa_names = [];
         foreach ($details as $item) {
-            $coa_code = $item['coa_code'];
+            $coa_code = is_array($item) ? $item['coa_code'] : $item->coa_code;
             if (!isset($coa_names[$coa_code])) {
                 $coa_q = $this->db->query(
-                    "SELECT nama FROM " . DBACC_STM . ".coa_master WHERE no_perkiraan = ?",
+                    "SELECT nama FROM " . DBACC . ".coa_master WHERE no_perkiraan = ?",
                     [$coa_code]
                 );
                 $coa_names[$coa_code] = ($coa_q->num_rows() > 0) ? $coa_q->row()->nama : $coa_code;
             }
         }
         // COA Kas Kecil name
-        $coa_kas_kecil = '1101-01-02';
-        $nm_kas_kecil = 'Kas Kecil';
+        $coa_kas_kecil = self::COA_KAS_KECIL;
+        $nm_kas_kecil  = 'Kas Kecil';
 
         // Step 6: Insert debit entries into tr_jurnal (one per detail item)
-        $created_by = $this->auth->user_id();
+        $created_by   = $this->auth->user_id();
         $created_date = date('Y-m-d H:i:s');
 
         foreach ($details as $item) {
+            $coa_code    = is_array($item) ? ($item['coa_code'] ?? '') : ($item->coa_code ?? '');
+            $pengeluaran = is_array($item) ? ($item['pengeluaran'] ?? '') : ($item->pengeluaran ?? '');
+            $total       = (int) (is_array($item) ? $item['total'] : $item->total);
+
             $this->db->insert('tr_jurnal', [
-                'no_jurnal'        => $no_jurnal,
-                'tgl_jurnal'       => $tanggal,
-                'coa'              => $item['coa_code'],
-                'id_company'       => $id_company,
-                'nm_company'       => $nm_company,
-                'nm_coa'           => $coa_names[(string) ($item['coa_code'] ?? '')],
-                'debit'            => (int) $item['total'],
-                'kredit'           => 0,
-                'keterangan'       => $item['pengeluaran'] ?: ($header['keterangan'] ?: 'Petty Cash Expense'),
-                'sts'              => '0', // belum diposting
-                'no_transaksi'     => $header['no_pencatatan'],
-                'jenis_transaksi'  => 'Petty Cash',
-                'created_by'       => $created_by,
-                'created_date'     => $created_date,
+                'no_jurnal'       => $no_jurnal,
+                'tgl_jurnal'      => $tanggal,
+                'coa'             => $coa_code,
+                'id_company'      => $id_company,
+                'nm_company'      => $nm_company,
+                'nm_coa'          => $coa_names[(string) $coa_code] ?? $coa_code,
+                'debit'           => $total,
+                'kredit'          => 0,
+                'keterangan'      => $pengeluaran ?: ($keterangan ?: 'Petty Cash Expense'),
+                'sts'             => '0', // belum diposting
+                'no_transaksi'    => $no_pencatatan,
+                'jenis_transaksi' => 'Petty Cash',
+                'created_by'      => $created_by,
+                'created_date'    => $created_date,
             ]);
         }
 
         // Step 7: Insert 1 credit entry (COA Kas Kecil)
         $this->db->insert('tr_jurnal', [
-            'no_jurnal'        => $no_jurnal,
-            'tgl_jurnal'       => $tanggal,
-            'coa'              => $coa_kas_kecil,
-            'id_company'       => $id_company,
-            'nm_company'       => $nm_company,
-            'nm_coa'           => $nm_kas_kecil,
-            'debit'            => 0,
-            'kredit'           => $grand_total,
-            'keterangan'       => $header['keterangan'] ?: 'Pengeluaran Kas Kecil',
-            'sts'              => '0',
-            'no_transaksi'     => $header['no_pencatatan'],
-            'jenis_transaksi'  => 'Petty Cash',
-            'created_by'       => $created_by,
-            'created_date'     => $created_date,
+            'no_jurnal'       => $no_jurnal,
+            'tgl_jurnal'      => $tanggal,
+            'coa'             => $coa_kas_kecil,
+            'id_company'      => $id_company,
+            'nm_company'      => $nm_company,
+            'nm_coa'          => $nm_kas_kecil,
+            'debit'           => 0,
+            'kredit'          => $grand_total,
+            'keterangan'      => $keterangan ?: 'Pengeluaran Kas Kecil',
+            'sts'             => '0',
+            'no_transaksi'    => $no_pencatatan,
+            'jenis_transaksi' => 'Petty Cash',
+            'created_by'      => $created_by,
+            'created_date'    => $created_date,
         ]);
 
         // Step 8: Update journal_status
@@ -618,195 +633,31 @@ class Expense_petty_cash_model extends BF_Model
     }
 
     /**
-     * Create inter-company journal entries for VUCA/SUSTAIN pencatatan
-     * Company-side: Debit COA items, Credit COA Hutang ke STM
-     * STM-side: Debit COA Piutang, Credit COA 1101-01-02
-     *
-     * Generates two independent journal sets in a single DBACC transaction:
-     * - Set 1 (Company side): N debit entries + 1 credit entry, balance = grand_total
-     * - Set 2 (STM side): 1 debit entry + 1 credit entry, balance = grand_total
-     * Each set has a different nomor jurnal.
+     * Backward-compatible wrapper: routes journal creation to single-database mode (DBACC).
      *
      * @param int $pencatatan_id
-     * @param array $header Pencatatan header data (no_pencatatan, tanggal, company, keterangan)
-     * @param array $details Pencatatan detail items, each with: coa_code, pengeluaran, total
+     * @param array|object $header
+     * @param array $details
      * @return bool
      */
     public function create_journal_intercompany($pencatatan_id, $header, $details)
     {
-        // Extract header values
-        $no_pencatatan = is_array($header) ? $header['no_pencatatan'] : $header->no_pencatatan;
-        $tanggal       = is_array($header) ? $header['tanggal'] : $header->tanggal;
-        $company       = is_array($header) ? $header['company'] : $header->company;
-        $keterangan    = is_array($header) ? (isset($header['keterangan']) ? $header['keterangan'] : '') : (isset($header->keterangan) ? $header->keterangan : '');
-
-        // Step 1: Calculate grand_total
-        $grand_total = 0;
-        foreach ($details as $item) {
-            $total = is_array($item) ? (int) $item['total'] : (int) $item->total;
-            $grand_total += $total;
-        }
-
-        if ($grand_total <= 0) {
-            return false;
-        }
-
-        // Step 2: Determine company info and COA codes
-        $company_upper = strtoupper((string) $company);
-        if ($company_upper === 'VUCA') {
-            $coa_hutang_stm = self::COA_HUTANG_STM_VUCA;
-            $coa_piutang    = self::COA_PIUTANG_VUCA;
-            $id_company     = '4';
-            $nm_company     = 'VUCA';
-            $db_company     = DBACC_VUCA;
-        } elseif ($company_upper === 'SUSTAIN') {
-            $coa_hutang_stm = self::COA_HUTANG_STM_SUSTAIN;
-            $coa_piutang    = self::COA_PIUTANG_SUSTAIN;
-            $id_company     = '6';
-            $nm_company     = 'SUSTAIN';
-            $db_company     = DBACC_SUSTAIN;
-        } else {
-            return false;
-        }
-
-        // Step 3: Generate no_jurnal
-        $month_roman = $this->_get_roman_month(date('n', strtotime((string) $tanggal)));
-        $year_short = date('y', strtotime((string) $tanggal));
-        $prefix_like = '%-AJV-' . $month_roman . '-' . $year_short;
-
-        $query_last = $this->db->query(
-            "SELECT no_jurnal FROM tr_jurnal WHERE no_jurnal LIKE ? ORDER BY id DESC LIMIT 1",
-            ['%' . $prefix_like]
-        );
-
-        if ($query_last->num_rows() > 0) {
-            $last_no = $query_last->row()->no_jurnal;
-            $last_seq = (int) substr((string) $last_no, 0, 5);
-            $next_seq = $last_seq + 1;
-        } else {
-            $next_seq = 1;
-        }
-        $no_jurnal_company = str_pad((string) $next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
-        $no_jurnal_stm = str_pad($next_seq + 1, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
-
-        // Step 4: Get COA names
-        $coa_names = [];
-        foreach ($details as $item) {
-            $coa_code = is_array($item) ? $item['coa_code'] : $item->coa_code;
-            if (!isset($coa_names[$coa_code])) {
-                $coa_q = $this->db->query(
-                    "SELECT nama FROM " . $db_company . ".coa_master WHERE no_perkiraan = ?",
-                    [$coa_code]
-                );
-                $coa_names[$coa_code] = ($coa_q->num_rows() > 0) ? $coa_q->row()->nama : $coa_code;
-            }
-        }
-
-        // Hutang COA name
-        $hutang_q = $this->db->query("SELECT nama FROM " . $db_company . ".coa_master WHERE no_perkiraan = ?", [$coa_hutang_stm]);
-        $nm_hutang = ($hutang_q->num_rows() > 0) ? $hutang_q->row()->nama : 'Hutang ke STM';
-
-        // Piutang COA name
-        $piutang_q = $this->db->query("SELECT nama FROM " . DBACC_STM . ".coa_master WHERE no_perkiraan = ?", [$coa_piutang]);
-        $nm_piutang = ($piutang_q->num_rows() > 0) ? $piutang_q->row()->nama : 'Piutang ' . $nm_company;
-
-        $created_by = $this->auth->user_id();
-        $created_date = date('Y-m-d H:i:s');
-
-        // =====================================================================
-        // SET 1: Company side (VUCA/SUSTAIN) — N debit + 1 kredit Hutang ke STM
-        // =====================================================================
-        foreach ($details as $item) {
-            $coa_code = is_array($item) ? $item['coa_code'] : $item->coa_code;
-            $total    = is_array($item) ? (int) $item['total'] : (int) $item->total;
-
-            $this->db->insert('tr_jurnal', [
-                'no_jurnal'        => $no_jurnal_company,
-                'tgl_jurnal'       => $tanggal,
-                'coa'              => $coa_code,
-                'id_company'       => $id_company,
-                'nm_company'       => $nm_company,
-                'nm_coa'           => $coa_names[$coa_code],
-                'debit'            => $total,
-                'kredit'           => 0,
-                'keterangan'       => $keterangan ?: 'Pengeluaran Kas Kecil',
-                'sts'              => '0',
-                'no_transaksi'     => $no_pencatatan,
-                'jenis_transaksi'  => 'Petty Cash',
-                'created_by'       => $created_by,
-                'created_date'     => $created_date,
-            ]);
-        }
-
-        // Credit: Hutang ke STM
-        $this->db->insert('tr_jurnal', [
-            'no_jurnal'        => $no_jurnal_company,
-            'tgl_jurnal'       => $tanggal,
-            'coa'              => $coa_hutang_stm,
-            'id_company'       => $id_company,
-            'nm_company'       => $nm_company,
-            'nm_coa'           => $nm_hutang,
-            'debit'            => 0,
-            'kredit'           => $grand_total,
-            'keterangan'       => $keterangan ?: 'Pengeluaran Kas Kecil',
-            'sts'              => '0',
-            'no_transaksi'     => $no_pencatatan,
-            'jenis_transaksi'  => 'Petty Cash',
-            'created_by'       => $created_by,
-            'created_date'     => $created_date,
-        ]);
-
-        // =====================================================================
-        // SET 2: STM side — 1 debit Piutang + 1 kredit Kas Kecil
-        // =====================================================================
-        $this->db->insert('tr_jurnal', [
-            'no_jurnal'        => $no_jurnal_stm,
-            'tgl_jurnal'       => $tanggal,
-            'coa'              => $coa_piutang,
-            'id_company'       => '5',
-            'nm_company'       => 'STM',
-            'nm_coa'           => $nm_piutang,
-            'debit'            => $grand_total,
-            'kredit'           => 0,
-            'keterangan'       => $keterangan ?: 'Piutang ' . $nm_company,
-            'sts'              => '0',
-            'no_transaksi'     => $no_pencatatan,
-            'jenis_transaksi'  => 'Petty Cash',
-            'created_by'       => $created_by,
-            'created_date'     => $created_date,
-        ]);
-
-        $this->db->insert('tr_jurnal', [
-            'no_jurnal'        => $no_jurnal_stm,
-            'tgl_jurnal'       => $tanggal,
-            'coa'              => self::COA_KAS_KECIL,
-            'id_company'       => '5',
-            'nm_company'       => 'STM',
-            'nm_coa'           => 'Kas Kecil',
-            'debit'            => 0,
-            'kredit'           => $grand_total,
-            'keterangan'       => $keterangan ?: 'Pengeluaran Kas Kecil - ' . $nm_company,
-            'sts'              => '0',
-            'no_transaksi'     => $no_pencatatan,
-            'jenis_transaksi'  => 'Petty Cash',
-            'created_by'       => $created_by,
-            'created_date'     => $created_date,
-        ]);
-
-        return true;
+        return $this->create_journal_stm($pencatatan_id, $header, $details);
     }
 
     /**
      * Generate nomor jurnal JV from pastibisa_tb_cabang sequence
      *
-     * Format: {nocab}BK{subcab}{yy}{padded_counter}
-     * Example: 101BKA2500001
+     * Format: {nocab}-{subcab}JV{yy}{padded_counter}
      *
-     * @param string $db_name Database name constant (DBACC_STM, DBACC_VUCA, DBACC_SUSTAIN)
+     * @param string|null $db_name Database name constant (defaults to DBACC)
      * @return string|false Generated nomor jurnal or false on failure
      */
-    protected function generate_nomor_jurnal_jv($db_name)
+    protected function generate_nomor_jurnal_jv($db_name = null)
     {
+        if (empty($db_name)) {
+            $db_name = DBACC;
+        }
         $cabang = '101';
         $query = $this->db->query(
             "SELECT subcab, nomorJC FROM " . $db_name . ".pastibisa_tb_cabang WHERE nocab = ?",
@@ -828,21 +679,9 @@ class Expense_petty_cash_model extends BF_Model
     }
 
     /**
-     * Delete ALL journal entries by no_pencatatan (no_reff in jurnal table)
+     * Delete ALL journal entries by no_pencatatan (no_transaksi in tr_jurnal table)
      *
-     * Deletes from all relevant DBACC databases:
-     * - DBACC_STM: Always (STM direct journals OR STM-side of inter-company)
-     * - DBACC_VUCA: For VUCA inter-company journals
-     * - DBACC_SUSTAIN: For SUSTAIN inter-company journals
-     *
-     * Since no_reff (No Pencatatan) uniquely identifies a pencatatan across all databases,
-     * it is safe to delete from all three — only the relevant ones will have matching rows.
-     *
-     * Used during:
-     * - Edit pencatatan (delete old journals, then create new ones)
-     * - Delete pencatatan (remove all associated journals)
-     *
-     * @param string $no_pencatatan The No Pencatatan value used as no_reff in jurnal
+     * @param string $no_pencatatan The No Pencatatan value
      * @return bool True if delete operations completed without error
      */
     public function delete_journal($no_pencatatan)
@@ -857,15 +696,7 @@ class Expense_petty_cash_model extends BF_Model
 
     /**
      * Create journal for a pencatatan record (eventual consistency Phase 2)
-     *
-     * This method is called AFTER save_pencatatan() has committed successfully.
-     * It implements the eventual consistency pattern:
-     * - Phase 1 (already done): Pencatatan saved with journal_status='pending'
-     * - Phase 2 (this method): Create journal in DBACC, update status accordingly
-     *
-     * For edits ($is_edit = true): deletes old journal entries before creating new ones.
-     * For company STM: calls create_journal_stm()
-     * For company VUCA/SUSTAIN: calls create_journal_intercompany()
+     * Uses single-database (DBACC) for all records.
      *
      * @param int $pencatatan_id The pencatatan ID to create journal for
      * @param bool $is_edit If true, delete existing journal entries before creating new ones
@@ -892,7 +723,7 @@ class Expense_petty_cash_model extends BF_Model
         // Step 3: Set journal_status to 'pending' before attempting
         $this->_update_journal_status($pencatatan_id, 'pending');
 
-        // Step 4: Prepare header and details as arrays for journal methods
+        // Step 4: Prepare header and details as arrays for journal method
         $header_data = [
             'no_pencatatan' => $header->no_pencatatan,
             'tanggal'       => $header->tanggal,
@@ -909,24 +740,12 @@ class Expense_petty_cash_model extends BF_Model
             ];
         }
 
-        // Step 5: Dispatch to appropriate journal creation method based on company
-        $company = strtoupper((string) $header->company);
+        // Step 5: Create single-database journal entry
         $journal_result = false;
-
         try {
-            if ($company === 'STM') {
-                $journal_result = $this->create_journal_stm($pencatatan_id, $header_data, $details_data);
-            } elseif ($company === 'VUCA' || $company === 'SUSTAIN') {
-                $journal_result = $this->create_journal_intercompany($pencatatan_id, $header_data, $details_data);
-                // Update journal_status for intercompany (create_journal_intercompany doesn't do it internally)
-                if ($journal_result) {
-                    $this->_update_journal_status($pencatatan_id, 'success');
-                } else {
-                    $this->_update_journal_status($pencatatan_id, 'failed');
-                }
-            } else {
+            $journal_result = $this->create_journal_stm($pencatatan_id, $header_data, $details_data);
+            if (!$journal_result) {
                 $this->_update_journal_status($pencatatan_id, 'failed');
-                return ['success' => false, 'message' => 'The company is not valid for journal creation.'];
             }
         } catch (Exception $e) {
             $this->_update_journal_status($pencatatan_id, 'failed');
@@ -944,14 +763,6 @@ class Expense_petty_cash_model extends BF_Model
 
     /**
      * Retry journal creation for pencatatan with journal_status='failed'
-     *
-     * Steps:
-     * 1. Get the pencatatan record by ID
-     * 2. Validate journal_status is 'failed' (only retry failed ones)
-     * 3. Get all detail items for this pencatatan
-     * 4. Delete any partial journal entries that may exist
-     * 5. Re-attempt journal creation based on company (STM vs VUCA/SUSTAIN)
-     * 6. Journal methods already update journal_status to 'success' or 'failed'
      *
      * @param int $pencatatan_id
      * @return bool True if journal creation succeeded, false otherwise
@@ -1004,22 +815,10 @@ class Expense_petty_cash_model extends BF_Model
             ];
         }
 
-        // Step 6: Re-attempt journal creation based on company
-        $company_upper = strtoupper((string) $pencatatan->company);
-
-        if ($company_upper === 'STM') {
-            $result = $this->create_journal_stm($pencatatan_id, $header, $details);
-        } elseif (in_array($company_upper, ['VUCA', 'SUSTAIN'])) {
-            $result = $this->create_journal_intercompany($pencatatan_id, $header, $details);
-            // Update journal_status since create_journal_intercompany doesn't do it internally
-            if ($result) {
-                $this->_update_journal_status($pencatatan_id, 'success');
-            } else {
-                $this->_update_journal_status($pencatatan_id, 'failed');
-            }
-        } else {
-            // Unknown company
-            return false;
+        // Step 6: Re-attempt single-database journal creation
+        $result = $this->create_journal_stm($pencatatan_id, $header, $details);
+        if (!$result) {
+            $this->_update_journal_status($pencatatan_id, 'failed');
         }
 
         return $result;
@@ -1093,7 +892,7 @@ class Expense_petty_cash_model extends BF_Model
         $subquery_paid = "SELECT pd.pencatatan_id 
                           FROM tr_pelaporan_petty_cash_detail pd
                           JOIN tr_pelaporan_petty_cash p ON p.id = pd.pelaporan_id
-                          JOIN payment_approve pa ON pa.no_doc = p.no_pelaporan
+                          JOIN payment_approve pa ON (pa.id_payment = p.no_pelaporan OR pa.no_doc = p.no_pelaporan)
                           WHERE pa.tgl_bayar IS NOT NULL";
 
         $this->db->select_sum('grand_total');

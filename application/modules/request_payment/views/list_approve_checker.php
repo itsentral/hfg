@@ -11,6 +11,7 @@ $count_periodik = 0;
 $count_pembayaran_po = 0;
 $count_direct_payment = 0;
 $count_document_import = 0;
+$count_refill_pettycash = 0;
 
 $ros_payment_types = ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'];
 
@@ -39,6 +40,9 @@ foreach ($data as $item) :
     }
     if (in_array($item->tipe, $ros_payment_types ?? [])) {
         $count_document_import += 1;
+    }
+    if ($item->tipe == 'refill_pettycash') {
+        $count_refill_pettycash += 1;
     }
 endforeach;
 ?>
@@ -167,6 +171,18 @@ endforeach;
                             <h2 class="fw-bold m-0 mt-1 text-dark"><?= $count_document_import ?></h2>
                         </div>
                         <button type="button" class="btn btn-sm btn-outline-dark btn_view_req" data-val="document_import"><i class="fa fa-eye"></i> View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card h-100 border-0 shadow-sm card-counter border-start border-4 border-success">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted fw-bold text-uppercase">Refill Petty Cash</small>
+                            <h2 class="fw-bold m-0 mt-1 text-success"><?= $count_refill_pettycash ?></h2>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-success btn_view_req" data-val="refill_pettycash"><i class="fa fa-eye"></i> View</button>
                     </div>
                 </div>
             </div>
@@ -674,6 +690,50 @@ endforeach;
             </div>
         </div>
 
+        <div class="col-12 list_refill_pettycash table-section mb-4" style="display: none;">
+            <h4 class="text-dark fw-bold mb-3"><i class="fa fa-money me-2"></i>Refill Petty Cash</h4>
+            <div class="table-responsive shadow-sm">
+                <table class="table table-striped table-hover table-bordered align-middle mb-0" id="table_refill_pettycash" width="100%">
+                    <thead class="text-center">
+                        <tr>
+                            <th>No Dokument</th>
+                            <th>Request By</th>
+                            <th>Date</th>
+                            <th>Keperluan</th>
+                            <th>Tipe</th>
+                            <th>Request Value</th>
+                            <th>Payment Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        foreach ($data as $item_rpc) :
+                            if ($item_rpc->tipe == 'refill_pettycash') {
+                                echo '<tr>';
+                                echo '<td class="text-center fw-semibold">' . $item_rpc->no_doc . '</td>';
+                                echo '<td>' . $item_rpc->nama . '</td>';
+                                echo '<td class="text-center">' . $item_rpc->tgl_doc . '</td>';
+                                echo '<td>' . $item_rpc->keperluan . '</td>';
+                                echo '<td class="text-center">Refill Petty Cash</td>';
+                                echo '<td class="text-end fw-semibold">' . number_format((float) $item_rpc->jumlah, 2) . '</td>';
+                                echo '<td class="text-center">' . $item_rpc->tanggal . '</td>';
+                                echo '<td class="text-center"><span class="badge bg-info text-dark">' . htmlspecialchars((string) $item_rpc->status) . '</span></td>';
+                                echo '<td class="text-center">';
+                                if ($ENABLE_MANAGE) : ?>
+                                    <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_rpc->tipe . '&id=' . $item_rpc->id . '&nilai=' . $item_rpc->jumlah); ?>" class="btn btn-success btn-sm"><i class="fa fa-check-square-o me-1"></i>Approve</a>
+                        <?php endif;
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                        endforeach;
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 <?= form_close() ?>
@@ -720,6 +780,9 @@ endforeach;
             "pageLength": 10
         });
         $('#table_document_import').dataTable({
+            "pageLength": 10
+        });
+        $('#table_refill_pettycash').dataTable({
             "pageLength": 10
         });
 

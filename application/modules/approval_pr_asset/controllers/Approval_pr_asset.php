@@ -30,6 +30,7 @@ class Approval_pr_asset extends Admin_Controller
 
     public function approve_pr()
     {
+        $this->auth->restrict($this->managePermission);
         $this->approval_pr_asset_model->approve_pr();
     }
 }

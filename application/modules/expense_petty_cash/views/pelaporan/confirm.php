@@ -233,7 +233,7 @@ if (!empty($coa_list)) {
                             <tr class="table-warning">
                                 <td>1101-01-02</td>
                                 <td>Kas Kecil</td>
-                                <td class="text-center">STM</td>
+                                <td class="text-center"><?= htmlspecialchars((string) $header->company) ?></td>
                                 <td class="text-end text-muted">-</td>
                                 <td class="text-end">Rp <?= number_format((float) $grand_total, 0, ',', '.') ?></td>
                             </tr>

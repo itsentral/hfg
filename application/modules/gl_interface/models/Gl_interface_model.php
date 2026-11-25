@@ -195,6 +195,63 @@ class Gl_interface_model extends CI_Model
         return $id_gl;
     }
 
+    /**
+     * Buat entri gl_interface + gl_interface_detail secara langsung (untuk transaksi Non-PO tanpa template tetap).
+     */
+    public function create_manual_jurnal(array $header_data, array $detail_rows)
+    {
+        if (empty($detail_rows)) {
+            return false;
+        }
+
+        $db_acc     = $this->load->database('accounting', TRUE);
+        $tgl_now    = $header_data['tgl'] ?? date('Y-m-d');
+        $created_on = date('Y-m-d H:i:s');
+        $jenis      = $header_data['jenis'] ?? 'BUK';
+        $user_id    = (isset($this->auth)) ? $this->auth->user_id() : 1;
+        $nomor_jv   = $this->_generate_nomor_jv_generic($jenis);
+
+        $this->db->insert('gl_interface', [
+            'nomor'           => $nomor_jv,
+            'tgl'             => $tgl_now,
+            'jml'             => (float) ($header_data['jml'] ?? 0),
+            'bulan'           => date('m', strtotime((string) $tgl_now)),
+            'tahun'           => date('Y', strtotime((string) $tgl_now)),
+            'kdcab'           => '101',
+            'jenis'           => $jenis,
+            'keterangan'      => substr((string) ($header_data['keterangan'] ?? 'Pembayaran Non-PO'), 0, 350),
+            'jenis_transaksi' => $header_data['jenis_transaksi'] ?? 'Payment Non-PO',
+            'status'          => 'pending',
+            'user_id'         => $user_id,
+            'memo'            => json_encode($header_data['memo'] ?? []),
+        ]);
+        $id_gl = $this->db->insert_id();
+
+        foreach ($detail_rows as $row) {
+            $no_perkiraan = $row['no_perkiraan'] ?? '';
+            $coa_row      = $no_perkiraan !== '' ? $db_acc->get_where('coa_master', ['no_perkiraan' => $no_perkiraan])->row() : null;
+            $nama_coa     = $coa_row->nama ?? $no_perkiraan;
+            $ket_row      = trim((string) ($row['keterangan'] ?? ''));
+
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => $nomor_jv,
+                'tipe'            => $jenis,
+                'tanggal'         => $tgl_now,
+                'no_perkiraan'    => $no_perkiraan,
+                'keterangan'      => substr(($nama_coa !== '' ? $nama_coa . ' | ' : '') . $ket_row, 0, 255),
+                'no_reff'         => $row['no_reff'] ?? null,
+                'debet'           => (float) ($row['debet'] ?? 0),
+                'kredit'          => (float) ($row['kredit'] ?? 0),
+                'debet_kurs'      => (float) ($row['debet_kurs'] ?? ($row['debet'] ?? 0)),
+                'kredit_kurs'     => (float) ($row['kredit_kurs'] ?? ($row['kredit'] ?? 0)),
+                'created_at'      => $created_on,
+            ]);
+        }
+
+        return $id_gl;
+    }
+
 
     private function _generate_nomor_jv_generic($tipe)
     {

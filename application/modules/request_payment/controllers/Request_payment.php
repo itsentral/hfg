@@ -31,12 +31,14 @@ class Request_payment extends Admin_Controller
 
 	public function index()
 	{
+		$this->auth->restrict($this->viewPermission);
 		$this->template->title('Request Payment');
 		$this->template->render('index');
 	}
 
 	public function payment_list()
 	{
+		$this->auth->restrict($this->viewPermission);
 		$data = $this->Request_payment_model->GetListDataPaymentList();
 		$list_tgl_pengajuan_pembayaran = $this->Request_payment_model->get_payment_paid();
 
@@ -53,7 +55,11 @@ class Request_payment extends Admin_Controller
 		if (!empty($status)) {
 			foreach ($status as $val) {
 
-				$config['upload_path'] = './assets/expense/';
+				$upload_path_exp = './assets/expense/';
+				if (!is_dir($upload_path_exp)) {
+					mkdir($upload_path_exp, 0755, true);
+				}
+				$config['upload_path'] = $upload_path_exp;
 				$config['allowed_types'] = '*';
 				$config['remove_spaces'] = TRUE;
 				$config['encrypt_name'] = TRUE;
@@ -118,9 +124,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = false;
+			write_log('Request Payment', 'Create', 'Save request payment failed', $this->input->post(), null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = true;
+			write_log('Request Payment', 'Create', 'Save request payment success', $this->input->post(), null, 1);
 		}
 		$param = array(
 			'save' => $result
@@ -167,10 +175,11 @@ class Request_payment extends Admin_Controller
 
 	public function list_approve_checker()
 	{
+		$this->auth->restrict('Approval_Request_Payment_Checker.View');
 		$data = $this->Request_payment_model->GetListDataApproval("a.status = 'approve checker' AND a.app_checker IS NULL");
 
-		$data_kasbon = $this->Request_payment_model->GetListDataApproval('1 = 1');
-		$data_expense = $this->Request_payment_model->GetListDataApproval('1 = 1');
+		$data_kasbon = $this->Request_payment_model->GetListDataApproval("a.status = 'approve checker' AND a.app_checker IS NULL AND a.tipe = 'kasbon'");
+		$data_expense = $this->Request_payment_model->GetListDataApproval("a.status = 'approve checker' AND a.app_checker IS NULL AND a.tipe = 'expense'");
 
 		$list_no_invoice = [];
 		$this->db->select('id, invoice_no');
@@ -191,6 +200,7 @@ class Request_payment extends Admin_Controller
 
 	public function list_approve_management()
 	{
+		$this->auth->restrict('Approval_Request_Payment_Management.View');
 		$data = $this->Request_payment_model->GetListDataApproval("a.status IN ('approve checker') AND a.app_management IS NULL AND a.app_checker IS NOT NULL");
 
 		$list_no_invoice = [];
@@ -282,6 +292,22 @@ class Request_payment extends Admin_Controller
 			$data_detail	= [$data];
 		}
 
+		// Refill Petty Cash
+		if (isset($type) && $type == 'refill_pettycash') {
+			$data = !empty($id)
+				? $this->db->get_where('tr_pelaporan_petty_cash', ['id' => $id])->row()
+				: $this->db->get_where('tr_pelaporan_petty_cash', ['no_pelaporan' => $get_id->no_doc])->row();
+			$data_detail = [];
+			if ($data) {
+				$data_detail = $this->db->select('pd.id, pd.pelaporan_id, pd.pencatatan_id, pc.no_pencatatan, pc.tanggal, pc.keterangan, pc.grand_total')
+					->from('tr_pelaporan_petty_cash_detail pd')
+					->join('tr_expense_petty_cash pc', 'pc.id = pd.pencatatan_id', 'left')
+					->where('pd.pelaporan_id', $data->id)
+					->get()
+					->result();
+			}
+		}
+
 		$get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
 
 		$this->template->set([
@@ -361,6 +387,22 @@ class Request_payment extends Admin_Controller
 		if (in_array($type, ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) {
 			$data 			= $this->db->get_where('tr_ros_payment', ['id' => $id])->row();
 			$data_detail	= [$data];
+		}
+
+		// Refill Petty Cash
+		if (isset($type) && $type == 'refill_pettycash') {
+			$data = !empty($id)
+				? $this->db->get_where('tr_pelaporan_petty_cash', ['id' => $id])->row()
+				: $this->db->get_where('tr_pelaporan_petty_cash', ['no_pelaporan' => $get_id->no_doc])->row();
+			$data_detail = [];
+			if ($data) {
+				$data_detail = $this->db->select('pd.id, pd.pelaporan_id, pd.pencatatan_id, pc.no_pencatatan, pc.tanggal, pc.keterangan, pc.grand_total')
+					->from('tr_pelaporan_petty_cash_detail pd')
+					->join('tr_expense_petty_cash pc', 'pc.id = pd.pencatatan_id', 'left')
+					->where('pd.pelaporan_id', $data->id)
+					->get()
+					->result();
+			}
 		}
 
 		$get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
@@ -582,17 +624,29 @@ class Request_payment extends Admin_Controller
 
 	public function save_approval()
 	{
-		$Data		= $this->input->post();
-		$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
-		if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
-			$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
+		if (!has_permission('Approval_Request_Payment_Management.Manage') && !has_permission($this->managePermission)) {
+			$this->auth->restrict('Approval_Request_Payment_Management.Manage');
 		}
-		if (in_array($Data['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
-			$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
+		$Data		= $this->input->post();
+		$header     = null;
+		if (!empty($Data['req_payment_id'])) {
+			$header = $this->db->get_where('request_payment', ['id' => $Data['req_payment_id']])->row_array();
+		}
+		if (empty($header)) {
+			$header = $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
+		}
+		if (empty($header) && ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash' || $Data['tipe'] == 'refill_pettycash')) {
+			$header = $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
+		}
+		if (empty($header) && in_array($Data['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
+			$header = $this->db->get_where('request_payment', ['ids' => $Data['id'], 'tipe' => $Data['tipe']])->row_array();
+			if (empty($header)) {
+				$header = $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
+			}
 		}
 		// Document Import (ROS Payment) — cari by ids karena 1 no_po bisa punya beberapa baris ros_*
-		if (in_array($Data['tipe'], ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) {
-			$header 	= $this->db->get_where('request_payment', ['ids' => $Data['id'], 'tipe' => $Data['tipe']])->row_array();
+		if (empty($header) && in_array($Data['tipe'], ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) {
+			$header = $this->db->get_where('request_payment', ['ids' => $Data['id'], 'tipe' => $Data['tipe']])->row_array();
 		}
 
 		if (empty($header)) {
@@ -896,6 +950,33 @@ class Request_payment extends Admin_Controller
 				];
 				$Harga[] 		= $nilai;
 			}
+
+			// Refill Petty Cash
+			if ($Data['tipe'] == 'refill_pettycash') {
+				$dtl_rpc = $this->db->select('pd.id, pc.no_pencatatan, pc.tanggal, pc.keterangan, pc.grand_total')
+					->from('tr_pelaporan_petty_cash_detail pd')
+					->join('tr_expense_petty_cash pc', 'pc.id = pd.pencatatan_id', 'left')
+					->where('pd.id', $detail['id'])
+					->get()
+					->row();
+				$nilai_rpc = $dtl_rpc ? (float) ($dtl_rpc->grand_total ?? 0) : 0;
+				$ArrDetail[] = [
+					'id'         => $id_detail,
+					'payment_id' => $Id,
+					'no_doc'     => $Data['no_doc'],
+					'tgl_doc'    => $dtl_rpc->tanggal ?? date('Y-m-d'),
+					'deskripsi'  => $dtl_rpc ? ($dtl_rpc->no_pencatatan . ' - ' . $dtl_rpc->keterangan) : ('Refill Petty Cash ' . $Data['no_doc']),
+					'qty'        => '1',
+					'harga'      => $nilai_rpc,
+					'total'      => $nilai_rpc,
+					'keterangan' => $dtl_rpc->keterangan ?? '',
+					'doc_file'   => '',
+					'coa'        => '',
+					'created_by' => $this->auth->user_name(),
+					'created_on' => date('Y-m-d H:i:s'),
+				];
+				$Harga[] = $nilai_rpc;
+			}
 			$id_detail++;
 		}
 
@@ -912,7 +993,9 @@ class Request_payment extends Admin_Controller
 			'status' => 'approve management' // pastikan sesuai dengan list enum Anda
 		];
 
-		if (in_array($Data['tipe'], ['direct_payment', 'Cash', 'invoice_dp', 'invoice_import', 'invoice_local'])) {
+		if (!empty($Data['req_payment_id'])) {
+			$this->db->update('request_payment', $update_req, ['id' => $Data['req_payment_id']]);
+		} elseif (in_array($Data['tipe'], ['direct_payment', 'Cash', 'refill_pettycash'])) {
 			$this->db->update('request_payment', $update_req, ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']]);
 		} else {
 			$this->db->update('request_payment', $update_req, ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']]);
@@ -930,8 +1013,9 @@ class Request_payment extends Admin_Controller
 				$this->db->update_batch('tr_kasbon', $updateDetail, 'id');
 			}
 
-			if ($Data['tipe'] == 'transport') {
-				$this->db->update_batch('tr_transport_req', $updateDetail, 'id');
+			if ($Data['tipe'] == 'transportasi') {
+				$this->db->update_batch('tr_transport', $updateDetail, 'id');
+				$this->db->update('tr_transport_req', ['status' => 2], ['id' => $Data['id']]);
 			}
 
 			if ($Data['tipe'] == 'nonpo') {
@@ -965,9 +1049,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = false;
+			write_log('Request Payment', 'Edit', 'Approve management failed: ' . ($Data['no_doc'] ?? ''), ['no_doc' => $Data['no_doc'] ?? '', 'tipe' => $Data['tipe'] ?? ''], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = true;
+			write_log('Request Payment', 'Edit', 'Approve management success: ' . ($Data['no_doc'] ?? ''), ['old' => $header, 'new' => array_merge($header, $update_req)], null, 1);
 		}
 		$param = array(
 			'save' => $result
@@ -978,6 +1064,9 @@ class Request_payment extends Admin_Controller
 
 	public function save_approval_checker()
 	{
+		if (!has_permission('Approval_Request_Payment_Checker.Manage') && !has_permission($this->managePermission)) {
+			$this->auth->restrict('Approval_Request_Payment_Checker.Manage');
+		}
 		$post = $this->input->post();
 
 		$this->db->trans_begin();
@@ -1037,6 +1126,11 @@ class Request_payment extends Admin_Controller
 							'modified_on' => date('Y-m-d H:i:s'),
 						], ['id' => $item['id']]);
 					}
+					if ($post['tipe'] == 'refill_pettycash') {
+						$this->db->update('tr_pelaporan_petty_cash', [
+							'alasan_reject' => null,
+						], ['no_pelaporan' => $post['no_doc']]);
+					}
 				}
 			}
 		endforeach;
@@ -1044,9 +1138,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = false;
+			write_log('Request Payment', 'Edit', 'Approve checker failed: ' . ($post['no_doc'] ?? ''), ['no_doc' => $post['no_doc'] ?? '', 'tipe' => $post['tipe'] ?? ''], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = true;
+			write_log('Request Payment', 'Edit', 'Approve checker success: ' . ($post['no_doc'] ?? ''), ['req_payment_id' => $post['req_payment_id'] ?? null, 'no_doc' => $post['no_doc'] ?? '', 'tipe' => $post['tipe'] ?? ''], null, 1);
 		}
 		$param = array(
 			'save' => $result
@@ -1082,7 +1178,11 @@ class Request_payment extends Admin_Controller
 		$payment_date = date("Y-m-d");
 		$det_Jurnaltes1 = array();
 		$ix = 0;
-		$config['upload_path'] = './assets/expense/';
+		$upload_path_exp = './assets/expense/';
+		if (!is_dir($upload_path_exp)) {
+			mkdir($upload_path_exp, 0755, true);
+		}
+		$config['upload_path'] = $upload_path_exp;
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = TRUE;
 		$config['encrypt_name'] = TRUE;
@@ -1539,65 +1639,95 @@ class Request_payment extends Admin_Controller
 	public function reject_approval()
 	{
 		$post = $this->input->post();
+		$perm_rej = (($post['tingkat_approval'] ?? '') == '1') ? 'Approval_Request_Payment_Checker.Manage' : 'Approval_Request_Payment_Management.Manage';
+		if (!has_permission($perm_rej) && !has_permission($this->managePermission)) {
+			$this->auth->restrict($perm_rej);
+		}
 
 		$this->db->trans_begin();
 
-		$get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $post['no_doc']])->row_array();
-		if ($post['tingkat_approval'] == '1') {
-			if ($get_req_payment['tipe'] == 'transportasi') {
-				$this->db->update('tr_transport_req', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
+		$get_req_payment = !empty($post['req_payment_id'])
+			? $this->db->get_where('request_payment', ['id' => $post['req_payment_id']])->row_array()
+			: $this->db->get_where('request_payment', ['no_doc' => $post['no_doc'], 'tipe' => ($post['tipe'] ?? '')])->row_array();
+		if (empty($get_req_payment)) {
+			$get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $post['no_doc']])->row_array();
+		}
 
+		$tipe_rej = $post['tipe'] ?? ($get_req_payment['tipe'] ?? '');
+		$reason   = $post['reject_reason'] ?? '';
+
+		if ($post['tingkat_approval'] == '1') {
+			if ($tipe_rej == 'transportasi') {
+				$this->db->update('tr_transport_req', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 				$this->db->update('tr_transport', ['req_payment' => 0], ['no_req' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'kasbon') {
-				$this->db->update('tr_kasbon', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
+			if ($tipe_rej == 'kasbon') {
+				$this->db->update('tr_kasbon', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'expense') {
-				$this->db->update('tr_expense', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
-
+			if ($tipe_rej == 'expense') {
+				$this->db->update('tr_expense', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 				$this->db->update('tr_expense_detail', ['req_payment' => 0], ['no_doc' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'periodik') {
+			if ($tipe_rej == 'periodik') {
 				foreach ($post['item'] as $item) {
-					$this->db->update('tr_pengajuan_rutin_detail', ['id_payment' => null, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
+					$this->db->update('tr_pengajuan_rutin_detail', ['id_payment' => null, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $reason], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
 				}
 			}
 		} else {
-			if ($get_req_payment['tipe'] == 'transportasi') {
-				$this->db->update('tr_transport_req', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
-
+			if ($tipe_rej == 'transportasi') {
+				$this->db->update('tr_transport_req', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 				$this->db->update('tr_transport', ['req_payment' => 0], ['no_req' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'kasbon') {
-				$this->db->update('tr_kasbon', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
+			if ($tipe_rej == 'kasbon') {
+				$this->db->update('tr_kasbon', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'expense') {
-				$this->db->update('tr_expense', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
-
+			if ($tipe_rej == 'expense') {
+				$this->db->update('tr_expense', ['status' => 1, 'sts_reject_manage' => 1, 'reject_reason' => $reason], ['no_doc' => $post['no_doc']]);
 				$this->db->update('tr_expense_detail', ['req_payment' => 0], ['no_doc' => $post['no_doc']]);
 			}
-			if ($get_req_payment['tipe'] == 'periodik') {
+			if ($tipe_rej == 'periodik') {
 				foreach ($post['item'] as $item) {
-					$this->db->update('tr_pengajuan_rutin_detail', ['id_payment' => null, 'sts_reject' => 1, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
+					$this->db->update('tr_pengajuan_rutin_detail', ['id_payment' => null, 'sts_reject' => 1, 'reject_reason' => $reason], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
 				}
 			}
 		}
 
-		// $this->db->update('request_payment', ['status' => '9'], ['no_doc' => $post['no_doc']]);
-		if ($post['tipe'] == "periodik") {
+		if ($tipe_rej == 'Cash' || $tipe_rej == 'direct_payment') {
+			$this->db->update('tr_pr_non_po', ['sts' => '0', 'reject_reason' => $reason, 'rejected_by' => $this->auth->user_name(), 'rejected_date' => date('Y-m-d H:i:s')], ['no_non_po' => $post['no_doc']]);
+		}
+		if (in_array($tipe_rej, ['invoice_dp', 'invoice_import', 'invoice_local']) && !empty($post['id'])) {
+			$this->db->update('tr_receive_invoice', ['status' => 'reject'], ['id' => $post['id']]);
+		}
+		if (in_array($tipe_rej, ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost']) && !empty($post['id'])) {
+			$this->db->update('tr_ros_payment', ['status' => 'reject', 'modified_by' => $this->auth->user_id(), 'modified_on' => date('Y-m-d H:i:s')], ['id' => $post['id']]);
+		}
+		if ($tipe_rej == 'refill_pettycash') {
+			$this->db->update('tr_pelaporan_petty_cash', ['status' => 'reject', 'alasan_reject' => $reason], ['no_pelaporan' => $post['no_doc']]);
+		}
+
+		$reject_req = [
+			'status'     => 'reject',
+			'keterangan' => substr((string) $reason, 0, 150),
+		];
+		if (!empty($post['req_payment_id'])) {
+			$this->db->update('request_payment', $reject_req, ['id' => $post['req_payment_id']]);
+		} elseif ($tipe_rej == 'periodik' && !empty($post['item'])) {
 			foreach ($post['item'] as $item) {
-				$this->db->delete('request_payment', ['no_doc' => $post['no_doc'], 'ids' => $item['id']]);
+				$this->db->update('request_payment', $reject_req, ['no_doc' => $post['no_doc'], 'ids' => $item['id']]);
 			}
 		} else {
-			$this->db->delete('request_payment', ['no_doc' => $post['no_doc']]);
+			$this->db->update('request_payment', $reject_req, ['no_doc' => $post['no_doc'], 'tipe' => $tipe_rej]);
 		}
 
 		if ($this->db->trans_status() == FALSE) {
 			$this->db->trans_rollback();
 			$valid = 0;
+			write_log('Request Payment', 'Edit', 'Reject request payment failed: ' . ($post['no_doc'] ?? ''), ['no_doc' => $post['no_doc'] ?? '', 'reason' => $reason], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$valid = 1;
+			$log_payload = !empty($get_req_payment) ? ['old' => $get_req_payment, 'new' => array_merge($get_req_payment, $reject_req)] : $reject_req;
+			write_log('Request Payment', 'Edit', 'Reject request payment success: ' . ($post['no_doc'] ?? ''), $log_payload, null, 1);
 		}
 
 		echo json_encode([
@@ -2324,9 +2454,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = false;
+			write_log('Request Payment', 'Edit', 'Approve checker consultant failed: ' . ($post['id_kasbon'] ?? ''), ['id_kasbon' => $post['id_kasbon'] ?? ''], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = true;
+			write_log('Request Payment', 'Edit', 'Approve checker consultant success: ' . ($post['id_kasbon'] ?? ''), ['id_kasbon' => $post['id_kasbon'] ?? ''], null, 1);
 		}
 		$param = array(
 			'save' => $result
@@ -2490,9 +2622,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = false;
+			write_log('Request Payment', 'Edit', 'Approve management consultant failed: ' . ($post['id_kasbon'] ?? ''), ['id_kasbon' => $post['id_kasbon'] ?? ''], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = true;
+			write_log('Request Payment', 'Edit', 'Approve management consultant success: ' . ($post['id_kasbon'] ?? ''), ['id_kasbon' => $post['id_kasbon'] ?? ''], null, 1);
 		}
 		$param = array(
 			'save' => $result
@@ -2733,6 +2867,7 @@ class Request_payment extends Admin_Controller
 
 	public function save_request_payment()
 	{
+		$this->auth->restrict($this->managePermission);
 		$post = $this->input->post();
 
 		$this->db->trans_begin();
@@ -2743,41 +2878,43 @@ class Request_payment extends Admin_Controller
 			foreach ($pilih as $key) {
 				$tanggal_pembayaran = $post['tanggal_pembayaran_' . $key] ?? null;
 
-				// Untuk tipe Document Import (ros_*), key = id (PK request_payment) — unik
-				// per komponen. Cek dulu apakah $key merujuk ke satu baris ros_*.
-				$ros_row = null;
+				// Untuk tipe ros_* dan invoice_*, key = id (PK request_payment) — unik per baris invoice/komponen.
+				$pk_row = null;
 				if (is_numeric($key)) {
-					$ros_row = $this->db
-						->select('id')
+					$pk_row = $this->db
+						->select('id, tipe, ids')
 						->from('request_payment')
 						->where('id', $key)
+						->group_start()
 						->like('tipe', 'ros_', 'after')
+						->or_like('tipe', 'invoice_', 'after')
+						->group_end()
 						->get()
 						->row();
 				}
 
-				if ($ros_row) {
-					// ── Jalur ROS: proses HANYA komponen ini (per id) ──
+				if ($pk_row) {
+					// ── Jalur PK (ROS atau Multi-Invoice PO): proses HANYA baris id ini ──
 					$this->db->update('request_payment', [
 						'tanggal' => $tanggal_pembayaran,
 						'status'  => 'approve checker'
 					], [
-						'id' => $ros_row->id
+						'id' => $pk_row->id
 					]);
 
-					// Sinkronkan tr_ros_payment ke 'approve checker' hanya untuk komponen ini,
-					// dan hanya jika masih 'diajukan' (tidak menurunkan yang sudah lebih maju).
-					$this->db->update('tr_ros_payment', [
-						'status'      => 'approve checker',
-						'modified_by' => $this->auth->user_id(),
-						'modified_on' => date('Y-m-d H:i:s'),
-					], [
-						'id_request_payment' => $ros_row->id,
-						'status'             => 'diajukan',
-					]);
+					if (strpos((string) $pk_row->tipe, 'ros_') === 0) {
+						$this->db->update('tr_ros_payment', [
+							'status'      => 'approve checker',
+							'modified_by' => $this->auth->user_id(),
+							'modified_on' => date('Y-m-d H:i:s'),
+						], [
+							'id_request_payment' => $pk_row->id,
+							'status'             => 'diajukan',
+						]);
+					}
 
 					// Update status_bayar TOP terkait menjadi 'request_payment'
-					$this->_update_status_bayar_top_by_request_payment('id', $ros_row->id);
+					$this->_update_status_bayar_top_by_request_payment('id', $pk_row->id);
 				} else {
 					// ── Jalur lama (tipe lain): per no_doc, TIDAK diubah ──
 					$this->db->update('request_payment', [
@@ -2798,11 +2935,13 @@ class Request_payment extends Admin_Controller
 
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
+			write_log('Request Payment', 'Edit', 'Process request payment failed', ['pilih' => $pilih], null, 0);
 
 			$valid = 0;
 			$msg = 'Please try again later !';
 		} else {
 			$this->db->trans_commit();
+			write_log('Request Payment', 'Edit', 'Process request payment success', ['pilih' => $pilih], null, 1);
 
 			$valid = 1;
 			$msg = 'Data has been processed !';
@@ -2827,7 +2966,7 @@ class Request_payment extends Admin_Controller
 	{
 		// Ambil baris request_payment yang diproses
 		$rp_rows = $this->db
-			->select('no_doc, tipe')
+			->select('no_doc, ids, tipe')
 			->from('request_payment')
 			->where($by, $value)
 			->get()
@@ -2843,11 +2982,11 @@ class Request_payment extends Admin_Controller
 				continue;
 			}
 
-			// no_doc menyimpan id tr_receive_invoice
+			$id_ri = !empty($rp->ids) ? $rp->ids : $rp->no_doc;
 			$ri = $this->db
 				->select('id_top')
 				->from('tr_receive_invoice')
-				->where('id', $rp->no_doc)
+				->where('id', $id_ri)
 				->get()
 				->row();
 
@@ -3071,20 +3210,33 @@ class Request_payment extends Admin_Controller
 
 		if (!empty($get_data_cash)) {
 			if ($get_data_cash->jenis_pr == 'pr departemen') {
-				$this->db->select('CONCAT("assets/pr/", a.document) as doc_file, a.no_pr as no_doc');
+				$this->db->select('a.document as raw_file, a.no_pr as no_doc');
 				$this->db->from('rutin_non_planning_header a');
 				$this->db->where('a.no_pr', $get_data_cash->no_pr);
 				$get_doc_pr = $this->db->get()->row();
 			} elseif ($get_data_cash->jenis_pr == 'pr asset') {
-				$this->db->select('CONCAT("assets/pr/", a.dokument_pendukung) as doc_file, a.no_pr as no_doc');
+				$this->db->select('a.dokument_pendukung as raw_file, a.no_pr as no_doc');
 				$this->db->from('tran_pr_header a');
 				$this->db->where('a.no_pr', $get_data_cash->no_pr);
 				$get_doc_pr = $this->db->get()->row();
 			} else {
-				$this->db->select('CONCAT("assets/pr/", a.upload_file) as doc_file, a.no_pr as no_doc');
+				$this->db->select('a.upload_file as raw_file, a.no_pr as no_doc');
 				$this->db->from('material_planning_base_on_produksi a');
 				$this->db->where('a.no_pr', $get_data_cash->no_pr);
 				$get_doc_pr = $this->db->get()->row();
+			}
+
+			if ($get_doc_pr) {
+				$raw_file = trim((string) ($get_doc_pr->raw_file ?? ''));
+				if ($raw_file === '') {
+					$get_doc_pr->doc_file = '';
+				} elseif (file_exists(FCPATH . $raw_file)) {
+					$get_doc_pr->doc_file = $raw_file;
+				} elseif (file_exists(FCPATH . 'uploads/pr/' . $raw_file)) {
+					$get_doc_pr->doc_file = 'uploads/pr/' . $raw_file;
+				} else {
+					$get_doc_pr->doc_file = 'assets/pr/' . $raw_file;
+				}
 			}
 		} else {
 			$get_doc_pr = null;
@@ -3210,6 +3362,9 @@ class Request_payment extends Admin_Controller
 		$link_doc = null;
 		if (!empty($_FILES['link_doc']['name'])) {
 			$upload_path = FCPATH . 'assets/expense/';
+			if (!is_dir($upload_path)) {
+				mkdir($upload_path, 0755, true);
+			}
 			$this->load->library('upload', [
 				'upload_path'   => $upload_path,
 				'allowed_types' => 'pdf|jpg|jpeg|png',

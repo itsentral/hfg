@@ -10,10 +10,14 @@
 class Request_mutasi extends Admin_Controller
 {
     // Permission
-    protected $viewPermission   = "Request_mutasi.View";
-    protected $addPermission    = "Request_mutasi.Add";
-    protected $managePermission = "Request_mutasi.Manage";
-    protected $deletePermission = "Request_mutasi.Delete";
+    protected $viewPermission   = "Request_Mutasi.View";
+    protected $addPermission    = "Request_Mutasi.Add";
+    protected $managePermission = "Request_Mutasi.Manage";
+    protected $deletePermission = "Request_Mutasi.Delete";
+    protected $approvalViewPermission   = "Approval_Mutasi.View";
+    protected $approvalManagePermission = "Approval_Mutasi.Manage";
+    protected $transaksiViewPermission  = "Transaksi_Bank.View";
+    protected $transaksiAddPermission   = "Transaksi_Bank.Add";
 
     public function __construct()
     {
@@ -27,6 +31,7 @@ class Request_mutasi extends Admin_Controller
 
     public function index()
     {
+        $this->auth->restrict($this->viewPermission);
         $data = $this->Request_mutasi_model->GetListDataRequest();
         $this->template->set('data', $data);
         $this->template->title('Mutation Request');
@@ -35,6 +40,7 @@ class Request_mutasi extends Admin_Controller
 
     public function create()
     {
+        $this->auth->restrict($this->addPermission);
         $getInv             = $this->db->query("SELECT * FROM tr_invoice_header")->row();
         $Cust               = $this->db->query("SELECT a.id_customer,b.nm_customer FROM tr_invoice_header a
 											INNER JOIN customer b on a.id_customer=b.id_customer GROUP BY a.id_customer")->result();
@@ -61,6 +67,7 @@ class Request_mutasi extends Admin_Controller
 
     public function save()
     {
+        $this->auth->restrict($this->addPermission);
         $post   = $this->input->post();
 
         $tgl    = $post['tgl_request'];
@@ -113,12 +120,14 @@ class Request_mutasi extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Request Mutasi', 'Create', 'Create request mutasi failed: ' . $kode_mutasi, $data, null, 0);
             $return = array(
                 'status' => 2,
                 'pesan'  => 'Save Process Failed. Please Try Again...'
             );
         } else {
             $this->db->trans_commit();
+            write_log('Request Mutasi', 'Create', 'Create request mutasi success: ' . $kode_mutasi, $data, null, 1);
             $return = array(
                 'status' => 1,
                 'nomor'  => $kode_mutasi,
@@ -130,6 +139,7 @@ class Request_mutasi extends Admin_Controller
 
     public function mutasi()
     {
+        $this->auth->restrict($this->managePermission);
         $data = $this->Request_mutasi_model->GetListDataMutasi();
         $this->template->title('Mutation List');
         $this->template->set('data', $data);
@@ -138,6 +148,7 @@ class Request_mutasi extends Admin_Controller
 
     public function approval_mutasi()
     {
+        $this->auth->restrict($this->approvalViewPermission);
         $data = $this->Request_mutasi_model->GetListApproval();
         $this->template->set('data', $data);
         $this->template->title('Mutation Approval');
@@ -146,6 +157,7 @@ class Request_mutasi extends Admin_Controller
 
     public function add_mutasi($id)
     {
+        $this->auth->restrict($this->managePermission);
         $result             = $this->Request_mutasi_model->GetDataApprove($id);
         $bank1              = $this->Jurnal_model->get_Coa_Bank_Aja('101');
         $pphpenjualan       = $this->Acc_model->combo_pph_penjualan();
@@ -169,6 +181,7 @@ class Request_mutasi extends Admin_Controller
 
     public function save_mutasi()
     {
+        $this->auth->restrict($this->managePermission);
         $post = $this->input->post();
 
         $no_request  = $post['no_request'];
@@ -183,6 +196,14 @@ class Request_mutasi extends Admin_Controller
         $request = $this->db->get_where('tr_request_mutasi', ['kd_mutasi' => $no_request])->row();
         if (!$request) {
             echo json_encode(['status' => 2, 'pesan' => 'Mutation request data not found.']);
+            return;
+        }
+        if ((string) $request->status_approve !== '1') {
+            echo json_encode(['status' => 2, 'pesan' => 'Mutation request has not been approved yet.']);
+            return;
+        }
+        if ((string) $request->status === '1') {
+            echo json_encode(['status' => 2, 'pesan' => 'Mutation request has already been realized.']);
             return;
         }
 
@@ -228,6 +249,12 @@ class Request_mutasi extends Admin_Controller
         }
 
         $this->db->trans_commit();
+        $old_req = (array) $request;
+        write_log('Request Mutasi', 'Create', 'Realize mutasi success: ' . $kode_aktual . ' (Req: ' . $no_request . ')', [
+            'old'    => $old_req,
+            'new'    => array_merge($old_req, ['status' => '1']),
+            'aktual' => $data_aktual,
+        ], null, 1);
         echo json_encode([
             'status' => 1,
             'nomor'  => $kode_aktual,
@@ -332,6 +359,7 @@ class Request_mutasi extends Admin_Controller
 
     public function approval($id)
     {
+        $this->auth->restrict($this->approvalViewPermission);
         $data = $this->Request_mutasi_model->GetDataApprove($id);
         $this->template->set('data', $data);
         $this->template->page_icon('fa fa-check');
@@ -341,7 +369,9 @@ class Request_mutasi extends Admin_Controller
 
     public function save_approval()
     {
+        $this->auth->restrict($this->approvalManagePermission);
         $kd_mutasi = $this->input->post('no_request');
+        $old_row   = $this->db->get_where('tr_request_mutasi', ['kd_mutasi' => $kd_mutasi])->row_array();
 
         $data = array(
             'status_approve'    => '1',
@@ -354,12 +384,15 @@ class Request_mutasi extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Request Mutasi', 'Edit', 'Approve mutasi failed: ' . $kd_mutasi, $data, null, 0);
             $Arr_Return = array(
                 'status'    => 2,
                 'pesan'     => 'Approve Process Failed. Please Try Again...'
             );
         } else {
             $this->db->trans_commit();
+            $log_payload = $old_row ? ['old' => $old_row, 'new' => array_merge($old_row, $data)] : $data;
+            write_log('Request Mutasi', 'Edit', 'Approve mutasi success: ' . $kd_mutasi, $log_payload, null, 1);
             $Arr_Return = array(
                 'status'    => 1,
                 'nomor'     => $kd_mutasi,
@@ -371,7 +404,9 @@ class Request_mutasi extends Admin_Controller
 
     public function reject_mutasi()
     {
+        $this->auth->restrict($this->approvalManagePermission);
         $kd_mutasi = $this->input->post('no_request');
+        $old_row   = $this->db->get_where('tr_request_mutasi', ['kd_mutasi' => $kd_mutasi])->row_array();
 
         $data = array(
             'alasan'            => $this->input->post('alasan'),
@@ -383,12 +418,15 @@ class Request_mutasi extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Request Mutasi', 'Edit', 'Reject mutasi failed: ' . $kd_mutasi, $data, null, 0);
             $Arr_Return = array(
                 'status'    => 2,
                 'pesan'     => 'Reject Process Failed. Please Try Again...'
             );
         } else {
             $this->db->trans_commit();
+            $log_payload = $old_row ? ['old' => $old_row, 'new' => array_merge($old_row, $data)] : $data;
+            write_log('Request Mutasi', 'Edit', 'Reject mutasi success: ' . $kd_mutasi, $log_payload, null, 1);
             $Arr_Return = array(
                 'status'    => 1,
                 'nomor'     => $kd_mutasi,
@@ -400,6 +438,7 @@ class Request_mutasi extends Admin_Controller
 
     public function index_transaksi()
     {
+        $this->auth->restrict($this->transaksiViewPermission);
         $data = $this->Request_mutasi_model->GetListDataTransaksi();
         $this->template->set('data', $data);
         $this->template->title('Bank Transaction Data');
@@ -408,6 +447,7 @@ class Request_mutasi extends Admin_Controller
 
     public function create_transaksi()
     {
+        $this->auth->restrict($this->transaksiAddPermission);
         $getInv             = $this->db->query("SELECT * FROM tr_invoice_header")->row();
         $Cust               = $this->db->query("SELECT a.id_customer,b.nm_customer FROM tr_invoice_header a
 											INNER JOIN customer b on a.id_customer=b.id_customer GROUP BY a.id_customer")->result();
@@ -434,6 +474,7 @@ class Request_mutasi extends Admin_Controller
 
     public function save_transaksi()
     {
+        $this->auth->restrict($this->transaksiAddPermission);
         $post   = $this->input->post();
 
         $tgl    = $post['tgl_request'];
@@ -513,12 +554,14 @@ class Request_mutasi extends Admin_Controller
 
             if (!$jurnal_status) {
                 $this->db->trans_rollback();
+                write_log('Request Mutasi', 'Create', 'Create transaksi bank failed (jurnal): ' . $kode_mutasi, $data, null, 0);
                 $Arr_Return = array(
                     'status'    => 2,
                     'pesan'     => 'Jurnal Save Failed. Transaction has been rolled back.'
                 );
             } else {
                 $this->db->trans_commit();
+                write_log('Request Mutasi', 'Create', 'Create transaksi bank success: ' . $kode_mutasi, $data, null, 1);
                 $Arr_Return = array(
                     'status'    => 1,
                     'nomor'     => $kode_mutasi,
