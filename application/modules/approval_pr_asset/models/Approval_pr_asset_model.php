@@ -88,6 +88,7 @@ class Approval_pr_asset_model extends BF_Model
 
     public function query_data_json_approval($like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
     {
+        $status_expr = "COALESCE(NULLIF(b.app_status_3, ''), NULLIF(a.app_status_3, ''), a.app_status, 'N')";
         $sql = "
             SELECT
                 a.*,
@@ -95,7 +96,7 @@ class Approval_pr_asset_model extends BF_Model
             FROM
                 tran_pr_detail a
                 LEFT JOIN tran_pr_header b ON a.no_pr = b.no_pr
-            WHERE a.category='asset' AND (a.app_status = 'N' OR a.app_status IS NULL OR a.app_status = '') AND (
+            WHERE a.category='asset' AND b.close_pr IS NULL AND " . $status_expr . " = 'N' AND (
                 a.id LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 OR a.nm_barang LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
@@ -130,21 +131,32 @@ class Approval_pr_asset_model extends BF_Model
         $action = $data['action'];
         $reason = strtolower((string) $data['reason']);
 
-        $ArrUpdate = array(
-            'app_status' => $action,
-            'app_reason' => $reason,
-            'app_by'     => (isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin'))),
-            'app_date'   => date('Y-m-d H:i:s')
+        $username = (isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin')));
+        $dateTime = date('Y-m-d H:i:s');
+
+        $ArrUpdateHeader = array(
+            'app_status_3' => $action,
+            'app_reason_3' => $reason,
+            'app_by_3'     => $username,
+            'app_date_3'   => $dateTime
+        );
+
+        $ArrUpdateDetail = array(
+            'app_status'   => ($action === 'Y') ? 'Y' : 'N',
+            'app_status_3' => $action,
+            'app_reason_3' => $reason,
+            'app_by_3'     => $username,
+            'app_date_3'   => $dateTime
         );
 
         $old_pr_header = $this->db->get_where('tran_pr_header', array('no_pr' => $no_pr))->row_array();
 
         $this->db->trans_start();
         $this->db->where('no_pr', $no_pr);
-        $this->db->update('tran_pr_header', $ArrUpdate);
+        $this->db->update('tran_pr_header', $ArrUpdateHeader);
 
         $this->db->where('no_pr', $no_pr);
-        $this->db->update('tran_pr_detail', $ArrUpdate);
+        $this->db->update('tran_pr_detail', $ArrUpdateDetail);
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === FALSE) {
@@ -156,7 +168,7 @@ class Approval_pr_asset_model extends BF_Model
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
             $Arr_Data   = array('pesan' => 'Success ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
-            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdate ?? [])) : $data;
+            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdateHeader ?? [])) : $data;
             write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }
 

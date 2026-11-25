@@ -358,11 +358,12 @@
         });
     });
 
-    function check_inputed_qty_stock() {
+    function check_inputed_qty_stock(category) {
         var deferred = $.Deferred();
         $.ajax({
             url: siteurl + active_controller + '/check_inputed_qty_stock',
             method: 'POST',
+            data: { 'category': category },
             dataType: 'json',
             success: function(response) {
                 deferred.resolve(response.jumlah_data);
@@ -393,7 +394,7 @@
             return false;
         }
 
-        check_inputed_qty_stock().then(function(data) {
+        check_inputed_qty_stock(category).then(function(data) {
             if (data > 0) {
                 swal({
                     title: "Confirm Request",

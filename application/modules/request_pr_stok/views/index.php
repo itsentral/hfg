@@ -8,6 +8,9 @@ $ENABLE_VIEW    = has_permission('PR_Stok.View');
 $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 ?>
 
+<!-- Driver.js (Interactive Feature Tour) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" />
+
 <style type="text/css">
     .no-pr {
         color: #b3261e;
@@ -206,66 +209,55 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
         background: #ef4444;
     }
 
-    .flowmap-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-left: 4px solid #3b82f6;
-        border-radius: 8px;
-        padding: 14px 18px;
-        margin-bottom: 16px;
-        font-size: 12.5px;
-        color: #475569;
-    }
-
-    .flow-trunk {
-        font-size: 13px;
-        color: #1e293b;
-        margin-top: 4px;
-        padding-bottom: 2px;
-        font-weight: 500;
-    }
-
-    .flow-branches {
-        margin-top: 8px;
-        padding-left: 14px;
-        border-left: 2px dashed #cbd5e1;
-    }
-
-    .branch-row {
-        margin: 5px 0;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .branch-tag {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 700;
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .branch-note {
-        color: #64748b;
-        font-size: 11.5px;
-        margin-left: 4px;
-    }
-
     .legend-box {
         display: flex;
         gap: 16px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         font-size: 12px;
         color: #64748b;
-        background: #fff;
-        padding: 8px 14px;
+        background: #f8fafc;
+        padding: 7px 14px;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
+    }
+
+    /* Driver.js Custom Popover Styling */
+    .driver-popover.pr-tour-popover {
+        max-width: 390px;
+        border-radius: 10px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+        border: 1px solid #e2e8f0;
+    }
+
+    .driver-popover.pr-tour-popover .driver-popover-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .driver-popover.pr-tour-popover .driver-popover-description {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #475569;
+    }
+
+    .pr-tour-flow {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-left: 3px solid #3b82f6;
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin-top: 8px;
+        font-size: 12px;
+    }
+
+    .pr-tour-flow-item {
+        margin-bottom: 6px;
+    }
+
+    .pr-tour-flow-item:last-child {
+        margin-bottom: 0;
     }
 
     .legend-box span {
@@ -304,36 +296,23 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                         </div>
                     </div>
                     <div class="col-md-5 col-12 text-md-end">
-                        <?php if ($ENABLE_ADD) : ?>
-                            <a class="btn btn-primary shadow-sm" href="<?= base_url('request_pr_stok/add_new') ?>" title="Create PR Stock">
-                                <i class="fa fa-plus me-1"></i> Tambah PR Stok
-                            </a>
-                        <?php endif; ?>
+                        <div class="d-inline-flex flex-wrap gap-2 justify-content-md-end">
+                            <button type="button" id="btn-pr-tour" class="btn btn-outline-primary shadow-sm" title="Panduan Alur PR Stock">
+                                <i class="fa fa-question-circle me-1"></i> Panduan Alur PR
+                            </button>
+                            <?php if ($ENABLE_ADD) : ?>
+                                <a id="btn-add-pr" class="btn btn-primary shadow-sm" href="<?= base_url('request_pr_stok/add_new') ?>" title="Create PR Stock">
+                                    <i class="fa fa-plus me-1"></i> Tambah PR Stok
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="card-body">
-                <!-- FLOWMAP CARD -->
-                <div class="flowmap-box shadow-none">
-                    <div class="fw-bold text-dark mb-1"><i class="fa fa-sitemap text-primary me-1"></i> Alur PR Stock:</div>
-                    <div class="flow-trunk">
-                        <span class="badge bg-secondary">PR — Direktur</span> <span class="branch-note">(1 approval level, without finance)</span> &rarr; <span class="badge bg-info text-dark">Metode Pembelian</span>
-                    </div>
-                    <div class="flow-branches">
-                        <div class="branch-row">
-                            <span class="branch-tag">Direct Payment</span> &rarr; <span class="badge bg-success">Request Payment</span>
-                            <span class="branch-note">(payment processed directly — final stage)</span>
-                        </div>
-                        <div class="branch-row">
-                            <span class="branch-tag">Cash Advance</span> &rarr; <span class="badge bg-primary">Cash Advance Finance</span> &rarr; <span class="badge bg-primary">Cash Advance Director</span> &rarr; <span class="badge bg-success">Request Payment</span>
-                            <span class="branch-note">(after 2-level cash advance approval — final stage)</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- LEGEND -->
-                <div class="legend-box">
+                <div class="legend-box" id="pr-legend-box">
                     <span><span class="dot dot-pending"></span> Not at this stage yet</span>
                     <span><span class="dot dot-active"></span> In progress / waiting</span>
                     <span><span class="dot dot-done"></span> This stage is complete</span>
@@ -353,8 +332,8 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                 <th class="text-center" style="width: 110px;">Dibutuhkan</th>
                                 <th class="text-center" style="width: 110px;">Request By</th>
                                 <th class="text-center" style="width: 110px;">Request Date</th>
-                                <th class="text-center no-sort" style="min-width: 290px;">Progress PR</th>
-                                <th class="text-center no-sort" style="width: 110px;">Aksi</th>
+                                <th class="text-center no-sort" id="th-progress-pr" style="min-width: 290px;">Progress PR</th>
+                                <th class="text-center no-sort" id="th-aksi-pr" style="width: 110px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -448,6 +427,9 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
     </div>
 </div>
 
+<!-- Driver.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('#example1').DataTable({
@@ -473,6 +455,116 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                 }
             }
         });
+    });
+
+    function startPrStockTour() {
+        if (!window.driver || !window.driver.js || typeof window.driver.js.driver !== 'function') {
+            if (typeof swal === 'function') {
+                swal('Info', 'Library panduan (Driver.js) gagal dimuat. Pastikan koneksi internet tersedia.', 'info');
+            } else {
+                alert('Library panduan (Driver.js) gagal dimuat.');
+            }
+            return;
+        }
+
+        var driverFactory = window.driver.js.driver;
+        var steps = [{
+            popover: {
+                title: 'Alur PR Stock',
+                description:
+                    'Berikut skema proses persetujuan hingga pembayaran untuk <strong>PR Stock</strong>:' +
+                    '<div class="pr-tour-flow">' +
+                        '<div class="pr-tour-flow-item"><strong>1. Approval Awal:</strong><br>' +
+                        '<span class="badge bg-secondary">PR — Direktur</span> <small class="text-muted">(1 level approval tanpa finance)</small> &rarr; <span class="badge bg-info text-dark">Metode Pembelian</span></div>' +
+                        '<div class="pr-tour-flow-item"><strong>2a. Jalur Direct Payment:</strong><br>' +
+                        '<span class="badge bg-warning text-dark">Direct Payment</span> &rarr; <span class="badge bg-success">Request Payment</span> <small class="text-muted">(final)</small></div>' +
+                        '<div class="pr-tour-flow-item"><strong>2b. Jalur Cash Advance:</strong><br>' +
+                        '<span class="badge bg-warning text-dark">Cash Advance</span> &rarr; <span class="badge bg-primary">CA Finance</span> &rarr; <span class="badge bg-primary">CA Director</span> &rarr; <span class="badge bg-success">Request Payment</span></div>' +
+                    '</div>',
+                side: 'bottom',
+                align: 'center'
+            }
+        }];
+
+        if ($('#btn-add-pr').length) {
+            steps.push({
+                element: '#btn-add-pr',
+                popover: {
+                    title: 'Buat Pengajuan PR Stok',
+                    description: 'Klik tombol ini untuk membuat pengajuan <strong>PR Stock</strong> baru (non-material / perlengkapan) beserta item dan jumlah yang dibutuhkan.',
+                    side: 'bottom',
+                    align: 'end'
+                }
+            });
+        }
+
+        steps.push({
+            element: '#pr-legend-box',
+            popover: {
+                title: 'Arti Kode Warna Status',
+                description:
+                    'Setiap titik (dot) pada pipeline memiliki arti status:<br>' +
+                    '<ul class="mb-0 ps-3 mt-1">' +
+                        '<li><strong>Abu-abu:</strong> Belum mencapai tahap ini.</li>' +
+                        '<li><strong>Kuning/Amber:</strong> Sedang menunggu / dalam proses.</li>' +
+                        '<li><strong>Hijau:</strong> Tahap telah disetujui / selesai.</li>' +
+                        '<li><strong>Merah:</strong> Dokumen ditolak (<em>Rejected</em>).</li>' +
+                    '</ul>',
+                side: 'bottom',
+                align: 'start'
+            }
+        });
+
+        var progressTarget = $('#example1 tbody tr:first .progress-cell').length
+            ? '#example1 tbody tr:first .progress-cell'
+            : '#th-progress-pr';
+
+        steps.push({
+            element: progressTarget,
+            popover: {
+                title: 'Monitoring Progress PR',
+                description: 'Kolom ini menampilkan posisi dokumen PR secara real-time, mulai dari approval Direktur, pemilihan metode pembelian, hingga Request Payment. Jika ditolak, alasan penolakan juga muncul di sini.',
+                side: 'left',
+                align: 'center'
+            }
+        });
+
+        var aksiTarget = $('#example1 tbody tr:first .opts').length
+            ? '#example1 tbody tr:first .opts'
+            : '#th-aksi-pr';
+
+        steps.push({
+            element: aksiTarget,
+            popover: {
+                title: 'Aksi Dokumen PR',
+                description:
+                    'Gunakan tombol aksi di kolom ini:<br>' +
+                    '<ul class="mb-0 ps-3 mt-1">' +
+                        '<li><strong>Biru (Mata):</strong> Lihat detail PR.</li>' +
+                        '<li><strong>Hijau (Print):</strong> Cetak dokumen PR.</li>' +
+                        '<li><strong>Merah (Silang):</strong> Close PR jika sudah selesai atau dibatalkan.</li>' +
+                    '</ul>',
+                side: 'left',
+                align: 'center'
+            }
+        });
+
+        var driverObj = driverFactory({
+            showProgress: true,
+            animate: true,
+            allowClose: true,
+            popoverClass: 'pr-tour-popover',
+            nextBtnText: 'Lanjut &rarr;',
+            prevBtnText: '&larr; Kembali',
+            doneBtnText: 'Selesai',
+            steps: steps
+        });
+
+        driverObj.drive();
+    }
+
+    $(document).on('click', '#btn-pr-tour', function() {
+        startPrStockTour();
     });
 
     $(document).on('click', '.close_pr_modal', function() {

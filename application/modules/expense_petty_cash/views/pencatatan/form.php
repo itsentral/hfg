@@ -3,7 +3,8 @@ $edit_mode = (isset($mode) && $mode === 'edit');
 $header_id = ($edit_mode && isset($pencatatan->header->id)) ? $pencatatan->header->id : '';
 $no_pencatatan = ($edit_mode && isset($pencatatan->header->no_pencatatan)) ? $pencatatan->header->no_pencatatan : 'Auto-generated';
 $tanggal = ($edit_mode && isset($pencatatan->header->tanggal)) ? $pencatatan->header->tanggal : date('Y-m-d');
-$company = ($edit_mode && isset($pencatatan->header->company)) ? $pencatatan->header->company : '';
+$active_company = function_exists('get_identitas') ? strtoupper((string) (get_identitas()->kode ?? 'HFG')) : 'HFG';
+$company = ($edit_mode && !empty($pencatatan->header->company)) ? strtoupper((string) $pencatatan->header->company) : $active_company;
 $request_by = ($edit_mode && isset($pencatatan->header->request_by)) ? $pencatatan->header->request_by : '';
 $keterangan = ($edit_mode && isset($pencatatan->header->keterangan)) ? $pencatatan->header->keterangan : '';
 
@@ -105,12 +106,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             </div>
             <div class="col-md-6 col-lg-3">
                 <label for="company" class="form-label fw-semibold text-muted small">Company <span class="text-danger">*</span></label>
-                <select class="form-select" id="company" name="company" required>
-                    <option value="">-- Pilih Company --</option>
-                    <option value="STM" <?= ($company === 'STM') ? 'selected' : '' ?>>STM</option>
-                    <option value="VUCA" <?= ($company === 'VUCA') ? 'selected' : '' ?>>VUCA</option>
-                    <option value="SUSTAIN" <?= ($company === 'SUSTAIN') ? 'selected' : '' ?>>SUSTAIN</option>
-                </select>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-building"></i></span>
+                    <input type="text" class="form-control bg-light fw-semibold border-start-0" id="company" name="company" value="<?= htmlspecialchars((string) $company) ?>" readonly required>
+                </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <label for="request_by" class="form-label fw-semibold text-muted small">Request By <span class="text-danger">*</span></label>
@@ -300,10 +299,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     <small class="text-muted"><i class="fa fa-info-circle me-1"></i>Preview of the journal entries generated on save</small>
                 </div>
 
-                <!-- Jurnal STM -->
+                <!-- Jurnal Pencatatan (Single Database) -->
                 <div id="jurnal-stm-section">
                     <div class="d-flex align-items-center gap-2 mb-2">
-                        <span class="badge bg-primary px-2 py-1"><i class="fa fa-building me-1"></i> Jurnal Pencatatan STM</span>
+                        <span class="badge bg-primary px-2 py-1"><i class="fa fa-building me-1"></i> Jurnal Pencatatan <span class="jurnal-company-name"><?= htmlspecialchars((string) $company) ?></span></span>
                     </div>
                     <div class="table-responsive bg-white rounded border">
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
@@ -327,69 +326,6 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                     <td colspan="4" class="text-end">Balancing:</td>
                                     <td class="text-end" id="jurnal-stm-total-debit">Rp 0</td>
                                     <td class="text-end" id="jurnal-stm-total-kredit">Rp 0</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Jurnal Inter-Company VUCA / SUSTAIN -->
-                <div id="jurnal-intercompany-section" style="display: none;">
-                    <div class="d-flex align-items-center gap-2 mb-2 mt-3">
-                        <span class="badge bg-warning text-dark px-2 py-1"><i class="fa fa-building me-1"></i> Sisi <span class="jurnal-company-name">Company</span></span>
-                    </div>
-                    <div class="table-responsive bg-white rounded border mb-3">
-                        <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="100" class="text-center">Date</th>
-                                    <th width="120">COA</th>
-                                    <th>Account Name</th>
-                                    <th width="80" class="text-center">Company</th>
-                                    <th width="130" class="text-end">Debit</th>
-                                    <th width="130" class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="jurnal-company-body">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-2">No data yet</td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end" id="jurnal-company-total-debit">Rp 0</td>
-                                    <td class="text-end" id="jurnal-company-total-kredit">Rp 0</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <span class="badge bg-info text-dark px-2 py-1"><i class="fa fa-building me-1"></i> Sisi STM (Inter-Company)</span>
-                    </div>
-                    <div class="table-responsive bg-white rounded border">
-                        <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="100" class="text-center">Date</th>
-                                    <th width="120">COA</th>
-                                    <th>Account Name</th>
-                                    <th width="80" class="text-center">Company</th>
-                                    <th width="130" class="text-end">Debit</th>
-                                    <th width="130" class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="jurnal-stm-side-body">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-2">No data yet</td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end" id="jurnal-stm-side-total-debit">Rp 0</td>
-                                    <td class="text-end" id="jurnal-stm-side-total-kredit">Rp 0</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -696,99 +632,36 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 }
             });
 
-            if (comp === 'STM') {
-                $('#jurnal-stm-section').show();
-                $('#jurnal-intercompany-section').hide();
+            var safeComp = $('<div>').text(comp || 'HFG').html();
+            $('.jurnal-company-name').text(comp || 'HFG');
+            $('#jurnal-stm-section').show();
 
-                var html = '';
-                if (rows.length > 0) {
-                    $.each(rows, function(i, r) {
-                        html += '<tr>';
-                        html += '  <td class="text-center">' + tglFmt + '</td>';
-                        html += '  <td>' + r.coaCode + '</td>';
-                        html += '  <td>' + $('<div>').text(r.coaNama).html() + '</td>';
-                        html += '  <td class="text-center">STM</td>';
-                        html += '  <td class="text-end">Rp ' + formatRupiah(r.total) + '</td>';
-                        html += '  <td class="text-end text-muted">-</td>';
-                        html += '</tr>';
-                    });
-                    html += '<tr class="table-warning">';
+            var html = '';
+            if (rows.length > 0) {
+                $.each(rows, function(i, r) {
+                    html += '<tr>';
                     html += '  <td class="text-center">' + tglFmt + '</td>';
-                    html += '  <td>1101-01-02</td>';
-                    html += '  <td>Kas Kecil</td>';
-                    html += '  <td class="text-center">STM</td>';
+                    html += '  <td>' + r.coaCode + '</td>';
+                    html += '  <td>' + $('<div>').text(r.coaNama).html() + '</td>';
+                    html += '  <td class="text-center">' + safeComp + '</td>';
+                    html += '  <td class="text-end">Rp ' + formatRupiah(r.total) + '</td>';
                     html += '  <td class="text-end text-muted">-</td>';
-                    html += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
                     html += '</tr>';
-                } else {
-                    html = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
-                }
-                $('#jurnal-stm-body').html(html);
-                $('#jurnal-stm-total-debit').text('Rp ' + formatRupiah(grandTotal));
-                $('#jurnal-stm-total-kredit').text('Rp ' + formatRupiah(grandTotal));
-
-            } else if (comp === 'VUCA' || comp === 'SUSTAIN') {
-                $('#jurnal-stm-section').hide();
-                $('#jurnal-intercompany-section').show();
-                $('.jurnal-company-name').text(comp);
-
-                var coaHutang = (comp === 'VUCA') ? '2103-01-01' : '2103-01-02';
-                var coaPiutang = (comp === 'VUCA') ? '1103-01-01' : '1103-01-02';
-
-                // Sisi Company
-                var htmlComp = '';
-                if (rows.length > 0) {
-                    $.each(rows, function(i, r) {
-                        htmlComp += '<tr>';
-                        htmlComp += '  <td class="text-center">' + tglFmt + '</td>';
-                        htmlComp += '  <td>' + r.coaCode + '</td>';
-                        htmlComp += '  <td>' + $('<div>').text(r.coaNama).html() + '</td>';
-                        htmlComp += '  <td class="text-center">' + comp + '</td>';
-                        htmlComp += '  <td class="text-end">Rp ' + formatRupiah(r.total) + '</td>';
-                        htmlComp += '  <td class="text-end text-muted">-</td>';
-                        htmlComp += '</tr>';
-                    });
-                    htmlComp += '<tr class="table-warning">';
-                    htmlComp += '  <td class="text-center">' + tglFmt + '</td>';
-                    htmlComp += '  <td>' + coaHutang + '</td>';
-                    htmlComp += '  <td>Payable to STM</td>';
-                    htmlComp += '  <td class="text-center">' + comp + '</td>';
-                    htmlComp += '  <td class="text-end text-muted">-</td>';
-                    htmlComp += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
-                    htmlComp += '</tr>';
-                } else {
-                    htmlComp = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
-                }
-                $('#jurnal-company-body').html(htmlComp);
-                $('#jurnal-company-total-debit').text('Rp ' + formatRupiah(grandTotal));
-                $('#jurnal-company-total-kredit').text('Rp ' + formatRupiah(grandTotal));
-
-                // Sisi STM
-                var htmlStm = '';
-                if (rows.length > 0) {
-                    htmlStm += '<tr>';
-                    htmlStm += '  <td class="text-center">' + tglFmt + '</td>';
-                    htmlStm += '  <td>' + coaPiutang + '</td>';
-                    htmlStm += '  <td>Piutang ' + comp + '</td>';
-                    htmlStm += '  <td class="text-center">STM</td>';
-                    htmlStm += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
-                    htmlStm += '  <td class="text-end text-muted">-</td>';
-                    htmlStm += '</tr>';
-                    htmlStm += '<tr class="table-warning">';
-                    htmlStm += '  <td class="text-center">' + tglFmt + '</td>';
-                    htmlStm += '  <td>1101-01-02</td>';
-                    htmlStm += '  <td>Kas Kecil</td>';
-                    htmlStm += '  <td class="text-center">STM</td>';
-                    htmlStm += '  <td class="text-end text-muted">-</td>';
-                    htmlStm += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
-                    htmlStm += '</tr>';
-                } else {
-                    htmlStm = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
-                }
-                $('#jurnal-stm-side-body').html(htmlStm);
-                $('#jurnal-stm-side-total-debit').text('Rp ' + formatRupiah(grandTotal));
-                $('#jurnal-stm-side-total-kredit').text('Rp ' + formatRupiah(grandTotal));
+                });
+                html += '<tr class="table-warning">';
+                html += '  <td class="text-center">' + tglFmt + '</td>';
+                html += '  <td>1101-01-02</td>';
+                html += '  <td>Kas Kecil</td>';
+                html += '  <td class="text-center">' + safeComp + '</td>';
+                html += '  <td class="text-end text-muted">-</td>';
+                html += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
+                html += '</tr>';
+            } else {
+                html = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
             }
+            $('#jurnal-stm-body').html(html);
+            $('#jurnal-stm-total-debit').text('Rp ' + formatRupiah(grandTotal));
+            $('#jurnal-stm-total-kredit').text('Rp ' + formatRupiah(grandTotal));
         }
 
         // Save Click

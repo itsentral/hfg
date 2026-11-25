@@ -608,12 +608,14 @@ class Non_rutin_model extends BF_Model
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
+                LEFT JOIN ms_department b ON b.id = a.id_dept
                 LEFT JOIN users c ON c.id_user = a.created_by
 		    WHERE 1=1 " . $where . " AND 
             a.status_id = 1 AND 
             a.no_pr IS NULL AND 
             a.app_1_by IS NOT NULL AND
             a.app_2_by IS NOT NULL AND
+            (a.rejected IS NULL OR a.rejected = 0) AND
             a.close_pr IS NULL
             AND (
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
@@ -630,10 +632,12 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nm_dept'
+            2 => 'b.nama'
         );
 
-        $sql .= " ORDER BY a.tingkat_pr DESC, id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
+        $order_col_sql = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
+        $order_dir_sql = (strtolower((string) $column_dir) === 'asc') ? 'ASC' : 'DESC';
+        $sql .= " ORDER BY a.tingkat_pr DESC, a.id DESC, " . $order_col_sql . " " . $order_dir_sql . " ";
         $sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
 
         $data['query'] = $this->db->query($sql);
@@ -660,12 +664,14 @@ class Non_rutin_model extends BF_Model
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
+                LEFT JOIN ms_department b ON b.id = a.id_dept
                 LEFT JOIN users c ON c.id_user = a.created_by
 		    WHERE 1=1 " . $where . " AND 
             a.status_id = 1 AND 
             a.no_pr IS NULL AND 
             a.app_1_by IS NULL AND 
             a.app_2_by IS NULL AND
+            (a.rejected IS NULL OR a.rejected = 0) AND
             a.close_pr IS NULL
             AND (
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
@@ -682,10 +688,12 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nm_dept'
+            2 => 'b.nama'
         );
 
-        $sql .= " ORDER BY a.tingkat_pr DESC, id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
+        $order_col_sql = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
+        $order_dir_sql = (strtolower((string) $column_dir) === 'asc') ? 'ASC' : 'DESC';
+        $sql .= " ORDER BY a.tingkat_pr DESC, a.id DESC, " . $order_col_sql . " " . $order_dir_sql . " ";
         $sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
 
         $data['query'] = $this->db->query($sql);
@@ -1051,8 +1059,8 @@ class Non_rutin_model extends BF_Model
         if (!empty($search['value'])) {
             $arr_where = [
                 'a.no_pengajuan' => $search['value'],
-                'd.name' => $search['value'],
-                'e.name' => $search['value'],
+                'a.no_pr' => $search['value'],
+                'd.nama' => $search['value'],
                 'c.nm_lengkap' => $search['value'],
                 'a.project_name' => $search['value']
             ];

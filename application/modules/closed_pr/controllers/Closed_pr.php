@@ -44,7 +44,8 @@ class Closed_pr extends Admin_Controller
 				a.no_pr,
 				IF(a.category = "pr material", "PR Material", "PR Stok") as kategori_pr,
 				b.nm_lengkap as request_by,
-				DATE_FORMAT(a.created_date, "%d %M %Y") as request_date
+				DATE_FORMAT(a.created_date, "%d %M %Y") as request_date,
+				a.close_pr_desc
 			FROM
 				material_planning_base_on_produksi a
 				LEFT JOIN users b ON b.id_user = a.created_by
@@ -59,12 +60,29 @@ class Closed_pr extends Admin_Controller
 				a.no_pr,
 				"PR Department" as kategori_pr,
 				b.nm_lengkap as request_by,
-				DATE_FORMAT(a.created_date, "%d %M %Y") as request_date
+				DATE_FORMAT(a.created_date, "%d %M %Y") as request_date,
+				a.close_pr_desc
 			FROM
 				rutin_non_planning_header a 
 				LEFT JOIN users b ON b.id_user = a.created_by
 			WHERE
 				a.close_pr IS NOT NULL
+
+			UNION ALL
+
+			SELECT
+				a.no_pr as id_pr,
+				a.no_pr,
+				"PR Asset" as kategori_pr,
+				COALESCE(b.nm_lengkap, a.created_by) as request_by,
+				DATE_FORMAT(a.created_date, "%d %M %Y") as request_date,
+				a.close_pr_desc
+			FROM
+				tran_pr_header a
+				LEFT JOIN users b ON b.username = a.created_by OR b.id_user = a.created_by
+			WHERE
+				a.close_pr IS NOT NULL AND
+				a.category = "asset"
 		')->result();
 
 		$this->template->set('result', $get_data);
@@ -72,6 +90,7 @@ class Closed_pr extends Admin_Controller
 	}
 
 	public function view_barang_pr() {
+		$this->auth->restrict($this->viewPermission);
 		$post = $this->input->post();
 
 		$kategori_pr = $post['kategori_pr'] ?? '';
@@ -80,6 +99,13 @@ class Closed_pr extends Admin_Controller
 			->from('rutin_non_planning_detail a')
 			->join('ms_satuan b', 'b.id = a.satuan', 'left')
 			->where('a.no_pengajuan', $post['id_pr'])
+			->get()
+			->result();
+		} elseif ($kategori_pr == 'PR Asset') {
+			$get_list_barang = $this->db->select('a.nm_barang as nm_barang, a.qty as qty, COALESCE(b.code, "unit") as unit, COALESCE(b.code, "unit") as unit_packing, 1 as nilai_konversi')
+			->from('tran_pr_detail a')
+			->join('ms_satuan b', 'b.id = a.satuan', 'left')
+			->where('a.no_pr', $post['id_pr'])
 			->get()
 			->result();
 		} else {

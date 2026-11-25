@@ -35,6 +35,26 @@ class Expense_petty_cash extends Admin_Controller
         $this->template->page_icon('fa fa-money');
     }
 
+    /**
+     * Helper cek salah satu permission dari daftar (kompatibel dengan nama permission lama & menu DB).
+     */
+    private function _has_any_perm(array $perms)
+    {
+        foreach ($perms as $p) {
+            if (has_permission($p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function _restrict_any(array $perms)
+    {
+        if (!$this->_has_any_perm($perms)) {
+            $this->auth->restrict($perms[0]);
+        }
+    }
+
     // =========================================================================
     // PENCATATAN
     // =========================================================================
@@ -49,12 +69,12 @@ class Expense_petty_cash extends Admin_Controller
      */
     public function index()
     {
-        $this->auth->restrict($this->viewPermission);
+        $this->_restrict_any([$this->viewPermission, 'Transaksi_Petty_Cash.View']);
 
         $data = [
-            'has_add'    => has_permission($this->addPermission),
-            'has_manage' => has_permission($this->managePermission),
-            'has_delete' => has_permission($this->deletePermission),
+            'has_add'    => $this->_has_any_perm([$this->addPermission, 'Transaksi_Petty_Cash.Add']),
+            'has_manage' => $this->_has_any_perm([$this->managePermission, 'Transaksi_Petty_Cash.Manage']),
+            'has_delete' => $this->_has_any_perm([$this->deletePermission, 'Transaksi_Petty_Cash.Delete']),
         ];
 
         $this->template->set($data);
@@ -240,11 +260,11 @@ class Expense_petty_cash extends Admin_Controller
      */
     public function pelaporan()
     {
-        $this->auth->restrict($this->viewPermission);
+        $this->_restrict_any([$this->viewPermission, 'Pelaporan_Petty_Cash.View']);
 
         $data = [
-            'has_add'    => has_permission($this->addPermission),
-            'has_manage' => has_permission($this->managePermission),
+            'has_add'    => $this->_has_any_perm([$this->addPermission, 'Pelaporan_Petty_Cash.Add']),
+            'has_manage' => $this->_has_any_perm([$this->managePermission, 'Pelaporan_Petty_Cash.Manage']),
         ];
 
         $this->template->set($data);
@@ -617,12 +637,15 @@ class Expense_petty_cash extends Admin_Controller
         $result = $this->Expense_petty_cash_pelaporan_model->submit_pelaporan($id);
 
         if (!$result) {
+            write_log('Expense Petty Cash', 'Edit', 'Submit pelaporan failed ID: ' . $id, ['id' => $id], null, 0);
             echo json_encode([
                 'status'  => false,
                 'message' => 'Failed to submit the report. Please try again.'
             ]);
             return;
         }
+
+        write_log('Expense Petty Cash', 'Edit', 'Submit pelaporan success ID: ' . $id, ['old' => ['status' => 'draft'], 'new' => ['status' => 'waiting']], null, 1);
 
         echo json_encode([
             'status'  => true,
@@ -644,7 +667,7 @@ class Expense_petty_cash extends Admin_Controller
      */
     public function approval()
     {
-        $this->auth->restrict($this->approvePermission);
+        $this->_restrict_any([$this->approvePermission, 'Approval_Expense_Petty_Cash.View']);
 
         $this->template->title('Approval Pelaporan Petty Cash');
         $this->template->render('approval/index');
@@ -819,7 +842,7 @@ class Expense_petty_cash extends Admin_Controller
     public function approve($id)
     {
         // Check permission
-        if (!has_permission($this->approvePermission)) {
+        if (!$this->_has_any_perm([$this->approvePermission, 'Approval_Expense_Petty_Cash.Manage'])) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'You do not have access to approve'
@@ -837,17 +860,22 @@ class Expense_petty_cash extends Admin_Controller
         }
 
         $current_user_id = $this->auth->user_id();
+        $old_pel = $this->db->get_where('tr_pelaporan_petty_cash', ['id' => $id])->row_array();
 
         // Call model to approve (handles status validation, approver check, and state transition)
         $result = $this->Expense_petty_cash_pelaporan_model->approve_pelaporan($id, $current_user_id);
 
         if (!$result) {
+            write_log('Expense Petty Cash', 'Edit', 'Approve pelaporan failed ID: ' . $id, ['id' => $id], null, 0);
             echo json_encode([
                 'status'  => false,
                 'message' => 'Failed to approve. Make sure the report has status waiting and you are the assigned approver.'
             ]);
             return;
         }
+
+        $log_payload = $old_pel ? ['old' => $old_pel, 'new' => array_merge($old_pel, ['status' => 'approved'])] : ['id' => $id, 'status' => 'approved'];
+        write_log('Expense Petty Cash', 'Edit', 'Approve pelaporan success ID: ' . $id, $log_payload, null, 1);
 
         echo json_encode([
             'status'  => true,
@@ -867,7 +895,7 @@ class Expense_petty_cash extends Admin_Controller
     public function reject($id)
     {
         // Check permission
-        if (!has_permission($this->approvePermission)) {
+        if (!$this->_has_any_perm([$this->approvePermission, 'Approval_Expense_Petty_Cash.Manage'])) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'You do not have access to reject'
@@ -916,17 +944,22 @@ class Expense_petty_cash extends Admin_Controller
         }
 
         $current_user_id = $this->auth->user_id();
+        $old_pel = $this->db->get_where('tr_pelaporan_petty_cash', ['id' => $id])->row_array();
 
         // Call model to reject (handles status validation, approver check, and state transition)
         $result = $this->Expense_petty_cash_pelaporan_model->reject_pelaporan($id, $alasan, $current_user_id);
 
         if (!$result) {
+            write_log('Expense Petty Cash', 'Edit', 'Reject pelaporan failed ID: ' . $id, ['id' => $id, 'alasan' => $alasan], null, 0);
             echo json_encode([
                 'status'  => false,
                 'message' => 'Failed to reject. Make sure the report has status waiting and you are the assigned approver.'
             ]);
             return;
         }
+
+        $log_payload = $old_pel ? ['old' => $old_pel, 'new' => array_merge($old_pel, ['status' => 'reject', 'alasan_reject' => $alasan])] : ['id' => $id, 'status' => 'reject'];
+        write_log('Expense Petty Cash', 'Edit', 'Reject pelaporan success ID: ' . $id, $log_payload, null, 1);
 
         echo json_encode([
             'status'  => true,
@@ -1245,7 +1278,7 @@ class Expense_petty_cash extends Admin_Controller
     public function delete($id = null)
     {
         // Check permission
-        if (!has_permission($this->deletePermission)) {
+        if (!$this->_has_any_perm([$this->deletePermission, 'Transaksi_Petty_Cash.Delete'])) {
             echo json_encode(['status' => 0, 'msg' => 'You do not have access to delete data.']);
             return;
         }
@@ -1256,8 +1289,10 @@ class Expense_petty_cash extends Admin_Controller
             return;
         }
 
+        $old_pc = $this->db->get_where('tr_expense_petty_cash', ['id' => $id])->row_array();
         // Call model to handle deletion (status validation, pelaporan constraint, cascade delete)
         $result = $this->Expense_petty_cash_model->delete_pencatatan($id);
+        write_log('Expense Petty Cash', 'Delete', 'Delete pencatatan petty cash ID: ' . $id, $old_pc ?: ['id' => $id], null, !empty($result['status']) ? 1 : 0);
 
         echo json_encode($result);
     }
@@ -1274,7 +1309,7 @@ class Expense_petty_cash extends Admin_Controller
     public function save()
     {
         // Check permission
-        if (!has_permission($this->addPermission) && !has_permission($this->managePermission)) {
+        if (!$this->_has_any_perm([$this->addPermission, $this->managePermission, 'Transaksi_Petty_Cash.Add', 'Transaksi_Petty_Cash.Manage'])) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'You do not have access to save data'
@@ -1284,7 +1319,12 @@ class Expense_petty_cash extends Admin_Controller
 
         // Get POST data
         $id            = $this->input->post('id') ?: null;
-        $company       = $this->input->post('company');
+        $old_pc        = $id ? $this->db->get_where('tr_expense_petty_cash', ['id' => $id])->row_array() : null;
+        $default_company = function_exists('get_identitas') ? strtoupper((string) (get_identitas()->kode ?? 'HFG')) : 'HFG';
+        $company       = strtoupper(trim((string) $this->input->post('company')));
+        if (empty($company)) {
+            $company = $default_company;
+        }
         $tanggal       = date('Y-m-d'); // Server-enforced: selalu hari ini, tidak terima input user
         $request_by    = $this->input->post('request_by');
         $keterangan    = $this->input->post('keterangan');
@@ -1297,10 +1337,9 @@ class Expense_petty_cash extends Admin_Controller
         // =====================================================================
         $errors = [];
 
-        // Validate company
-        $valid_companies = ['STM', 'VUCA', 'SUSTAIN'];
-        if (empty($company) || !in_array($company, $valid_companies ?? [])) {
-            $errors['company'] = 'A company is required (STM, VUCA, or SUSTAIN)';
+        // Validate company (single-company active identity)
+        if (empty($company) || strlen($company) > 20) {
+            $errors['company'] = 'Company code is required (max 20 characters)';
         }
 
         // Validate request_by
@@ -1427,6 +1466,11 @@ class Expense_petty_cash extends Admin_Controller
         // Determine pencatatan_id for journal creation
         $pencatatan_id = empty($id) ? $result : (int) $id;
         $is_edit = !empty($id);
+        if ($is_edit && !empty($old_pc)) {
+            write_log('Expense Petty Cash', 'Edit', 'Update pencatatan petty cash ID: ' . $pencatatan_id, ['old' => $old_pc, 'new' => array_merge($old_pc, $header)], null, 1);
+        } else {
+            write_log('Expense Petty Cash', 'Create', 'Create pencatatan petty cash ID: ' . $pencatatan_id, $header, null, 1);
+        }
 
         // =====================================================================
         // Create journal (eventual consistency - Phase 2)

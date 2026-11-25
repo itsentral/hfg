@@ -36,7 +36,6 @@ class Non_rutin extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('master_model');
 		$this->load->model('non_rutin_model');
 
 		// $this->load->library(array('Mpdf'));
@@ -48,6 +47,7 @@ class Non_rutin extends Admin_Controller
 
 	public function index()
 	{
+		$this->auth->restrict($this->viewPermission);
 		$data_Group			= $this->db->get('groups')->result();
 		$tanda				= $this->uri->segment(2);
 		// $get_department = $this->db->get_where('ms_department', ['deleted_by' => null])->result();
@@ -463,6 +463,7 @@ class Non_rutin extends Admin_Controller
 						'sts_reject3_by' => null,
 						'sts_reject3_date' => null,
 						'rejected' => null,
+						'sts_app' => 'N',
 						'app_post' => null,
 						'keterangan_3' 		=> isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 						'updated_by'	=> $this->auth->user_id(),
@@ -893,6 +894,7 @@ class Non_rutin extends Admin_Controller
 						'sts_reject3_by' => null,
 						'sts_reject3_date' => null,
 						'rejected' => null,
+						'sts_app' => 'N',
 						'app_post' => null,
 						'keterangan_3' 		=> isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 						'updated_by'	=> $this->auth->user_id(),
@@ -1175,7 +1177,9 @@ class Non_rutin extends Admin_Controller
 
 	public function edit_detail()
 	{
+		$this->auth->restrict($this->managePermission);
 		$post = $this->input->post();
+		$old_detail = $this->db->get_where('rutin_non_planning_detail', ['id' => $post['id']])->row_array();
 
 		$this->db->trans_begin();
 
@@ -1192,9 +1196,12 @@ class Non_rutin extends Admin_Controller
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$valid = 0;
+			write_log('PR Departemen', 'Edit', 'Edit detail PR Dept failed ID: ' . $post['id'], $ArrUpdate, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$valid = 1;
+			$log_payload = $old_detail ? ['old' => $old_detail, 'new' => array_merge($old_detail, $ArrUpdate)] : $ArrUpdate;
+			write_log('PR Departemen', 'Edit', 'Edit detail PR Dept success ID: ' . $post['id'], $log_payload, null, 1);
 		}
 
 		echo json_encode([
@@ -1400,20 +1407,24 @@ class Non_rutin extends Admin_Controller
 
 	public function close_pr()
 	{
+		$this->auth->restrict($this->deletePermission);
 		$no_pengajuan = $this->input->post('no_pengajuan');
 		$close_pr_reason = $this->input->post('close_pr_reason') ?: $this->input->post('reject_reason');
+		$old_header = $this->db->get_where('rutin_non_planning_header', ['no_pengajuan' => $no_pengajuan])->row_array();
+		$update_close = ['close_pr' => 1, 'close_pr_desc' => $close_pr_reason];
 
 		$this->db->trans_start();
 
-		$update_close_pr = $this->db->update('rutin_non_planning_header', ['close_pr' => 1, 'close_pr_desc' => $close_pr_reason], ['no_pengajuan' => $no_pengajuan]);
+		$update_close_pr = $this->db->update('rutin_non_planning_header', $update_close, ['no_pengajuan' => $no_pengajuan]);
 
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
-
+			write_log('PR Departemen', 'Close PR', 'Close PR Dept failed: ' . $no_pengajuan, $update_close, null, 0);
 			$valid = 0;
 		} else {
 			$this->db->trans_commit();
-
+			$log_payload = $old_header ? ['old' => $old_header, 'new' => array_merge($old_header, $update_close)] : $update_close;
+			write_log('PR Departemen', 'Close PR', 'Close PR Dept success: ' . $no_pengajuan, $log_payload, null, 1);
 			$valid = 1;
 		}
 

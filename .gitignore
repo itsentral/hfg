@@ -34,6 +34,12 @@ application/config/development/*
 #antigravity
 .artifacts/*
 
+# Local code archives and OS metadata
+/backup/
+/node_modules/
+Thumbs.db
+.DS_Store
+
 # AI Agent Context & IDE (Kiro)
 *.Identifier
 *:Zone.Identifier
