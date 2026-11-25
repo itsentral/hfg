@@ -106,12 +106,7 @@
 			</td>
 			<td style="width: 55%; vertical-align: top; text-align: right; font-size: 10px; line-height: 1.35; color: #333; border: none; padding: 0;">
 				<strong style="font-size: 12px; color: #000;"><?= html_escape($company_name); ?></strong><br>
-				<?php if (!empty($company_address)): ?>
-					<?= nl2br(html_escape($company_address)); ?>
-				<?php else: ?>
-					Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-					Cengkareng, Jakarta Barat 11710 - Indonesia
-				<?php endif; ?>
+				<?= function_exists('get_company_address_html') ? get_company_address_html() : nl2br(html_escape($company_address)); ?>
 			</td>
 		</tr>
 	</table>

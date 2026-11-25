@@ -20,7 +20,7 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string)
 
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
 	<tr>
-		<td align='center'><b>PT. ORIGA MULIA FRP</b></td>
+		<td align='center'><b><?= html_escape(get_company_name(true, true)) ?></b></td>
 	</tr>
 	<tr>
 		<td align='center'><b>

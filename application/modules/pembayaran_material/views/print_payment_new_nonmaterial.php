@@ -124,7 +124,7 @@ $coa	=  $this->db->query("SELECT * FROM ".DBACC.".coa_master WHERE no_perkiraan 
 $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$headers->id_supplier' ")->row();
 ?>
 <table width=800>
-<tr><td rowspan=2 width="100"><img src="<?=base_url("assets/images/ori_logo.jpg")?>" width="80"></td><td colspan=2><h1>PT. ORI POLITEC COMPOSITES</h1></td></tr>
+<tr><td rowspan=2 width="72" valign="top"><img src="<?= html_escape(get_company_logo('icon')) ?>" width="60" height="60"></td><td colspan=2><h1 style="margin:0; font-size:20px;"><?= html_escape(get_company_name(true, true)) ?></h1><div style="font-size:11px;"><?= get_company_address_html() ?></div></td></tr>
 <tr><td><center><div style="font-size:18px;"><u>BANK/CASH PAYMENT VOUCHER</u></div><?=$coa->nama?></center></td></tr>
 <tr><td rowspan=2 valign=top>Supplier</td><td rowspan=2 valign=top>: <?=$supplier->nm_supplier?></td><td valign=top width="100">Number</td><td valign=top nowrap>: <?=$kodebayar?></td></tr>
 <tr><td valign=top>Date</td><td valign=top nowrap>: <?=date("d M Y",strtotime((string) $headers->payment_date))?></td></tr>

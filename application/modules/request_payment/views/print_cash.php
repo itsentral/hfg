@@ -32,7 +32,20 @@ $nmuser = (!empty($data_pr->nm_pic)) ? $data_pr->nm_pic : '';
     </style>
     <table cellpadding=2 cellspacing=0 border=0 width=650>
         <tr>
-            <th colspan=6>PEMBELIAN CASH<br /><br /><br /></th>
+            <td colspan=6 style="border-bottom: 2px solid #333; padding-bottom: 6px;">
+                <table cellpadding=0 cellspacing=0 border=0 width="100%">
+                    <tr>
+                        <td width="65" valign="top"><img src="<?= html_escape(get_company_logo('icon')) ?>" width="55" height="55" alt="Logo"></td>
+                        <td valign="top" style="padding-left: 10px; font-size: 11px; line-height: 1.4;">
+                            <strong style="font-size: 13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
+                            <?= get_company_address_html() ?>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th colspan=6><br />PEMBELIAN CASH<br /><br /><br /></th>
         </tr>
         <tr>
             <td nowrap colspan=2>Document No : <?= $data_pr->no_non_po ?></td>

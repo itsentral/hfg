@@ -148,6 +148,21 @@
 
 <body>
 
+	<table width="100%" style="border-collapse: collapse; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 6px;">
+		<tr>
+			<td style="width: 65px; vertical-align: top; padding-bottom: 6px;">
+				<img src="<?= html_escape(get_company_logo('icon')) ?>" alt="Logo" width="55" height="55">
+			</td>
+			<td style="vertical-align: top; padding-left: 8px; font-size: 11px; line-height: 1.4; padding-bottom: 6px;">
+				<strong style="font-size: 13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
+				<?= get_company_address_html() ?>
+			</td>
+			<td style="text-align: right; vertical-align: top; padding-bottom: 6px;">
+				<strong style="font-size: 14px;">PURCHASE REQUEST (PR STOK)</strong>
+			</td>
+		</tr>
+	</table>
+
 	<table width="50%">
 		<tr>
 			<td width="45%">No. PR </td>

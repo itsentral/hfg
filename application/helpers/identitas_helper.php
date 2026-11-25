@@ -258,6 +258,38 @@ if (!function_exists('get_company_address')) {
     }
 }
 
+if (!function_exists('get_company_address_html')) {
+    /**
+     * Format alamat (+ kota + telepon bila terisi) dari tabel identitas sebagai HTML siap cetak.
+     *
+     * @param bool $include_phone Sertakan nomor telepon bila terisi
+     * @return string
+     */
+    function get_company_address_html($include_phone = true)
+    {
+        $idt    = get_identitas();
+        $alamat = isset($idt->alamat) ? trim((string) $idt->alamat) : '';
+        $kota   = isset($idt->kota) ? trim((string) $idt->kota) : '';
+        $telp   = $include_phone && isset($idt->no_telp) ? trim((string) $idt->no_telp) : '';
+
+        $parts = [];
+        if ($alamat !== '') {
+            $parts[] = nl2br(html_escape($alamat));
+            if ($kota !== '' && stripos($alamat, $kota) === false) {
+                $parts[] = html_escape($kota);
+            }
+        } elseif ($kota !== '') {
+            $parts[] = html_escape($kota);
+        }
+
+        if ($telp !== '') {
+            $parts[] = 'Telp: ' . html_escape($telp);
+        }
+
+        return implode('<br>', $parts);
+    }
+}
+
 if (!function_exists('get_company_phone')) {
     /**
      * Ambil nomor telepon perusahaan dari tabel identitas dengan nilai fallback.

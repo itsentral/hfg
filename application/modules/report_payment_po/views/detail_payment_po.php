@@ -106,9 +106,9 @@
                             $category_badge = '<span class="badge bg-secondary bg-opacity-25 text-dark fw-semibold">' . htmlspecialchars((string) $category_label) . '</span>';
                         }
 
-                        $selisih_kurs_receive_1 = abs($item['selisih_kurs_receive_1']);
-                        $selisih_kurs_receive_2 = abs($item['selisih_kurs_receive_2']);
-                        $selisih_kurs_admin     = abs($item['selisih_kurs_admin']);
+                        $selisih_kurs_receive_1 = abs((float) ($item['selisih_kurs_receive_1'] ?? 0));
+                        $selisih_kurs_receive_2 = abs((float) ($item['selisih_kurs_receive_2'] ?? 0));
+                        $selisih_kurs_admin     = abs((float) ($item['selisih_kurs_admin'] ?? 0));
                     ?>
                         <tr>
                             <?php if ($is_first) : ?>
