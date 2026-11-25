@@ -193,7 +193,7 @@ if (!function_exists('evaluate_pr_status')) {
             if ($is_rejected) {
                 $status = 'reject';
                 $reason = !empty($item->reject_reason3) ? $item->reject_reason3 : (!empty($item->reject_reason1) ? $item->reject_reason1 : ($item->reject_reason ?? 'Pengajuan ditolak'));
-                if ($item->sts_reject3 == '1') {
+                if ($sts_rej3 == '1') {
                     $stage = 2;
                     $status_text = 'Ditolak — Direktur';
                 } else {
@@ -398,7 +398,13 @@ if (!function_exists('evaluate_pr_status')) {
                 $stage = 1;
                 $status = 'reject';
                 $status_text = 'Ditolak — Direktur';
-                $reason = !empty($item->reject_reason) ? $item->reject_reason : (!empty($item->reject_reason3) ? $item->reject_reason3 : 'Stok masih mencukupi / pengajuan ditolak');
+                $reason = !empty($item->reject_reason)
+                    ? $item->reject_reason
+                    : (!empty($item->reject_reason3)
+                        ? $item->reject_reason3
+                        : (!empty($item->reject_reason2)
+                            ? $item->reject_reason2
+                            : (!empty($item->reject_reason1) ? $item->reject_reason1 : 'Stok masih mencukupi / pengajuan ditolak')));
             } elseif (!$is_approved) {
                 $stage = 1;
                 $status = 'active';

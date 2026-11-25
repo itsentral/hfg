@@ -54,7 +54,10 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                     if (!empty($result)) {
                         $no = 1;
                         foreach ($result as $row) {
-                            $app_status = isset($row['app_status']) ? $row['app_status'] : 'N';
+                            $app_status = !empty($row['header_app_status_3'])
+                                ? $row['header_app_status_3']
+                                : (!empty($row['app_status_3']) ? $row['app_status_3'] : (isset($row['app_status']) ? $row['app_status'] : 'N'));
+                            $app_reason = !empty($row['header_app_reason_3']) ? $row['header_app_reason_3'] : (!empty($row['app_reason_3']) ? $row['app_reason_3'] : '');
                             if ($app_status == 'Y') {
                                 $status = 'APPROVED';
                                 $color  = 'success';
@@ -75,8 +78,8 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                             echo "<td class='text-center'><span class='badge bg-" . $color . "'>" . $status . "</span></td>";
                             echo "</tr>";
 
-                            if (!empty($row['app_reason'])) {
-                                echo "<tr><td colspan='6' class='text-danger bg-light'><small><b>Reason:</b> " . htmlspecialchars((string) $row['app_reason']) . "</small></td></tr>";
+                            if (!empty($app_reason)) {
+                                echo "<tr><td colspan='6' class='text-danger bg-light'><small><b>Reason:</b> " . htmlspecialchars((string) $app_reason) . "</small></td></tr>";
                             }
                         }
                     } else {

@@ -64,6 +64,58 @@ class Request_payment_model extends BF_Model
         parent::__construct();
     }
 
+    /**
+     * Enqueue dokumen dari modul hulu ke request_payment dengan status 'open' secara idempoten.
+     */
+    public function enqueue_request_payment(array $payload)
+    {
+        $no_doc = $payload['no_doc'] ?? '';
+        $tipe   = $payload['tipe'] ?? '';
+        $ids    = $payload['ids'] ?? null;
+
+        if ($no_doc === '' || $tipe === '') {
+            return false;
+        }
+
+        $this->db->from('request_payment');
+        $this->db->where('no_doc', $no_doc);
+        $this->db->where('tipe', $tipe);
+        if ($ids !== null && $ids !== '') {
+            $this->db->where('ids', $ids);
+        }
+        $this->db->where('status !=', 'reject');
+        $existing = $this->db->get()->row();
+
+        if ($existing) {
+            return (int) $existing->id;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            'no_doc'     => $no_doc,
+            'no_surat'   => $payload['no_surat'] ?? $no_doc,
+            'ids'        => $ids,
+            'nama'       => substr((string) ($payload['nama'] ?? ''), 0, 150),
+            'tgl_doc'    => !empty($payload['tgl_doc']) ? $payload['tgl_doc'] : date('Y-m-d'),
+            'tanggal'    => !empty($payload['tanggal']) ? $payload['tanggal'] : date('Y-m-d'),
+            'keperluan'  => substr((string) ($payload['keperluan'] ?? ''), 0, 150),
+            'tipe'       => $tipe,
+            'jumlah'     => (float) ($payload['jumlah'] ?? 0),
+            'status'     => 'open',
+            'bank_id'    => $payload['bank_id'] ?? null,
+            'accnumber'  => $payload['accnumber'] ?? null,
+            'accname'    => $payload['accname'] ?? null,
+            'doc_file'   => $payload['doc_file'] ?? null,
+            'link_doc'   => $payload['link_doc'] ?? null,
+            'currency'   => $payload['currency'] ?? 'IDR',
+            'created_by' => $payload['created_by'] ?? ($this->auth ? $this->auth->user_name() : ''),
+            'created_on' => $now,
+        ];
+
+        $this->db->insert('request_payment', $data);
+        return (int) $this->db->insert_id();
+    }
+
     // list data request
     public function GetListDataRequest($tab = null, $from_date = null, $to_date = null)
     {
@@ -473,11 +525,10 @@ class Request_payment_model extends BF_Model
 
             $checked = '';
 
-            // Untuk tipe Document Import (ros_*), beberapa komponen (BM/LS/Insurance/Other)
-            // berbagi no_doc (= no_po) yang sama. Agar checkbox unik per komponen,
-            // pakai id (PK request_payment) sebagai key. Tipe lain tetap pakai no_doc.
-            $is_ros = (strpos((string) $item->tipe, 'ros_') === 0);
-            $row_key = $is_ros ? $item->id : $item->no_doc;
+            // Untuk tipe Document Import (ros_*) & Invoice PO (invoice_*), beberapa record
+            // dapat berbagi no_doc (= no_po) yang sama. Pakai id (PK request_payment) sebagai key.
+            $use_pk_key = (strpos((string) $item->tipe, 'ros_') === 0 || strpos((string) $item->tipe, 'invoice_') === 0);
+            $row_key = $use_pk_key ? $item->id : $item->no_doc;
 
             $input_tanggal_pembayaran = '<input type="text" class="form-control form-control-sm tanggal" name="tanggal_pembayaran_' . $row_key . '" placeholder="Select date...">';
 
@@ -486,19 +537,24 @@ class Request_payment_model extends BF_Model
             $action .= '<input type="hidden" name="nilai_pengajuan_' . $row_key . '" value="' . $item->jumlah . '">';
 
             $btn_print = '';
-            if ($item->tipe == 'Periodik') {
-                $btn_print = ' <a href="' . base_url('expense/periodik_print/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
+            $tipe_lower = strtolower((string) $item->tipe);
+            $source_id  = !empty($item->ids) ? $item->ids : $item->id;
+            if ($tipe_lower == 'periodik') {
+                $btn_print = ' <a href="' . base_url('expense/periodik_print/' . $source_id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
             }
-            if ($item->tipe == 'Kasbon') {
-                $btn_print = ' <a href="' . base_url('expense/kasbon_print/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
+            if ($tipe_lower == 'kasbon') {
+                $btn_print = ' <a href="' . base_url('expense/kasbon_print/' . $source_id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
             }
-            if ($item->tipe == 'Transport') {
-                $btn_print = ' <a href="' . base_url('expense/transport_req_print/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
+            if ($tipe_lower == 'transportasi' || $tipe_lower == 'transport') {
+                $btn_print = ' <a href="' . base_url('expense/transport_req_print/' . $source_id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
             }
-            if ($item->tipe == 'Expense') {
-                $btn_print = ' <a href="' . base_url('expense/expense_print/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
+            if ($tipe_lower == 'expense') {
+                $btn_print = ' <a href="' . base_url('expense/expense_print/' . $source_id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
             }
-            if ($item->tipe == 'Cash') {
+            if ($tipe_lower == 'refill_pettycash') {
+                $btn_print = ' <a href="' . base_url('expense_petty_cash/pelaporan/view/' . $source_id) . '" target="_blank" class="btn btn-sm btn-info" title="Detail RPC"><i class="fa fa-print"></i></a>';
+            }
+            if ($tipe_lower == 'cash') {
                 $id_non_po = !empty($item->ids) ? $item->ids : $item->id;
                 $get_check_non_po = $this->db->get_where('tr_pr_non_po', ['id' => $id_non_po])->row();
                 if (!$get_check_non_po && !empty($item->no_doc)) {

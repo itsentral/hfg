@@ -109,7 +109,7 @@
                             <?php if (!empty($results2)) :
                                 foreach ($results2 as $item) : ?>
                                     <tr>
-                                        <td class="text-center fw-semibold"><?= !empty($item->no_doc) ? $item->id_payment : '-'; ?></td>
+                                        <td class="text-center fw-semibold"><?= !empty($item->no_doc) ? $item->no_doc : '-'; ?></td>
                                         <td class="text-center">
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
@@ -128,7 +128,7 @@
                                         <td><?= !empty($item->keterangan_pembayaran) ? $item->keterangan_pembayaran : '-'; ?></td>
                                         <td class="text-center">
                                             <div class="d-flex gap-1 justify-content-center">
-                                                <a href="<?= base_url('pembayaran_material/view_payment_new/' . $item->id_payment); ?>" class="btn btn-sm btn-info text-white" title="View Request Payment"><i class="fa fa-eye"></i></a>
+                                                <a href="<?= base_url('pembayaran_material/view_payment_new/' . $item->no_doc); ?>" class="btn btn-sm btn-info text-white" title="View Request Payment"><i class="fa fa-eye"></i></a>
                                                 <?php if (!empty($item->link_doc) && file_exists('assets/expense/' . $item->link_doc)) : ?>
                                                     <a href="<?= base_url('assets/expense/' . $item->link_doc); ?>" class="btn btn-sm btn-primary" title="Download file"><i class="fa fa-download"></i></a>
                                                 <?php endif; ?>

@@ -35,7 +35,7 @@ class Pengajuan_rutin extends Admin_Controller
 
 	public function index()
 	{
-		//        $this->auth->restrict($this->viewPermission);
+		$this->auth->restrict($this->viewPermission);
 		$departemen = '';
 		$datauser = $this->All_model->GetInfoUser($this->auth->user_id());
 		//		if($datauser) $departemen=$datauser->department_id;
@@ -73,6 +73,7 @@ class Pengajuan_rutin extends Admin_Controller
 
 	public function app_list()
 	{
+		$this->auth->restrict('Approval_Pengajuan_Pembayaran_Rutin.View');
 		$departemen = '';
 		//		$datauser=$this->All_model->GetInfoUser($this->auth->user_id());
 		//		if($datauser) $departemen=$datauser->departemen;
@@ -109,6 +110,7 @@ class Pengajuan_rutin extends Admin_Controller
 
 	public function edit($id)
 	{
+		$this->auth->restrict($this->managePermission);
 		$data	= $this->Pengajuan_rutin_model->GetDataPengajuanRutin($id);
 		if (!$data) {
 			$this->template->set_message("Invalid Data", 'error');
@@ -166,10 +168,15 @@ class Pengajuan_rutin extends Admin_Controller
 
 	public function save_data()
 	{
-
 		$departement	= $this->input->post("departement");
 		$id				= $this->input->post("id");
 		$no_doc			= $this->input->post("no_doc");
+		if ($no_doc == '') {
+			$this->auth->restrict($this->addPermission);
+		} else {
+			$this->auth->restrict($this->managePermission);
+		}
+		$old_header     = $id ? $this->db->get_where('tr_pengajuan_rutin', ['id' => $id])->row_array() : null;
 		$tanggal_doc	= $this->input->post("tanggal_doc");
 		// $tanggal_doc    = str_replace('/','-',$tanggal_doc);
 		$tanggal_doc    = date('Y-m-d', strtotime((string) $tanggal_doc));
@@ -210,7 +217,7 @@ class Pengajuan_rutin extends Admin_Controller
 						'id' => $id,
 						'tanggal_doc' => $tanggal_doc,
 						'sts_reject' => null,
-						'sts' => 0,
+						'status' => 0,
 						'reject_ket' => null
 					)
 				);
@@ -247,7 +254,11 @@ class Pengajuan_rutin extends Admin_Controller
 							$_FILES['file']['tmp_name'] = $_FILES['doc_file_' . $idf]['tmp_name'];
 							$_FILES['file']['error'] = $_FILES['doc_file_' . $idf]['error'];
 							$_FILES['file']['size'] = $_FILES['doc_file_' . $idf]['size'];
-							$config['upload_path'] = './assets/bayar_rutin/';
+							$upload_path_rutin = './assets/bayar_rutin/';
+							if (!is_dir($upload_path_rutin)) {
+								mkdir($upload_path_rutin, 0755, true);
+							}
+							$config['upload_path'] = $upload_path_rutin;
 							$config['allowed_types'] = '*';
 							$config['remove_spaces'] = TRUE;
 							$config['encrypt_name'] = TRUE;
@@ -291,7 +302,11 @@ class Pengajuan_rutin extends Admin_Controller
 							$_FILES['file']['error'] = $_FILES['doc_file_' . $idf]['error'];
 							$_FILES['file']['size'] = $_FILES['doc_file_' . $idf]['size'];
 
-							$config['upload_path'] = './assets/bayar_rutin/';
+							$upload_path_rutin = './assets/bayar_rutin/';
+							if (!is_dir($upload_path_rutin)) {
+								mkdir($upload_path_rutin, 0755, true);
+							}
+							$config['upload_path'] = $upload_path_rutin;
 							$config['allowed_types'] = '*';
 							$config['remove_spaces'] = TRUE;
 							$config['encrypt_name'] = TRUE;
@@ -313,12 +328,25 @@ class Pengajuan_rutin extends Admin_Controller
 
 			$this->db->trans_commit();
 
+			if (!empty($old_header)) {
+				$new_header = array_merge($old_header, [
+					'tanggal_doc' => $tanggal_doc,
+					'sts_reject'  => null,
+					'status'      => 0,
+					'reject_ket'  => null,
+				]);
+				write_log('Pengajuan Rutin', 'Edit', 'Update pengajuan rutin success: ' . $no_doc, ['old' => $old_header, 'new' => $new_header], null, 1);
+			} else {
+				write_log('Pengajuan Rutin', 'Create', 'Create pengajuan rutin success: ' . $no_doc, ['no_doc' => $no_doc, 'tanggal_doc' => $tanggal_doc, 'departement' => $departement], null, 1);
+			}
+
 			$this->output->set_status_header(200);
 			echo json_encode([
 				'save' => TRUE
 			]);
 		} catch (Exception $e) {
 			$this->db->trans_rollback();
+			write_log('Pengajuan Rutin', !empty($old_header) ? 'Edit' : 'Create', 'Save pengajuan rutin failed: ' . $e->getMessage(), ['no_doc' => $no_doc], null, 0);
 
 			$this->output->set_status_header(500);
 			echo json_encode([
@@ -376,6 +404,7 @@ class Pengajuan_rutin extends Admin_Controller
 			$sql            = $this->db->last_query();
 		}
 		simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+		write_log('Pengajuan Rutin', 'Delete', ($result ? 'Delete' : 'Failed delete') . ' pengajuan rutin: ' . $id, ['no_doc' => $id], null, $status);
 		$param = array(
 			'delete' => $result,
 			'idx' => $id
@@ -492,8 +521,10 @@ class Pengajuan_rutin extends Admin_Controller
 	// approve
 	public function approve($id = '')
 	{
+		$this->auth->restrict('Approval_Pengajuan_Pembayaran_Rutin.Manage');
 		$result = false;
 		if ($id != "") {
+			$old_row = $this->db->get_where('tr_pengajuan_rutin', ['id' => $id])->row_array();
 			$data = array(
 				array(
 					'id' => $id,
@@ -501,6 +532,38 @@ class Pengajuan_rutin extends Admin_Controller
 				)
 			);
 			$result = $this->Pengajuan_rutin_model->update_batch($data, 'id');
+
+			if ($result) {
+				$header = $this->db->select('a.*, u.nm_lengkap')
+					->from('tr_pengajuan_rutin a')
+					->join('users u', 'u.id_user = a.created_by', 'left')
+					->where('a.id', $id)
+					->get()
+					->row();
+				if ($header) {
+					$this->load->model('request_payment/Request_payment_model');
+					$details = $this->db->get_where('tr_pengajuan_rutin_detail', ['no_doc' => $header->no_doc])->result();
+					foreach ($details as $dtl) {
+						$this->Request_payment_model->enqueue_request_payment([
+							'no_doc'     => $header->no_doc,
+							'no_surat'   => $header->no_doc,
+							'ids'        => $dtl->id,
+							'nama'       => $header->nm_lengkap ?: $this->auth->user_name(),
+							'tgl_doc'    => $header->tanggal_doc,
+							'keperluan'  => !empty($dtl->nama) ? $dtl->nama : $dtl->keterangan,
+							'tipe'       => 'periodik',
+							'jumlah'     => (float) $dtl->nilai,
+							'bank_id'    => $dtl->bank_id ?? '',
+							'accnumber'  => $dtl->accnumber ?? '',
+							'accname'    => $dtl->accname ?? '',
+							'doc_file'   => $dtl->doc_file ?? '',
+							'currency'   => 'IDR',
+							'created_by' => $this->auth->user_name(),
+						]);
+					}
+				}
+			}
+
 			$keterangan     = "SUKSES, Approve data " . $id;
 			$status         = 1;
 			$nm_hak_akses   = $this->managePermission;
@@ -508,6 +571,8 @@ class Pengajuan_rutin extends Admin_Controller
 			$jumlah = 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = !empty($old_row) ? ['old' => $old_row, 'new' => array_merge($old_row, ['status' => 1])] : ['id' => $id, 'status' => 1];
+			write_log('Pengajuan Rutin', 'Edit', 'Approve pengajuan rutin: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save' => $result,
@@ -517,8 +582,10 @@ class Pengajuan_rutin extends Admin_Controller
 	}
 	public function reject($id = '')
 	{
+		$this->auth->restrict('Approval_Pengajuan_Pembayaran_Rutin.Manage');
 		$result = false;
 		if ($id != "") {
+			$old_row = $this->db->get_where('tr_pengajuan_rutin', ['id' => $id])->row_array();
 			$data = array(
 				array(
 					'id' => $id,
@@ -534,6 +601,8 @@ class Pengajuan_rutin extends Admin_Controller
 			$jumlah = 1;
 			$sql            = $this->db->last_query();
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+			$log_payload = !empty($old_row) ? ['old' => $old_row, 'new' => array_merge($old_row, ['sts_reject' => 1, 'reject_ket' => $this->input->post('reject_reason')])] : ['id' => $id, 'sts_reject' => 1];
+			write_log('Pengajuan Rutin', 'Edit', 'Reject pengajuan rutin: ' . $id, $log_payload, null, $result ? 1 : 0);
 		}
 		$param = array(
 			'save' => $result,
@@ -616,7 +685,10 @@ class Pengajuan_rutin extends Admin_Controller
 
 						$this->db->select('a.id');
 						$this->db->from('payment_approve a');
-						$this->db->where('a.no_doc', $item->no_doc);
+						$this->db->group_start();
+						$this->db->where('a.id_payment', $item->no_doc);
+						$this->db->or_where('a.no_doc', $item->no_doc);
+						$this->db->group_end();
 						$count_payment_periodik = $this->db->get()->num_rows();
 
 						if ($count_payment_periodik > 0) {

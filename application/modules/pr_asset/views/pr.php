@@ -81,6 +81,27 @@
     </div>
 </div>
 
+<!-- Modal Closing PR Asset -->
+<div class="modal fade" id="dialog-popup" tabindex="-1" aria-labelledby="modalClosePrAssetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white py-3">
+                <h5 class="modal-title fw-bold" id="modalClosePrAssetLabel"><i class="fa fa-times-circle me-1"></i> Closing PR Asset</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post" id="frm-close-pr">
+                <div class="modal-body p-4" id="ModalView">
+                    <div class="text-center text-muted py-3">Loading data...</div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check me-1"></i> Close PR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     var currentStatus = 'N';
@@ -169,4 +190,58 @@
             }
         });
     }
+
+    $(document).on('click', '.close_pr_modal', function() {
+        var no_pr = $(this).data('no_pr');
+        var ctrl = (typeof active_controller !== 'undefined' && active_controller) ? active_controller : 'pr_asset/';
+        if (!ctrl.endsWith('/')) ctrl += '/';
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + ctrl + 'close_pr_modal',
+            data: { 'no_pr': no_pr },
+            cache: false,
+            success: function(result) {
+                $('#ModalView').html(result);
+                var modalEl = document.getElementById('dialog-popup');
+                var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.show();
+            },
+            error: function() {
+                Swal.fire('Error!', 'Failed to load Close PR modal.', 'error');
+            }
+        });
+    });
+
+    $(document).on('submit', '#frm-close-pr', function(e) {
+        e.preventDefault();
+        var ctrl = (typeof active_controller !== 'undefined' && active_controller) ? active_controller : 'pr_asset/';
+        if (!ctrl.endsWith('/')) ctrl += '/';
+        var data = new FormData(this);
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + ctrl + 'close_pr',
+            data: data,
+            cache: false,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                if (res.status == 1) {
+                    var modalEl = document.getElementById('dialog-popup');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    Swal.fire('Success!', res.msg || 'PR Asset closed.', 'success').then(function() {
+                        DataTables(currentStatus);
+                    });
+                } else {
+                    Swal.fire('Failed!', res.msg || 'Failed to close PR Asset.', 'warning');
+                }
+            },
+            error: function() {
+                Swal.fire('Error!', 'A system error occurred.', 'error');
+            }
+        });
+    });
 </script>

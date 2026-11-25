@@ -47,7 +47,9 @@ class Pr_asset_model extends BF_Model
             $nestedData[] = "<div align='center'>" . $row['created_by'] . "</div>";
             $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['created_date'])) . "</div>";
 
-            $app_status = isset($row['app_status']) ? $row['app_status'] : 'N';
+            $app_status = !empty($row['header_app_status_3'])
+                ? $row['header_app_status_3']
+                : (!empty($row['app_status_3']) ? $row['app_status_3'] : (isset($row['app_status']) ? $row['app_status'] : 'N'));
             if ($app_status == 'Y') {
                 $status = 'APPROVED';
                 $color  = 'success';
@@ -67,17 +69,22 @@ class Pr_asset_model extends BF_Model
                 $toggle_btn = "<button type='button' class='btn btn-sm btn-warning look_hide me-1' title='View Detail' data-id='" . $nomor . "'><i class='fa fa-eye me-1'></i> View</button>";
             }
             $modal_btn = "<button type='button' class='btn btn-sm btn-outline-primary view_modal_pr me-1' title='PR Detail' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-info-circle'></i></button>";
-            $print_btn = "<a href='" . site_url('pr_asset/print_pr_asset/' . $row['no_pr']) . "' target='_blank' class='btn btn-sm btn-info text-white' title='Print PR'><i class='fa fa-print'></i> Print</a>";
+            $print_btn = "<a href='" . site_url('pr_asset/print_pr_asset/' . $row['no_pr']) . "' target='_blank' class='btn btn-sm btn-info text-white me-1' title='Print PR'><i class='fa fa-print'></i> Print</a>";
+            $close_btn = '';
+            if (empty($tanda) && empty($row['close_pr']) && has_permission('PR_Asset.Delete')) {
+                $close_btn = "<button type='button' class='btn btn-sm btn-danger close_pr_modal' title='Close PR' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-times'></i></button>";
+            }
 
-            $nestedData[] = "<div align='center' class='btn-group'>" . $toggle_btn . $modal_btn . $print_btn . "</div>";
+            $nestedData[] = "<div align='center' class='btn-group'>" . $toggle_btn . $modal_btn . $print_btn . $close_btn . "</div>";
             $data[]       = $nestedData;
 
             // Detail Row (Expandable underneath)
             $tgl_butuh = (!empty($row['tgl_butuh'])) ? date('d F Y', strtotime((string) $row['tgl_butuh'])) : ((!empty($row['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) : '-');
 
+            $app_reason = !empty($row['header_app_reason_3']) ? $row['header_app_reason_3'] : (!empty($row['app_reason_3']) ? $row['app_reason_3'] : '');
             $reason_html = "<div align='center'></div>";
-            if (($app_status == 'D' || $app_status == 'R') && !empty($row['app_reason'])) {
-                $reason_html = "<div align='center'><b>REASON</b><br><span class='text-danger'>" . strtoupper((string) $row['app_reason']) . "</span></div>";
+            if (($app_status == 'D' || $app_status == 'R') && !empty($app_reason)) {
+                $reason_html = "<div align='center'><b>REASON</b><br><span class='text-danger'>" . strtoupper((string) $app_reason) . "</span></div>";
             }
 
             if ($tanda == 'approval_management' && ($app_status == 'N' || empty($app_status))) {
@@ -132,25 +139,29 @@ class Pr_asset_model extends BF_Model
 
     public function query_data_json_pr_asset($tanda = '', $status_filter = '', $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
     {
-        $where = '';
+        $status_expr = "COALESCE(NULLIF(b.app_status_3, ''), NULLIF(a.app_status_3, ''), a.app_status, 'N')";
+        $where = " AND b.close_pr IS NULL ";
         if (!empty($tanda) && $tanda === 'approve') {
-            $where .= " AND (a.app_status = 'N' OR a.app_status IS NULL OR a.app_status = '') ";
+            $where .= " AND " . $status_expr . " = 'N' ";
         }
 
         if (!empty($status_filter) && $status_filter !== 'ALL') {
             if ($status_filter === 'N') {
-                $where .= " AND (a.app_status = 'N' OR a.app_status IS NULL OR a.app_status = '') ";
+                $where .= " AND " . $status_expr . " = 'N' ";
             } else if ($status_filter === 'D') {
-                $where .= " AND (a.app_status = 'D' OR a.app_status = 'R') ";
+                $where .= " AND " . $status_expr . " IN ('D', 'R') ";
             } else {
-                $where .= " AND a.app_status = '" . $this->db->escape_str($status_filter) . "' ";
+                $where .= " AND " . $status_expr . " = '" . $this->db->escape_str($status_filter) . "' ";
             }
         }
 
         $sql = "
             SELECT
                 a.*,
-                b.tgl_pr
+                b.tgl_pr,
+                b.close_pr,
+                b.app_status_3 AS header_app_status_3,
+                b.app_reason_3 AS header_app_reason_3
             FROM
                 tran_pr_detail a
                 LEFT JOIN tran_pr_header b ON a.no_pr = b.no_pr
@@ -321,6 +332,7 @@ class Pr_asset_model extends BF_Model
             'no_pr'        => $no_pr,
             'tgl_pr'       => date('Y-m-d'),
             'category'     => 'asset',
+            'app_status_3' => 'N',
             'created_by'   => $username,
             'created_date' => $dateTime
         );
@@ -335,6 +347,7 @@ class Pr_asset_model extends BF_Model
             'nilai_pr'       => $nil_pr,
             'tgl_dibutuhkan' => $tgl_butuh,
             'app_status'     => 'N',
+            'app_status_3'   => 'N',
             'created_by'     => $username,
             'created_date'   => $dateTime
         );
@@ -385,21 +398,29 @@ class Pr_asset_model extends BF_Model
         $username = isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin'));
         $dateTime = date('Y-m-d H:i:s');
 
-        $ArrUpdate = array(
-            'app_status' => $action,
-            'app_reason' => $reason,
-            'app_by'     => $username,
-            'app_date'   => $dateTime
+        $ArrUpdateHeader = array(
+            'app_status_3' => $action,
+            'app_reason_3' => $reason,
+            'app_by_3'     => $username,
+            'app_date_3'   => $dateTime
+        );
+
+        $ArrUpdateDetail = array(
+            'app_status'   => ($action === 'Y') ? 'Y' : 'N',
+            'app_status_3' => $action,
+            'app_reason_3' => $reason,
+            'app_by_3'     => $username,
+            'app_date_3'   => $dateTime
         );
 
         $old_pr_header = $this->db->get_where('tran_pr_header', array('no_pr' => $no_pr))->row_array();
 
         $this->db->trans_start();
         $this->db->where('no_pr', $no_pr);
-        $this->db->update('tran_pr_header', $ArrUpdate);
+        $this->db->update('tran_pr_header', $ArrUpdateHeader);
 
         $this->db->where('no_pr', $no_pr);
-        $this->db->update('tran_pr_detail', $ArrUpdate);
+        $this->db->update('tran_pr_detail', $ArrUpdateDetail);
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === FALSE) {
@@ -411,7 +432,7 @@ class Pr_asset_model extends BF_Model
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
             $Arr_Data   = array('pesan' => 'Success ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
-            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdate ?? [])) : $data;
+            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdateHeader ?? [])) : $data;
             write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }
 

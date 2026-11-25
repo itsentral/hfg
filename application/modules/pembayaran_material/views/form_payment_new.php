@@ -919,6 +919,8 @@ foreach ($results['result_payment'] as $item) {
 						baseurl = siteurl + active_controller + 'save_payment_local';
 					} else if (tipe_payment === 'ros_bm' || tipe_payment === 'ros_ls' || tipe_payment === 'ros_insurance' || tipe_payment === 'ros_other_cost') {
 						baseurl = siteurl + active_controller + 'save_payment_ros';
+					} else if ($.inArray(tipe_payment, ['Cash', 'direct_payment', 'kasbon', 'expense', 'transportasi', 'periodik', 'nonpo', 'refill_pettycash']) !== -1) {
+						baseurl = siteurl + active_controller + 'save_payment_non_po';
 					} else {
 						baseurl = siteurl + active_controller + 'save_payment_po';
 					}

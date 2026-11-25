@@ -3,10 +3,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $data_status = array();
 class Pembayaran_material extends Admin_Controller
 {
-	protected $viewPermission   = 'Incoming_Stok.View';
-	protected $addPermission    = 'Incoming_Stok.Add';
-	protected $managePermission = 'Incoming_Stok.Manage';
-	protected $deletePermission = 'Incoming_Stok.Delete';
+	protected $viewPermission   = 'Payment.View';
+	protected $addPermission    = 'Payment.Add';
+	protected $managePermission = 'Payment.Manage';
+	protected $deletePermission = 'Payment.Delete';
 
 	protected $data_status;
 
@@ -137,6 +137,7 @@ class Pembayaran_material extends Admin_Controller
 	//==================================================================================================================
 	public function payment_list()
 	{
+		$this->auth->restrict($this->viewPermission);
 		// PR: expense dengan exp_inv_po=1 ATAU tipe invoice PO (DP/Import/Local) ATAU tipe Cash
 		$results = $this->db->query("
 			SELECT a.*, 
@@ -164,7 +165,7 @@ class Pembayaran_material extends Admin_Controller
 			WHERE (a.id_payment IS NOT NULL AND a.id_payment <> '')
 			AND a.tipe NOT IN ('invoice_dp', 'invoice_import', 'invoice_local', 'Cash')
 			AND (a.tipe <> 'expense' OR b.exp_inv_po IS NULL OR b.exp_inv_po <> 1)
-			GROUP BY a.id_payment 
+			GROUP BY a.no_doc 
 			ORDER BY a.created_on DESC
 		")->result();
 
@@ -181,6 +182,7 @@ class Pembayaran_material extends Admin_Controller
 
 	public function form_payment_new()
 	{
+		$this->auth->restrict($this->addPermission);
 
 		$id_payment = explode(';', (string) $_GET['id_payment']);
 
@@ -1013,6 +1015,7 @@ class Pembayaran_material extends Admin_Controller
 
 	public function save_payment_po()
 	{
+		$this->auth->restrict($this->managePermission);
 		// Mulai buffer baru — supaya semua Notice/Warning/Deprecated yang mungkin
 		// muncul di tengah proses TERTANGKAP di buffer ini, bukan langsung ke output.
 		ob_start();
@@ -1324,6 +1327,7 @@ class Pembayaran_material extends Admin_Controller
 	 */
 	public function save_payment_ros()
 	{
+		$this->auth->restrict($this->managePermission);
 		ob_start();
 
 		$post = $this->input->post();
@@ -1581,6 +1585,7 @@ class Pembayaran_material extends Admin_Controller
 	 */
 	public function save_payment_local()
 	{
+		$this->auth->restrict($this->managePermission);
 		// Mulai buffer baru — supaya semua Notice/Warning/Deprecated yang mungkin
 		// muncul di tengah proses TERTANGKAP di buffer ini, bukan langsung ke output.
 		ob_start();
@@ -1791,6 +1796,12 @@ class Pembayaran_material extends Admin_Controller
 				foreach ($post['dt'] as $detail) {
 					if (!empty($detail['ids'])) {
 						$this->db->update('tr_receive_invoice', ['status' => 'payment'], ['id' => $detail['ids']]);
+						$ri_top = $this->db->select('id_top')
+							->get_where('tr_receive_invoice', ['id' => $detail['ids']])
+							->row();
+						if ($ri_top && !empty($ri_top->id_top)) {
+							$this->db->update('tr_top_po', ['status_bayar' => 'payment'], ['id' => $ri_top->id_top]);
+						}
 					}
 				}
 			}
@@ -2097,8 +2108,12 @@ class Pembayaran_material extends Admin_Controller
 			'size'     => $_FILES['upload_doc']['size'][$file_key],
 		];
 
+		$upload_dir_inv = FCPATH . 'uploads/payment_invoice/';
+		if (!is_dir($upload_dir_inv)) {
+			mkdir($upload_dir_inv, 0755, true);
+		}
 		$config_upload = [
-			'upload_path'   => FCPATH . 'uploads/payment_invoice/',
+			'upload_path'   => $upload_dir_inv,
 			'allowed_types' => '*',
 			'remove_spaces' => TRUE,
 			'encrypt_name'  => TRUE
@@ -2121,6 +2136,7 @@ class Pembayaran_material extends Admin_Controller
 
 	public function save_payment_import()
 	{
+		$this->auth->restrict($this->managePermission);
 		if (ob_get_level()) ob_end_clean();
 		$post = $this->input->post();
 
@@ -2323,6 +2339,12 @@ class Pembayaran_material extends Admin_Controller
 				foreach ($post['dt'] as $detail) {
 					if (!empty($detail['ids'])) {
 						$this->db->update('tr_receive_invoice', ['status' => 'payment'], ['id' => $detail['ids']]);
+						$ri_top = $this->db->select('id_top')
+							->get_where('tr_receive_invoice', ['id' => $detail['ids']])
+							->row();
+						if ($ri_top && !empty($ri_top->id_top)) {
+							$this->db->update('tr_top_po', ['status_bayar' => 'payment'], ['id' => $ri_top->id_top]);
+						}
 					}
 				}
 			}
@@ -2364,6 +2386,335 @@ class Pembayaran_material extends Admin_Controller
 			]);
 			exit;
 		}
+	}
+
+	/**
+	 * Save Payment khusus Non-PO (Cash, direct_payment, kasbon, expense, transportasi, periodik, nonpo, refill_pettycash).
+	 * Tidak menyentuh tr_receive_invoice / tr_top_po; memperbarui status request_payment -> 'finish'
+	 * serta status dokumen di modul hulu masing-masing.
+	 */
+	public function save_payment_non_po()
+	{
+		$this->auth->restrict($this->managePermission);
+		ob_start();
+		$post = $this->input->post();
+		$this->db->trans_begin();
+
+		try {
+			$id_req_arr = [];
+			$raw_ids    = explode(',', (string) ($post['id_payment'] ?? ''));
+			foreach ($raw_ids as $rid) {
+				$rid = trim((string) $rid);
+				if ($rid !== '' && is_numeric($rid)) {
+					$id_req_arr[] = (int) $rid;
+				}
+			}
+			if (empty($id_req_arr) && !empty($post['dt'])) {
+				foreach ($post['dt'] as $dt_item) {
+					if (!empty($dt_item['id_payment'])) {
+						$id_req_arr[] = (int) $dt_item['id_payment'];
+					}
+				}
+			}
+			if (empty($id_req_arr)) {
+				throw new Exception('Request payment data not found.');
+			}
+
+			$req_payment_rows = $this->db->where_in('id', $id_req_arr)->get('request_payment')->result();
+			if (empty($req_payment_rows)) {
+				throw new Exception('Invalid request payment data.');
+			}
+
+			$first_req    = $req_payment_rows[0];
+			$tipe_payment = $first_req->tipe;
+
+			$tgl_bayar    = !empty($post['tgl_bayar']) ? $post['tgl_bayar'] : date('Y-m-d');
+			$bank_coa     = $post['bank'] ?? '';
+			$mata_uang    = !empty($post['mata_uang']) ? $post['mata_uang'] : 'IDR';
+			$kurs         = (float) str_replace(',', '', $post['kurs_payment'] ?? '1');
+			if ($kurs <= 0) {
+				$kurs = 1;
+			}
+			$payment_bank = (float) str_replace(',', '', $post['payment_bank'] ?? '0');
+			$bank_charge  = (float) str_replace(',', '', $post['bank_charge'] ?? '0');
+			$keterangan   = $post['keterangan_pembayaran'] ?? '';
+			$id_supplier  = $post['supplier_input'] ?? '';
+			$nm_supplier  = $post['nm_supplier_input'] ?? '';
+			$nilai_bank_idr = $payment_bank * $kurs;
+
+			$db_acc     = $this->load->database('accounting', TRUE);
+			$kode_bank  = '';
+			$nm_coa_bank = '';
+			if ($bank_coa !== '') {
+				$row_bank = $db_acc->get_where('coa_master', ['no_perkiraan' => $bank_coa])->row();
+				if ($row_bank) {
+					$nm_coa_bank = $row_bank->nama ?? '';
+					$kode_bank   = $row_bank->kode_bank ?? '';
+				}
+			}
+
+			$no_doc_payment = $this->Pembayaran_material_model->generate_id_payment_paid($kode_bank, $tgl_bayar);
+
+			$total_pph    = 0;
+			$total_ppn    = 0;
+			$subtotal     = 0;
+			$tipe_pph_val = '';
+			$detail_gl    = [];
+
+			if (!empty($post['dt'])) {
+				foreach ($post['dt'] as $detail) {
+					$det_pph         = (float) str_replace(',', '', $detail['nilai_pph'] ?? '0');
+					$det_ppn         = (float) str_replace(',', '', $detail['nilai_ppn'] ?? '0');
+					$det_jumlah_asli = (float) str_replace(',', '', $detail['jumlah'] ?? '0');
+					$det_jumlah_idr  = $det_jumlah_asli * $kurs;
+
+					$total_pph += $det_pph;
+					$total_ppn += $det_ppn;
+					$subtotal  += $det_jumlah_idr;
+
+					if (!empty($detail['tipe_pph'])) {
+						$tipe_pph_val = ($detail['tipe_pph'] == 1) ? 'PPH 23' : 'PPH 22';
+					}
+				}
+			}
+
+			if ($subtotal <= 0 && $nilai_bank_idr > 0) {
+				$subtotal = $nilai_bank_idr;
+			}
+			$grand_total = $subtotal + $total_ppn - $total_pph + $bank_charge;
+
+			$this->db->insert('payment_approve', [
+				'no_doc'                => $no_doc_payment,
+				'tipe'                  => $tipe_payment,
+				'tgl_bayar'             => $tgl_bayar,
+				'tgl_doc'               => $tgl_bayar,
+				'pay_by'                => $this->auth->user_name(),
+				'pay_on'                => date('Y-m-d H:i:s'),
+				'created_by'            => $this->auth->user_name(),
+				'created_on'            => date('Y-m-d H:i:s'),
+				'supplier'              => $id_supplier,
+				'keterangan_pembayaran' => $keterangan,
+				'coa_bank'              => $bank_coa,
+				'nm_coa_bank'           => $nm_coa_bank,
+				'mata_uang'             => $mata_uang,
+				'currency'              => $mata_uang,
+				'kurs_payment'          => $kurs,
+				'payment_bank'          => $payment_bank,
+				'total_payment'         => $subtotal,
+				'total_pph'             => $total_pph,
+				'total_ppn'             => $total_ppn,
+				'grand_total_payment'   => $grand_total,
+				'tipe_pph'              => $tipe_pph_val,
+				'id_supplier'           => $id_supplier,
+				'nm_supplier'           => $nm_supplier ?: $first_req->nama,
+				'link_doc'              => '',
+				'bank_charge'           => $bank_charge,
+				'nominal_asli'          => $payment_bank,
+				'nominal_asli_idr'      => $nilai_bank_idr,
+				'tagihan_idr'           => $subtotal,
+				'dibayar_idr'           => (int) round($nilai_bank_idr > 0 ? $nilai_bank_idr : $grand_total),
+				'selisih_kurs_idr'      => 0,
+				'selisih'               => 0,
+				'id_payment'            => $first_req->no_doc,
+				'gl_hutang_dagang'      => (int) round($subtotal),
+				'gl_selisih_kurs'       => 0,
+				'gl_total_payment'      => (int) round($nilai_bank_idr > 0 ? $nilai_bank_idr : $grand_total),
+				'status'                => 1,
+			]);
+
+			$req_by_id = [];
+			foreach ($req_payment_rows as $rp) {
+				$req_by_id[$rp->id] = $rp;
+			}
+
+			if (!empty($post['dt'])) {
+				$total_bayar_idr = (float) str_replace(',', '', $post['nilai_bank_idr'] ?? '0');
+				foreach ($post['dt'] as $detail) {
+					$det_id_req      = (int) ($detail['id_payment'] ?? 0);
+					$rp_row          = $req_by_id[$det_id_req] ?? $first_req;
+					$det_jumlah_asli = (float) str_replace(',', '', $detail['jumlah'] ?? '0');
+					$det_jumlah_idr  = $det_jumlah_asli * $kurs;
+					$det_ppn         = (float) str_replace(',', '', $detail['nilai_ppn'] ?? '0');
+					$det_pph         = (float) str_replace(',', '', $detail['nilai_pph'] ?? '0');
+					$file_upload_row = $this->upload_doc_per_row($det_id_req ?: '');
+					$coa_beban       = $this->_resolve_non_po_coa($rp_row);
+
+					$this->db->insert('payment_approve_details', [
+						'payment_id'         => $no_doc_payment,
+						'no_doc'             => $detail['no_surat'] ?? ($rp_row->no_surat ?: $rp_row->no_doc),
+						'no_po'              => $detail['no_doc'] ?? $rp_row->no_doc,
+						'deskripsi'          => $rp_row->keperluan ?: ('Payment ' . $rp_row->tipe . ' ' . $rp_row->no_doc),
+						'nilai_invoice_kurs' => $det_jumlah_asli,
+						'nilai_invoice_idr'  => $det_jumlah_idr,
+						'total_bayar_kurs'   => $payment_bank,
+						'total_bayar_idr'    => $total_bayar_idr > 0 ? $total_bayar_idr : $det_jumlah_idr,
+						'total'              => $det_jumlah_idr,
+						'nilai_invoice'      => $det_jumlah_idr,
+						'nilai_ppn'          => $det_ppn,
+						'nilai_pph'          => $det_pph,
+						'tipe_pph'           => (($detail['tipe_pph'] ?? null) == 1) ? 'PPH 23' : 'PPH 22',
+						'kurs_invoice'       => $kurs,
+						'coa'                => $coa_beban,
+						'currency'           => $mata_uang,
+						'file_original_name' => $file_upload_row['file_original_name'],
+						'file_hash_name'     => $file_upload_row['file_hash_name'],
+						'created_by'         => $this->auth->user_name(),
+						'created_on'         => date('Y-m-d H:i:s'),
+					]);
+
+					if ($det_jumlah_idr > 0) {
+						$detail_gl[] = [
+							'no_perkiraan' => $coa_beban ?: $bank_coa,
+							'keterangan'   => $rp_row->keperluan ?: ('Payment ' . $rp_row->no_doc),
+							'no_reff'      => $rp_row->no_doc,
+							'debet'        => $det_jumlah_idr,
+							'kredit'       => 0,
+						];
+					}
+				}
+			}
+
+			// Sinkronisasi status dokumen di modul hulu & request_payment
+			$now = date('Y-m-d H:i:s');
+			foreach ($req_payment_rows as $rp) {
+				$t = strtolower((string) $rp->tipe);
+				if ($t === 'cash' || $t === 'direct_payment') {
+					$this->db->update('tr_pr_non_po', ['sts' => '3'], ['no_non_po' => $rp->no_doc]);
+				} elseif ($t === 'kasbon') {
+					$this->db->update('tr_kasbon', ['status' => 3, 'modified_by' => $this->auth->user_name(), 'modified_on' => $now], ['no_doc' => $rp->no_doc]);
+				} elseif ($t === 'expense') {
+					$this->db->update('tr_expense', ['status' => 3, 'modified_by' => $this->auth->user_name(), 'modified_on' => $now], ['no_doc' => $rp->no_doc]);
+					$this->db->update('tr_expense_detail', ['status' => '2'], ['no_doc' => $rp->no_doc]);
+				} elseif ($t === 'transportasi' || $t === 'transport') {
+					$this->db->update('tr_transport_req', ['status' => 2, 'modified_by' => $this->auth->user_name(), 'modified_on' => $now], ['no_doc' => $rp->no_doc]);
+					$this->db->update('tr_transport', ['status' => 2], ['no_req' => $rp->no_doc]);
+				} elseif ($t === 'periodik') {
+					if (!empty($rp->ids)) {
+						$this->db->update('tr_pengajuan_rutin_detail', [
+							'id_payment'  => $no_doc_payment,
+							'status'      => '2',
+							'modified_by' => $this->auth->user_name(),
+							'modified_on' => $now,
+						], ['id' => $rp->ids]);
+					}
+					$belum_periodik = $this->db
+						->where('no_doc', $rp->no_doc)
+						->where('(id_payment IS NULL OR id_payment = "" OR id_payment = "0")', null, false)
+						->count_all_results('tr_pengajuan_rutin_detail');
+					if ((int) $belum_periodik === 0) {
+						$this->db->update('tr_pengajuan_rutin', ['status' => 2, 'modified_by' => $this->auth->user_name(), 'modified_on' => $now], ['no_doc' => $rp->no_doc]);
+					}
+				} elseif ($t === 'refill_pettycash') {
+					$this->db->update('tr_pelaporan_petty_cash', ['status' => 'approved'], ['no_pelaporan' => $rp->no_doc]);
+				} elseif ($t === 'nonpo') {
+					$this->db->update('tr_non_po_detail', ['status' => '2'], ['no_doc' => $rp->no_doc]);
+					$this->db->update('tr_non_po_header', ['status' => 2], ['no_doc' => $rp->no_doc]);
+				}
+			}
+
+			$this->db->where_in('id', $id_req_arr);
+			$this->db->update('request_payment', ['status' => 'finish']);
+
+			$this->db->where('id_user', $this->auth->user_id());
+			$this->db->where_in('id_payment', $id_req_arr);
+			$this->db->delete('tr_choosed_payment');
+
+			// Generate GL Interface (template bila tersedia, fallback entri manual terstruktur agar tidak gagal)
+			$row_lengkap = $this->db->get_where('payment_approve', ['no_doc' => $no_doc_payment])->row_array();
+			$this->load->model('gl_interface/Gl_interface_model');
+			$action_map = 'save_payment_non_po_' . strtolower((string) $tipe_payment);
+			$mapping    = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'Pembayaran Material', 'action' => $action_map])->row();
+			if (!$mapping) {
+				$mapping = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'Pembayaran Material', 'action' => 'save_payment_non_po'])->row();
+			}
+
+			if ($mapping && !empty($mapping->kode_master_jurnal)) {
+				$this->Gl_interface_model->generate_jurnal_dari_template($mapping->kode_master_jurnal, $row_lengkap);
+			} else {
+				if ($bank_charge > 0) {
+					$detail_gl[] = [
+						'no_perkiraan' => $bank_coa,
+						'keterangan'   => 'Biaya Admin Bank - ' . $no_doc_payment,
+						'no_reff'      => $no_doc_payment,
+						'debet'        => $bank_charge,
+						'kredit'       => 0,
+					];
+				}
+				$kredit_bank = ($nilai_bank_idr > 0) ? $nilai_bank_idr : $grand_total;
+				if ($kredit_bank > 0) {
+					$detail_gl[] = [
+						'no_perkiraan' => $bank_coa,
+						'keterangan'   => $keterangan ?: ('Pembayaran ' . $tipe_payment . ' ' . $first_req->no_doc),
+						'no_reff'      => $no_doc_payment,
+						'debet'        => 0,
+						'kredit'       => $kredit_bank,
+					];
+				}
+				$this->Gl_interface_model->create_manual_jurnal([
+					'tgl'             => $tgl_bayar,
+					'jml'             => $kredit_bank,
+					'jenis'           => 'BUK',
+					'keterangan'      => 'Pembayaran Non-PO (' . $tipe_payment . ') ' . $first_req->no_doc,
+					'jenis_transaksi' => 'Payment Non-PO',
+					'memo'            => [
+						'id_supplier'   => $id_supplier,
+						'nama_supplier' => $nm_supplier ?: $first_req->nama,
+						'no_reff'       => $no_doc_payment,
+						'no_request'    => $first_req->no_doc,
+					],
+				], $detail_gl);
+			}
+
+			write_log('Pembayaran Material', 'Payment Non-PO', 'Payment Non-PO saved: ' . $no_doc_payment . ' (' . $tipe_payment . ')', ['no_doc' => $no_doc_payment, 'tipe' => $tipe_payment, 'total' => $grand_total], null, 1);
+
+			$this->db->trans_commit();
+
+			ob_end_clean();
+			header('Content-Type: application/json');
+			echo json_encode([
+				'status' => 1,
+				'pesan'  => 'Payment Non-PO saved successfully.'
+			]);
+			exit;
+		} catch (Exception $e) {
+			$this->db->trans_rollback();
+
+			ob_end_clean();
+			header('Content-Type: application/json');
+			echo json_encode([
+				'status' => 0,
+				'pesan'  => 'Failed: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	private function _resolve_non_po_coa($rp_row)
+	{
+		if (empty($rp_row)) {
+			return '';
+		}
+		$t = strtolower((string) ($rp_row->tipe ?? ''));
+		if ($t === 'periodik' && !empty($rp_row->ids)) {
+			$row = $this->db->select('coa')->get_where('tr_pengajuan_rutin_detail', ['id' => $rp_row->ids])->row();
+			return $row->coa ?? '';
+		}
+		if ($t === 'kasbon') {
+			$row = $this->db->select('coa')->get_where('tr_kasbon', ['no_doc' => $rp_row->no_doc])->row();
+			return $row->coa ?? '';
+		}
+		if ($t === 'expense') {
+			$row = $this->db->select('coa')->get_where('tr_expense_detail', ['no_doc' => $rp_row->no_doc])->row();
+			if (!$row || empty($row->coa)) {
+				$row = $this->db->select('coa')->get_where('tr_expense', ['no_doc' => $rp_row->no_doc])->row();
+			}
+			return $row->coa ?? '';
+		}
+		if ($t === 'transportasi' || $t === 'transport') {
+			$row = $this->db->select('coa')->get_where('tr_transport_req', ['no_doc' => $rp_row->no_doc])->row();
+			return $row->coa ?? '';
+		}
+		return '';
 	}
 
 	public function view_payment_new($id)
@@ -2952,6 +3303,10 @@ class Pembayaran_material extends Admin_Controller
 
 			$id_payment_paid = $this->Pembayaran_material_model->generate_id_payment_paid($kode_bank, $post['tgl_bayar']);
 
+			$upload_dir_exp = FCPATH . 'assets/expense/';
+			if (!is_dir($upload_dir_exp)) {
+				mkdir($upload_dir_exp, 0755, true);
+			}
 			$config['upload_path'] = 'assets/expense/';
 			$config['allowed_types'] = '*';
 			$config['remove_spaces'] = TRUE;

@@ -1006,8 +1006,8 @@ class New_ros extends Admin_Controller
                 'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN),
             ),
             'fill' => array(
-                'type'  => PHPExcel_Style_Fill::FILL_SOLID,
-                'color' => array('rgb' => 'D9E1F2'),
+                'fillType'   => PHPExcel_Style_Fill::FILL_SOLID,
+                'startColor' => array('rgb' => 'D9E1F2'),
             ),
         );
 
@@ -1063,8 +1063,8 @@ class New_ros extends Admin_Controller
                     'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN),
                 ),
                 'fill' => array(
-                    'type'  => PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => $bgColor),
+                    'fillType'   => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startColor' => array('rgb' => $bgColor),
                 ),
                 'alignment' => array(
                     'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,

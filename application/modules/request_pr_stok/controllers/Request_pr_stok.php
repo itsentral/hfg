@@ -58,8 +58,8 @@ class Request_pr_stok extends Admin_Controller
       ->join('users e', 'e.id_user = a.created_by', 'left')
       ->join('tr_pr_detail_kasbon pdk', 'pdk.no_pr = a.no_pr', 'left')
       ->join('tr_kasbon kb', 'kb.no_doc = pdk.id_kasbon OR kb.id_pr = a.no_pr', 'left')
-      ->join('tr_pr_non_po np', "np.no_pr = a.no_pr AND np.jenis_pr = 'pr stock'", 'left', FALSE)
-      ->join('payment_approve pa_np', 'pa_np.no_doc = np.no_non_po AND pa_np.status = 2', 'left')
+      ->join('tr_pr_non_po np', "np.no_pr = a.no_pr AND np.jenis_pr = 'pr stok'", 'left', FALSE)
+      ->join('payment_approve pa_np', '(pa_np.id_payment = np.no_non_po OR pa_np.no_doc = np.no_non_po) AND pa_np.status = 2', 'left', FALSE)
       ->join('tr_purchase_order po', 'po.no_pr = a.no_pr', 'left')
       ->where('a.category', 'pr stok')
       ->where('a.booking_date <>', null)
@@ -87,6 +87,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function add()
   {
+    $this->auth->restrict($this->addPermission);
     $data = [
       'category' => $this->db->get_where('accessories_category', array('deleted_date' => NULL))->result_array()
     ];
@@ -96,6 +97,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function add_new()
   {
+    $this->auth->restrict($this->addPermission);
     $data = [
       'category' => $this->db->get_where('accessories_category', array('deleted_date' => NULL))->result_array()
     ];
@@ -152,6 +154,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function save_reorder_change()
   {
+    $this->auth->restrict($this->addPermission);
     $data = $this->input->post();
 
     $id_material  = $data['id_material'];
@@ -161,6 +164,7 @@ class Request_pr_stok extends Admin_Controller
     $info         = $data['info'];
 
     $get_accessories = $this->db->get_where('accessories', ['id' => $id_material])->row();
+    $old_accessories = $get_accessories ? (array) $get_accessories : [];
     $purchase_pack = ($purchase / $get_accessories->konversi);
 
     $get_price_ref = $this->db->select('price_reference')->get_where('budget_rutin_detail', ['id_barang' => $id_material])->row();
@@ -184,12 +188,15 @@ class Request_pr_stok extends Admin_Controller
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
+      write_log('PR Stok', 'Edit', 'Change propose reorder failed for material ID: ' . $id_material, $ArrHeader, null, 0);
       $Arr_Data  = array(
         'pesan'    => 'Save process failed. Please try again later ...',
         'status'  => 0
       );
     } else {
       $this->db->trans_commit();
+      $log_payload = !empty($old_accessories) ? ['old' => $old_accessories, 'new' => array_merge($old_accessories, $ArrHeader)] : $ArrHeader;
+      write_log('PR Stok', 'Edit', 'Change propose reorder success for material ID: ' . $id_material, $log_payload, null, 1);
       $Arr_Data  = array(
         'pesan'    => 'Save process success. Thanks ...',
         'status'  => 1
@@ -201,6 +208,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function save_reorder_all()
   {
+    $this->auth->restrict($this->addPermission);
     $data = $this->input->post();
 
     $Ym         = date('ym');
@@ -217,12 +225,29 @@ class Request_pr_stok extends Admin_Controller
 
     // $getraw_materials   = $this->db->get_where('accessories', array('id_category' => $id_category, 'deleted_date' => NULL, 'status' => '1', 'request >' => 0))->result_array();
 
-    $getraw_materials = $this->db->query('SELECT a.* FROM accessories a WHERE a.id_category = "' . $id_category . '" AND a.deleted_date IS NULL AND a.status = "1" AND (a.request_pack > 0)')->result_array();
+    $getraw_materials = $this->db->query(
+      'SELECT a.* FROM accessories a WHERE a.id_category = ? AND a.deleted_date IS NULL AND a.status = "1" AND a.request_pack > 0',
+      [$id_category]
+    )->result_array();
+
+    if (empty($getraw_materials)) {
+      echo json_encode([
+        'pesan'  => 'No items with propose qty > 0 found for the selected category.',
+        'status' => 0
+      ]);
+      return;
+    }
 
     $ArrSaveDetail = [];
+    $material_ids  = [];
     $SUM = 0;
+    $tgl_dibutuhkan = null;
     foreach ($getraw_materials as $key => $value) {
       $SUM += $value['request'];
+      $material_ids[] = $value['id'];
+      if (empty($tgl_dibutuhkan) && !empty($value['tgl_dibutuhkan'])) {
+        $tgl_dibutuhkan = $value['tgl_dibutuhkan'];
+      }
 
       $this->db->select('a.price_reference');
       $this->db->from('budget_rutin_detail a');
@@ -245,7 +270,7 @@ class Request_pr_stok extends Admin_Controller
       'id_customer'   => 'C100-2401002',
       'project' => 'Pengisian Stok Internal',
       'qty_propose' => $SUM,
-      'tgl_dibutuhkan' => $value['tgl_dibutuhkan'],
+      'tgl_dibutuhkan' => $tgl_dibutuhkan,
       'created_by'      => $this->id_user,
       'created_date'    => $this->datetime,
       'booking_by'      => $this->id_user,
@@ -255,37 +280,31 @@ class Request_pr_stok extends Admin_Controller
       'nilai_pengajuan' => isset($data['nilai_pengajuan']) ? (float)str_replace(',', '', $data['nilai_pengajuan'] ?? '') : 0
     );
 
-    // print_r($ArrSaveHeader);
-    // print_r($ArrSaveDetail);
-    // exit;
-
     $this->db->trans_start();
-    $insert_stok = $this->db->insert('material_planning_base_on_produksi', $ArrSaveHeader);
-    if (!$insert_stok) {
-      $this->db->trans_rollback();
-
-      print_r($this->db->last_query());
-      exit;
-    }
+    $this->db->insert('material_planning_base_on_produksi', $ArrSaveHeader);
     if (!empty($ArrSaveDetail)) {
-      $insert_pr_stok_detail = $this->db->insert_batch('material_planning_base_on_produksi_detail', $ArrSaveDetail);
-      if (!$insert_pr_stok_detail) {
-        $this->db->trans_rollback();
-
-        print_r($this->db->last_query());
-        exit;
-      }
+      $this->db->insert_batch('material_planning_base_on_produksi_detail', $ArrSaveDetail);
+    }
+    if (!empty($material_ids)) {
+      $this->db->where_in('id', $material_ids);
+      $this->db->update('accessories', [
+        'request'      => 0,
+        'request_pack' => 0,
+        'info_pr'      => null
+      ]);
     }
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
+      write_log('PR Stok', 'Create', 'Create PR Stok failed: ' . $so_number, ['so_number' => $so_number, 'category' => $id_category], null, 0);
       $Arr_Data  = array(
         'pesan'    => 'Save process failed. Please try again later ...',
         'status'  => 0
       );
     } else {
       $this->db->trans_commit();
+      write_log('PR Stok', 'Create', 'Create PR Stok success: ' . $so_number, ['so_number' => $so_number, 'category' => $id_category, 'items' => count($ArrSaveDetail)], null, 1);
       $Arr_Data  = array(
         'pesan'    => 'Save process success. Thanks ...',
         'status'  => 1
@@ -297,6 +316,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function save_reorder_change_date()
   {
+    $this->auth->restrict($this->addPermission);
     $data = $this->input->post();
 
     $tanggal         = $data['tanggal'];
@@ -409,6 +429,7 @@ class Request_pr_stok extends Admin_Controller
 
   public function process_update_all()
   {
+    $this->auth->restrict($this->managePermission);
     $data       = $this->input->post();
     $detail      = $data['detail'];
     $so_number  = $data['so_number'];
@@ -420,6 +441,7 @@ class Request_pr_stok extends Admin_Controller
     }
 
     $get_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row();
+    $old_pr = $get_pr ? (array) $get_pr : [];
 
 
     $this->db->trans_start();
@@ -464,6 +486,7 @@ class Request_pr_stok extends Admin_Controller
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
+      write_log('PR Stok', 'Edit', 'Update planning PR Stok failed: ' . $so_number, ['so_number' => $so_number], null, 0);
       $Arr_Data  = array(
         'pesan'    => 'Process Failed !',
         'status'  => 0,
@@ -471,6 +494,16 @@ class Request_pr_stok extends Admin_Controller
       );
     } else {
       $this->db->trans_commit();
+      $new_pr_fields = [
+        'no_rev'         => ($get_pr->no_rev + 1),
+        'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
+        'tingkat_pr'     => $data['tingkat_pr'],
+        'keterangan_1'   => $data['keterangan_1'],
+        'keterangan_2'   => $data['keterangan_2'],
+        'keterangan_3'   => $data['keterangan_3'],
+      ];
+      $log_payload = !empty($old_pr) ? ['old' => $old_pr, 'new' => array_merge($old_pr, $new_pr_fields)] : $new_pr_fields;
+      write_log('PR Stok', 'Edit', 'Update planning PR Stok success: ' . $so_number, $log_payload, null, 1);
       $Arr_Data  = array(
         'pesan'    => 'Process Success !',
         'status'  => 1,
@@ -559,7 +592,9 @@ class Request_pr_stok extends Admin_Controller
 
   public function edit_detail()
   {
+    $this->auth->restrict($this->managePermission);
     $post = $this->input->post();
+    $old_detail = $this->db->get_where('material_planning_base_on_produksi_detail', ['id' => $post['id']])->row_array();
 
     $this->db->trans_begin();
 
@@ -568,16 +603,17 @@ class Request_pr_stok extends Admin_Controller
       'note' => $post['notes']
     ];
 
-    // print_r($ArrUpdate);
-
     $this->db->update('material_planning_base_on_produksi_detail', $ArrUpdate, ['id' => $post['id']]);
 
-    if ($this->db->trans_status === FALSE) {
+    if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
       $valid = 0;
+      write_log('PR Stok', 'Edit', 'Edit detail PR Stok failed ID: ' . $post['id'], $ArrUpdate, null, 0);
     } else {
       $this->db->trans_commit();
       $valid = 1;
+      $log_payload = $old_detail ? ['old' => $old_detail, 'new' => array_merge($old_detail, $ArrUpdate)] : $ArrUpdate;
+      write_log('PR Stok', 'Edit', 'Edit detail PR Stok success ID: ' . $post['id'], $log_payload, null, 1);
     }
 
     echo json_encode(['status' => $valid]);
@@ -585,7 +621,9 @@ class Request_pr_stok extends Admin_Controller
 
   public function del_detail()
   {
+    $this->auth->restrict($this->deletePermission);
     $id = $this->input->post('id');
+    $old_detail = $this->db->get_where('material_planning_base_on_produksi_detail', ['id' => $id])->row_array();
 
     $this->db->trans_begin();
 
@@ -594,9 +632,11 @@ class Request_pr_stok extends Admin_Controller
     if ($this->db->trans_status() === false) {
       $this->db->trans_rollback();
       $valid = 0;
+      write_log('PR Stok', 'Delete', 'Delete detail PR Stok failed ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $valid = 1;
+      write_log('PR Stok', 'Delete', 'Delete detail PR Stok success ID: ' . $id, $old_detail ?: ['id' => $id], null, 1);
     }
 
     echo json_encode([
@@ -609,9 +649,9 @@ class Request_pr_stok extends Admin_Controller
     $post = $this->input->post();
     $so_number = $post['so_number'];
 
-    $detail     = $this->db
-      ->select('a.*, b.max_stok, b.min_stok, b.nama as nm_material')
-      ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+    $detail = $this->db
+      ->select('a.*, 0 AS max_stok, 0 AS min_stok, b.stock_name AS nm_material', FALSE)
+      ->join('accessories b', 'a.id_material = b.id', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
         array(
@@ -621,15 +661,11 @@ class Request_pr_stok extends Admin_Controller
       ->result_array();
 
     $hasil = '';
-    $GET_LEVEL4 = get_inventory_lv4();
-    $GET_STOK_PUSAT = getStokMaterial(1);
     foreach ($detail as $key => $value) {
       $key++;
-      $nm_material   = (!empty($GET_LEVEL4[(string) ($value['id_material'] ?? '')]['nama'])) ? $GET_LEVEL4[(string) ($value['id_material'] ?? '')]['nama'] : '';
-      $stock_free   = $value['stock_free'];
-      $use_stock     = $value['use_stock'];
-      $sisa_free     = $stock_free - $use_stock;
-      $propose     = $value['propose_purchase'];
+      $stock_free   = $value['stock_free'] ?? 0;
+      $use_stock    = $value['use_stock'] ?? 0;
+      $propose      = $value['propose_purchase'];
 
 
 
@@ -687,11 +723,7 @@ class Request_pr_stok extends Admin_Controller
       'note' => $post['notes'],
       'price_ref' => $price_ref
     ];
-    $insert = $this->db->insert('material_planning_base_on_produksi_detail', $ArrData);
-    if (!$insert) {
-      print_r($this->db->error($insert));
-      exit;
-    }
+    $this->db->insert('material_planning_base_on_produksi_detail', $ArrData);
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
@@ -713,14 +745,16 @@ class Request_pr_stok extends Admin_Controller
 
   public function check_inputed_qty_stock()
   {
-    $get_data = $this->db->query('
-      SELECT
-        id
-      FROM
-        accessories
-      WHERE
-        request_pack > 0
-    ')->num_rows();
+    $category = $this->input->post('category');
+    $this->db->select('id');
+    $this->db->from('accessories');
+    $this->db->where('deleted_date IS NULL', null, false);
+    $this->db->where('status', '1');
+    $this->db->where('request_pack >', 0);
+    if (!empty($category) && $category != '0') {
+      $this->db->where('id_category', $category);
+    }
+    $get_data = $this->db->get()->num_rows();
 
     echo json_encode([
       'jumlah_data' => $get_data
@@ -740,20 +774,24 @@ class Request_pr_stok extends Admin_Controller
 
   public function close_pr()
   {
+    $this->auth->restrict($this->deletePermission);
     $so_number = $this->input->post('so_number');
     $close_pr_reason = $this->input->post('close_pr_reason');
+    $old_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row_array();
+    $update_close = ['close_pr' => 1, 'close_pr_desc' => $close_pr_reason];
 
     $this->db->trans_start();
 
-    $update_close_pr = $this->db->update('material_planning_base_on_produksi', ['close_pr' => 1, 'close_pr_desc' => $close_pr_reason], ['so_number' => $so_number]);
+    $update_close_pr = $this->db->update('material_planning_base_on_produksi', $update_close, ['so_number' => $so_number]);
 
     if ($this->db->trans_status() === false) {
       $this->db->trans_rollback();
-
+      write_log('PR Stok', 'Close PR', 'Close PR Stok failed: ' . $so_number, ['so_number' => $so_number, 'reason' => $close_pr_reason], null, 0);
       $valid = 0;
     } else {
       $this->db->trans_commit();
-
+      $log_payload = $old_pr ? ['old' => $old_pr, 'new' => array_merge($old_pr, $update_close)] : $update_close;
+      write_log('PR Stok', 'Close PR', 'Close PR Stok success: ' . $so_number, $log_payload, null, 1);
       $valid = 1;
     }
 
