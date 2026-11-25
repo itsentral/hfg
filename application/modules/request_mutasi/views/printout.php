@@ -103,12 +103,12 @@
         }
 
         .header-logo {
-            min-width: 110px;
+            width: 60px;
         }
 
         .header-company {
             flex: 1;
-            padding-left: 10px;
+            padding-left: 12px;
             font-size: 11px;
             line-height: 1.4;
         }
@@ -253,14 +253,7 @@
     </div>
     <div class="header-company">
         <strong style="font-size:13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
-        <?php $alamat_pt = get_company_address(); ?>
-        <?php if ($alamat_pt !== ''): ?>
-            <?= nl2br(html_escape($alamat_pt)) ?>
-        <?php else: ?>
-            Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-            Cengkareng, Jakarta Barat 11710<br>
-            Indonesia
-        <?php endif; ?>
+        <?= get_company_address_html() ?>
     </div>
     <div class="header-title">
         <h2>Bank Mutation Request</h2>

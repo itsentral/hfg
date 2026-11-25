@@ -239,6 +239,19 @@ $grand_total = (int) $pelaporan->header->grand_total;
 </head>
 
 <body>
+    <!-- Kop Perusahaan -->
+    <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #333; margin-bottom: 12px;">
+        <tr>
+            <td style="width: 65px; vertical-align: top; padding-bottom: 6px;">
+                <img src="<?= html_escape(get_company_logo('icon')) ?>" alt="Logo" width="55" height="55">
+            </td>
+            <td style="vertical-align: top; padding-left: 10px; font-size: 11px; line-height: 1.4; padding-bottom: 6px;">
+                <strong style="font-size: 13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
+                <?= get_company_address_html() ?>
+            </td>
+        </tr>
+    </table>
+
     <!-- Header Section -->
     <div class="header-section">
         <h2>PETTY CASH EXPENSE REPORT</h2>

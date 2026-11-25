@@ -18,7 +18,20 @@
     </style>
     <table cellpadding=2 cellspacing=0 border=0 width=650>
         <tr>
-            <th colspan=8>Form Expense : Pettycash</th>
+            <td colspan=8 style="border-bottom: 2px solid #333; padding-bottom: 6px;">
+                <table cellpadding=0 cellspacing=0 border=0 width="100%">
+                    <tr>
+                        <td width="65" valign="top"><img src="<?= html_escape(get_company_logo('icon')) ?>" width="55" height="55" alt="Logo"></td>
+                        <td valign="top" style="padding-left: 10px; font-size: 11px; line-height: 1.4;">
+                            <strong style="font-size: 13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
+                            <?= get_company_address_html() ?>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th colspan=8><br />Form Expense : Pettycash</th>
         </tr>
         <tr>
             <th colspan=8 align="left">Pettycash : <?= $data->pettycash ?></th>

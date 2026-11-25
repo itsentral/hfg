@@ -10,8 +10,8 @@
         }
         body { font-family: Arial, sans-serif; font-size: 11px; margin: 0; padding: 15px; color: #000; }
         .header-wrap { display: flex; align-items: flex-start; margin-bottom: 8px; }
-        .header-logo { min-width: 80px; }
-        .header-company { flex: 1; padding-left: 10px; font-size: 11px; line-height: 1.4; }
+        .header-logo { width: 60px; }
+        .header-company { flex: 1; padding-left: 12px; font-size: 11px; line-height: 1.4; }
         .header-company strong { font-size: 13px; }
         .header-title { text-align: right; min-width: 220px; }
         .header-title h2 { margin: 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -44,14 +44,7 @@
         </div>
         <div class="header-company">
             <strong><?= html_escape(get_company_name(true, true)) ?></strong><br>
-            <?php $alamat_pt = get_company_address(); ?>
-            <?php if ($alamat_pt !== ''): ?>
-                <?= nl2br(html_escape($alamat_pt)) ?>
-            <?php else: ?>
-                Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-                Cengkareng, Jakarta Barat 11710<br>
-                Indonesia
-            <?php endif; ?>
+            <?= get_company_address_html() ?>
         </div>
         <div class="header-title">
             <h2>Purchase Request (PR) Asset</h2>

@@ -110,14 +110,7 @@
         </div>
         <div style="width: 60%;">
             <strong><?= html_escape(get_company_name(true, true)) ?></strong><br>
-            <?php $alamat_pt = get_company_address(); ?>
-            <?php if ($alamat_pt !== ''): ?>
-                <?= nl2br(html_escape($alamat_pt)) ?>
-            <?php else: ?>
-                Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-                Cengkareng, Jakarta Barat 11710<br>
-                Indonesia
-            <?php endif; ?>
+            <?= get_company_address_html() ?>
         </div>
         <div style="width: 40%;">
             <h2 style="text-align:right; margin: 0;">PURCHASE REQUEST</h2>

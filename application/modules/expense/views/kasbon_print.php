@@ -130,12 +130,15 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 		}
 
 		.company-logo {
-			width: 110px;
+			width: 60px;
+			white-space: nowrap;
 		}
 
 		.company-logo img {
-			max-width: 100px;
-			height: auto;
+			width: 60px;
+			height: 60px;
+			object-fit: contain;
+			display: block;
 		}
 
 		.company-info h2 {
@@ -430,16 +433,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 				</td>
 				<td class="company-info" style="padding-left: 12px;">
 					<h2><?= html_escape(get_company_name(true, true)) ?></h2>
-					<p>
-						<?php $alamat_pt = get_company_address(); ?>
-						<?php if ($alamat_pt !== ''): ?>
-							<?= nl2br(html_escape($alamat_pt)) ?>
-						<?php else: ?>
-							Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-							Cengkareng, Jakarta Barat 11710<br>
-							Indonesia
-						<?php endif; ?>
-					</p>
+					<p><?= get_company_address_html() ?></p>
 				</td>
 				<td class="doc-title-box">
 					<h3>CASH ADVANCE REQUEST</h3>

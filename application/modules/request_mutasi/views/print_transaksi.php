@@ -99,7 +99,7 @@
         }
 
         .header-logo {
-            width: 190px;
+            width: 60px;
         }
 
         .header-company {
@@ -226,14 +226,11 @@
     <!-- HEADER -->
     <div class="header-wrap">
         <div class="header-logo">
-            <img src="<?= base_url('assets/images/logo_sentral-removebg-preview.png') ?>" alt="Logo" width="180" height="60">
+            <img src="<?= html_escape(get_company_logo('icon')) ?>" alt="Logo" width="60" height="60">
         </div>
         <div class="header-company">
-            <strong style="font-size:13px;">PT Sentral Sistem Consulting</strong><br>
-            Jalan Letnan Jendral M.T. Haryono KAV.10 <br> 
-            MTH Square Lt.3A No.2, RT.6/RW.12, Cawang, <br> 
-            Kecamatan Jatinegara, Kota Jakarta Timur, <br>
-            Daerah Khusus Ibukota Jakarta 13330
+            <strong style="font-size:13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
+            <?= get_company_address_html() ?>
         </div>
         <div class="header-title">
             <?php

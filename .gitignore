@@ -14,7 +14,7 @@
 # application/config
 application/logs/*
 application/config/development/*
-# application/config/database.php
+application/config/database.php
 #application/config/constants.php
 !application/logs/index.html
 !application/logs/.htaccess

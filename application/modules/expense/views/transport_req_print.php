@@ -139,19 +139,12 @@ function formatDate($date)
 <body>
 	<!-- Header Perusahaan -->
 	<div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
-		<div style="min-width: 70px;">
+		<div style="width: 55px;">
 			<img src="<?= get_company_logo('icon') ?>" alt="Logo" width="55" height="55">
 		</div>
-		<div style="flex: 1; padding-left: 10px; font-size: 11px; line-height: 1.4;">
+		<div style="flex: 1; padding-left: 12px; font-size: 11px; line-height: 1.4;">
 			<strong style="font-size: 13px;"><?= html_escape(get_company_name(true, true)) ?></strong><br>
-			<?php $alamat_pt = get_company_address(); ?>
-			<?php if ($alamat_pt !== ''): ?>
-				<?= nl2br(html_escape($alamat_pt)) ?>
-			<?php else: ?>
-				Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-				Cengkareng, Jakarta Barat 11710<br>
-				Indonesia
-			<?php endif; ?>
+			<?= get_company_address_html() ?>
 		</div>
 		<div style="text-align: right; min-width: 200px;">
 			<h4 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase;">Transport Request</h4>
