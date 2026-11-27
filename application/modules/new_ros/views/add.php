@@ -853,7 +853,12 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 dataType: 'json',
                 success: function(res) {
                     Swal.close();
-                    if (res.status == 1 && res.dp_required) {
+                    if (res.status != 1 || typeof res.dp_required !== 'boolean') {
+                        $('#select_po').val('').trigger('change');
+                        Swal.fire('Error', 'Could not verify the down payment. Please select the PO again.', 'error');
+                        return;
+                    }
+                    if (res.dp_required) {
                         // DP belum dibayar — block dan tampilkan warning
                         Swal.fire({
                             icon: 'warning',
@@ -880,8 +885,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 },
                 error: function() {
                     Swal.close();
-                    // Jika gagal cek, tetap lanjut load (fail-open)
-                    loadPOMaterials(no_po);
+                    $('#select_po').val('').trigger('change');
+                    Swal.fire('Error', 'Could not verify the down payment. Please select the PO again.', 'error');
                 }
             });
         });
@@ -1750,8 +1755,12 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 Swal.fire('Notice', 'Please select a PO Number first.', 'warning');
                 return;
             }
-            if (!kurs) {
-                Swal.fire('Notice', 'Please fill in the PIB Exchange Rate first.', 'warning');
+            if (!(kurs > 0)) {
+                Swal.fire('Notice', 'Enter a positive PIB Exchange Rate.', 'warning');
+                return;
+            }
+            if (!isLokal && !(getAutoVal('#total_kg_bersih_pib') > 0)) {
+                Swal.fire('Notice', 'Enter a positive PIB Net Weight.', 'warning');
                 return;
             }
             if ($('#data_po_body tr[data-idx]').length === 0) {

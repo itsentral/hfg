@@ -296,7 +296,16 @@ class New_ros extends Admin_Controller
     public function check_dp_status()
     {
         $no_po = $this->input->post('no_po');
+        echo json_encode([
+            'status' => 1,
+            'dp_required' => $this->has_unpaid_dp($no_po),
+            'message' => 'This PO has an unpaid DP term. Please process the DP payment first.',
+            'link' => base_url('purchase_order_payment/index/dp')
+        ]);
+    }
 
+    private function has_unpaid_dp($no_po)
+    {
         // Cek apakah PO ini punya TOP DP (group_top = 76)
         $top_dp = $this->db->get_where('tr_top_po', [
             'no_po'     => $no_po,
@@ -305,8 +314,7 @@ class New_ros extends Admin_Controller
 
         if (!$top_dp) {
             // Tidak ada term DP, tidak perlu validasi — lanjut
-            echo json_encode(['status' => 1, 'dp_required' => false]);
-            return;
+            return false;
         }
 
         // Ada term DP, cek apakah sudah dibayar (tr_receive_invoice tipe=dp, status=payment)
@@ -316,18 +324,7 @@ class New_ros extends Admin_Controller
             'status'  => 'payment'
         ])->row();
 
-        if ($invoice_dp) {
-            // DP sudah dibayar — lanjut
-            echo json_encode(['status' => 1, 'dp_required' => false]);
-        } else {
-            // DP belum dibayar — block
-            echo json_encode([
-                'status'      => 1,
-                'dp_required' => true,
-                'message'     => 'This PO has an unpaid DP term. Please process the DP payment first.',
-                'link'        => base_url('purchase_order_payment/index/dp')
-            ]);
-        }
+        return !$invoice_dp;
     }
 
     // ─── EDIT ────────────────────────────────────────────────────────
@@ -528,11 +525,101 @@ class New_ros extends Admin_Controller
         }
     }
 
+    private function validate_ros_save($post, $is_new)
+    {
+        foreach (['id_ros', 'id_supplier', 'no_po'] as $field) {
+            if (!is_string($post[$field] ?? null) || trim($post[$field]) === '') {
+                throw new InvalidArgumentException('ROS reference, Supplier and PO Number are required.');
+            }
+        }
+        if (!$is_new) {
+            $header = $this->db->query(
+                'SELECT status, no_po, id_supplier FROM tr_ros_header WHERE id = ? FOR UPDATE',
+                [$post['id_ros']]
+            )->row();
+            if (!$header || (string) $header->status !== '0'
+                || (string) $header->no_po !== $post['no_po']
+                || (string) $header->id_supplier !== $post['id_supplier']) {
+                throw new InvalidArgumentException('Only a draft ROS can be edited, with its original PO and supplier.');
+            }
+        }
+
+        $po = $this->db->query('SELECT * FROM tr_purchase_order WHERE no_po = ? FOR UPDATE', [$post['no_po']])->row();
+        if (!$po || (string) $po->id_suplier !== $post['id_supplier']) {
+            throw new InvalidArgumentException('The selected PO does not belong to this supplier.');
+        }
+        if ($is_new && ((string) $po->status !== '2' || (string) $po->close_po === '1' || $this->has_unpaid_dp($post['no_po']))) {
+            throw new InvalidArgumentException('Select an approved, open PO with its required down payment paid.');
+        }
+
+        $local = strtolower((string) $po->loi) === 'lokal';
+        if ($local) {
+            $post['kurs_pib'] = '1';
+        }
+        $numeric = static function ($value) {
+            $normalized = is_scalar($value) ? str_replace(',', '', (string) $value) : '';
+            return is_numeric($normalized) && is_finite((float) $normalized) ? (float) $normalized : null;
+        };
+        if ($numeric($post['kurs_pib'] ?? null) <= 0
+            || (!$local && $numeric($post['total_kg_bersih_pib'] ?? null) <= 0)) {
+            throw new InvalidArgumentException('Enter a positive exchange rate and, for imports, a positive PIB net weight.');
+        }
+        foreach (['nilai_po_usd', 'nilai_po_pib_rp', 'total_kg_kotor_pib', 'total_kg_bersih_pib',
+                  'cost_bm', 'cost_bm_kite', 'cost_bmt', 'cost_cukai', 'cost_ppn', 'cost_ppnbm',
+                  'cost_pph_import', 'biaya_ls', 'ppn_ls', 'pph_ls', 'insurance'] as $field) {
+            $value = $post[$field] ?? '';
+            if ($value !== '' && ($numeric($value) === null || $numeric($value) < 0)) {
+                throw new InvalidArgumentException('Invalid amount or weight: ' . $field);
+            }
+        }
+        $post['no_surat'] = $po->no_surat;
+        if (empty($post['mat']) || !is_array($post['mat'])) {
+            throw new InvalidArgumentException('At least one PO material is required.');
+        }
+        $po_items = array_column($this->New_ros_model->get_po_materials($post['no_po']), null, 'id_po_detail');
+        $seen = [];
+        foreach ($post['mat'] as &$material) {
+            $detail_id = is_array($material) ? ($material['id_po_detail'] ?? null) : null;
+            $source = is_scalar($detail_id) ? ($po_items[(string) $detail_id] ?? null) : null;
+            if (!$source || isset($seen[$detail_id])) {
+                throw new InvalidArgumentException('Each material must reference a different item from the selected PO.');
+            }
+            $seen[$detail_id] = true;
+            if ($numeric($source['kg_unit']) <= 0
+                || $numeric($source['unit_price_usd']) === null || $numeric($source['unit_price_usd']) < 0
+                || $numeric($source['total_value_usd']) === null || $numeric($source['total_value_usd']) < 0) {
+                throw new InvalidArgumentException('A PO material has an invalid quantity, price or subtotal.');
+            }
+            foreach (['kg_unit', 'unit_price_usd', 'total_value_usd', 'nm_barang'] as $field) {
+                $material[$field] = $source[$field];
+            }
+            $material['id_barang'] = $source['idmaterial'];
+            $material['nm_erp'] = $source['nm_erp'] ?: $source['nm_barang'];
+            $material['nm_alias'] = $source['nm_alias'] ?: $source['nm_barang'];
+            $material['bm_persen'] = $local ? 0 : $this->New_ros_model->get_bm_persen($source['idmaterial'], $post['id_supplier']);
+        }
+        unset($material);
+        $upload_error = $_FILES['doc_pib']['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($upload_error !== UPLOAD_ERR_OK && $upload_error !== UPLOAD_ERR_NO_FILE) {
+            throw new InvalidArgumentException('The PIB document upload failed. Check the file size and try again.');
+        }
+        return $post;
+    }
+
     // ─── SAVE ROS ────────────────────────────────────────────────────
     public function save()
     {
         $post = $this->input->post();
+        $is_new = ($post['id_ros'] ?? null) === 'New';
+        $this->auth->restrict($is_new ? $this->addPermission : $this->managePermission);
         $this->db->trans_begin();
+        try {
+            $post = $this->validate_ros_save($post, $is_new);
+        } catch (InvalidArgumentException $e) {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'msg' => $e->getMessage()]);
+            return;
+        }
 
         $kurs_pib          = (float) str_replace(',', '', $post['kurs_pib'] ?? '');
         $total_kg_bersih   = (float) str_replace(',', '', $post['total_kg_bersih_pib'] ?? '');
@@ -584,8 +671,6 @@ class New_ros extends Admin_Controller
                 return; // Berhenti di sini
             }
         }
-
-        $is_new = ($post['id_ros'] == 'New');
 
         if ($is_new) {
             $id_ros = $this->New_ros_model->generate_no_ros();
@@ -1899,24 +1984,14 @@ class New_ros extends Admin_Controller
 
     public function finalize()
     {
+        $this->auth->restrict($this->managePermission);
         $id_ros = $this->input->post('id_ros');
 
-        // Cek apakah sudah ada coil
-        $this->db->select('c.id');
-        $this->db->from('tr_ros_material_coil c');
-        $this->db->join('tr_ros_material m', 'm.id = c.id_ros_material');
-        $this->db->where('m.id_ros', $id_ros);
-        $coil_count = $this->db->get()->num_rows();
-
-        if ($coil_count == 0) {
-            echo json_encode(['status' => 0, 'msg' => 'Please upload the packing list before finalizing.']);
-            return;
-        }
-
-        // Ambil header ROS
-        $header = $this->New_ros_model->get_header($id_ros);
-        if (!$header) {
-            echo json_encode(['status' => 0, 'msg' => 'ROS data not found.']);
+        $this->db->trans_begin();
+        $header = $this->db->query('SELECT * FROM tr_ros_header WHERE id = ? FOR UPDATE', [$id_ros])->row_array();
+        if (!$header || (string) $header['status'] !== '0') {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'msg' => 'Data not found or status is no longer Draft.']);
             return;
         }
 
@@ -1925,8 +2000,12 @@ class New_ros extends Admin_Controller
         foreach ($materials as &$mat) {
             $mat['coils'] = $this->New_ros_model->get_coils($mat['id']);
         }
-
-        $this->db->trans_begin();
+        unset($mat);
+        if ($message = $this->packing_list_error($materials)) {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'msg' => $message]);
+            return;
+        }
 
         $this->db->update('tr_ros_header', [
             'status'      => 1,
@@ -1936,13 +2015,15 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-            write_log('New ROS', 'Finalize ROS', 'Failed to finalize ROS: ' . $id, array('id' => $id), null, 0);
+            write_log('New ROS', 'Finalize ROS', 'Failed to finalize ROS: ' . $id_ros, ['id' => $id_ros], null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to finalize ROS.']);
             return;
         }
 
         $this->db->trans_commit();
-        write_log('New ROS', 'Finalize ROS', 'Successfully finalized ROS: ' . $id, array('id' => $id), null, 1);
+        write_log('New ROS', 'Finalize ROS', 'Successfully finalized ROS: ' . $id_ros, [
+            'old' => $header, 'new' => array_merge($header, ['status' => 1])
+        ], null, 1);
 
         // Hitung total untuk GL Interface
         $total_inventory = 0;
@@ -2195,19 +2276,51 @@ class New_ros extends Admin_Controller
         echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils ?? [])]);
     }
 
+    private function packing_list_error(array $materials)
+    {
+        if (!$materials) {
+            return 'At least one PO material is required.';
+        }
+        foreach ($materials as $material) {
+            if (empty($material['coils'])) {
+                return 'Upload packing list data for each PO material before closing the ROS.';
+            }
+            foreach ($material['coils'] as $coil) {
+                $net = (float) $coil['berat_bersih'];
+                $gross = (float) $coil['berat_kotor'];
+                if (trim((string) $coil['no_coil']) === '' || $net <= 0 || $gross < $net) {
+                    return 'Every coil must have a number, positive net weight and gross weight at least equal to net weight.';
+                }
+            }
+        }
+        return null;
+    }
+
     public function close_ros()
     {
+        $this->auth->restrict($this->managePermission);
         ob_start();
         $id_ros = $this->input->post('id_ros');
 
         // Cek ROS exists & masih draft
-        $header = $this->New_ros_model->get_header($id_ros);
+        $this->db->trans_begin();
+        $header = $this->db->query('SELECT * FROM tr_ros_header WHERE id = ? FOR UPDATE', [$id_ros])->row_array();
         if (!$header || $header['status'] != '0') {
+            $this->db->trans_rollback();
             echo json_encode(['status' => 0, 'msg' => 'Data not found or status is no longer Draft.']);
             return;
         }
 
         $materials = $this->New_ros_model->get_materials($id_ros);
+        foreach ($materials as &$material) {
+            $material['coils'] = $this->New_ros_model->get_coils($material['id']);
+        }
+        unset($material);
+        if ($message = $this->packing_list_error($materials)) {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'msg' => $message]);
+            return;
+        }
         $others    = $this->New_ros_model->get_others($id_ros);
 
         // (Perhitungan manual komponen biaya, selisih kurs, dan validasi COA lama dihapus
@@ -2221,7 +2334,6 @@ class New_ros extends Admin_Controller
         $status_payment = $is_lokal ? 'close' : 'proses_payment';
 
         // ── Update status ROS ──
-        $this->db->trans_begin();
         $this->db->update('tr_ros_header', [
             'status'          => '1',
             'status_incoming' => 'open',
