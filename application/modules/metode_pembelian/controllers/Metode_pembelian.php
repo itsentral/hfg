@@ -92,13 +92,10 @@ class Metode_pembelian extends Admin_Controller
 
 	public function add_rfq()
 	{
-
-		$data_Group			= $this->master_model->getArray('groups', array(), 'id', 'name');
 		$query = "SELECT kode_supplier AS id_supplier, nama AS nm_supplier FROM new_supplier ORDER BY nm_supplier ASC ";
 		$restQuery = $this->db->query($query)->result_array();
 		$data = array(
 			'action'		=> 'index',
-			'row_group'		=> $data_Group,
 			'supList'		=> $restQuery,
 		);
 		$this->template->set($data);
